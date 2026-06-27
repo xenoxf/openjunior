@@ -6,7 +6,8 @@ import App from './App.tsx'
 import { SessionAuthGate } from './components/auth/SessionAuthGate'
 import { ThemeSystemProvider } from './contexts/ThemeSystemContext'
 import { ThemeProvider } from './components/providers/ThemeProvider'
-import './lib/debug'
+// Deferred — debug utilities only needed via browser console
+import('./lib/debug').catch(() => {})
 import { syncDesktopSettings, initializeAppearancePreferences } from './lib/persistence'
 import { startAppearanceAutoSave } from './lib/appearanceAutoSave'
 import { applyPersistedDirectoryPreferences } from './lib/directoryPersistence'

@@ -727,6 +727,12 @@ export const SETTINGS_SEARCH_ITEMS: readonly SettingsSearchItem[] = [
     keywords: ['background', 'push'],
     isAvailable: (ctx) => ctx.isWeb && !ctx.isDesktop && !ctx.isVSCode,
   },
+  {
+    id: 'integrations.browse',
+    page: 'integrations',
+    titleKey: 'settings.integrations.page.title',
+    keywords: ['mcp', 'plugins', 'skills', 'catalog', 'extensions', 'connect', 'services', 'tools', 'marketplace'],
+  },
 ] as const;
 
 interface BuildSettingsSearchResultsOptions {

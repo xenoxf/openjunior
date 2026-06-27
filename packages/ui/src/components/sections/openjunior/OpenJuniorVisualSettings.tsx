@@ -2024,6 +2024,65 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                     </div>
                 )}
 
+                {/* --- Advanced Settings --- */}
+                <div className="space-y-3">
+                    <section className="px-2 pb-2 pt-0">
+                        <h4 className="typography-ui-header font-medium text-foreground mb-2">Advanced</h4>
+
+                        <div
+                            className="group flex cursor-pointer items-center gap-2 py-1.5"
+                            role="button"
+                            tabIndex={0}
+                            aria-pressed={useUIStore.getState().naturalLanguageMode}
+                            onClick={() => {
+                                const current = useUIStore.getState().naturalLanguageMode;
+                                useUIStore.getState().setNaturalLanguageMode(!current);
+                            }}
+                            onKeyDown={(event) => {
+                                if (event.key === ' ' || event.key === 'Enter') {
+                                    event.preventDefault();
+                                    const current = useUIStore.getState().naturalLanguageMode;
+                                    useUIStore.getState().setNaturalLanguageMode(!current);
+                                }
+                            }}
+                        >
+                            <Checkbox
+                                checked={useUIStore.getState().naturalLanguageMode}
+                                onChange={(v) => useUIStore.getState().setNaturalLanguageMode(v)}
+                                ariaLabel="Enable natural language input mode"
+                            />
+                            <div className="flex min-w-0 items-center gap-1.5">
+                                <span className="typography-ui-label text-foreground">Natural Language Input</span>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Icon name="information" className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
+                                    </TooltipTrigger>
+                                    <TooltipContent sideOffset={8} className="max-w-xs">
+                                        Show a friendly text input bar instead of the command palette for non-technical users
+                                    </TooltipContent>
+                                </Tooltip>
+                            </div>
+                        </div>
+
+                        <div
+                            className="group flex cursor-pointer items-center gap-2 py-1.5"
+                            role="button"
+                            tabIndex={0}
+                            aria-pressed={useUIStore.getState().showTerminalQuickKeysOnDesktop}
+                        >
+                            <span className="typography-ui-label text-foreground">Hide Keyboard Shortcuts</span>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Icon name="information" className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent sideOffset={8} className="max-w-xs">
+                                    Hide shortcut hints from the UI for a cleaner interface
+                                </TooltipContent>
+                            </Tooltip>
+                        </div>
+                    </section>
+                </div>
+
                 {/* --- Privacy & Data --- */}
                 {shouldShow('reportUsage') && (
                     <div className="space-y-3">

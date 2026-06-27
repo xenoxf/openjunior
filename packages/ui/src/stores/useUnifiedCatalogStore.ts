@@ -28,12 +28,16 @@ export interface UnifiedCatalogState {
   isLoadingMore: boolean;
   isInstalling: Record<string, boolean>;
 
+  // Tracking installed integrations by item id
+  installedIds: string[];
+
   // Selected item for detail dialog
   selectedItem: UnifiedCatalogItem | null;
 
   // Actions
   loadCatalog: (options?: { refresh?: boolean }) => Promise<void>;
   loadMore: () => Promise<void>;
+  loadInstalled: () => Promise<void>;
   setTypeFilter: (type: UnifiedCatalogItemType | 'all') => void;
   setCategoryFilter: (category: UnifiedCatalogCategory) => void;
   setSearch: (query: string) => void;
@@ -44,6 +48,13 @@ export interface UnifiedCatalogState {
 
 const CATALOG_CACHE_TTL_MS = 5000;
 let lastCatalogLoad = 0;
+
+export function installedKey(item: UnifiedCatalogItem): string {
+  if (item.type === 'mcp') {
+    return item.name.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+  }
+  return item.id;
+}
 
 export const useUnifiedCatalogStore = create<UnifiedCatalogState>()(
   devtools(
@@ -60,6 +71,8 @@ export const useUnifiedCatalogStore = create<UnifiedCatalogState>()(
       isLoading: false,
       isLoadingMore: false,
       isInstalling: {},
+
+      installedIds: [],
 
       selectedItem: null,
 
@@ -97,12 +110,12 @@ export const useUnifiedCatalogStore = create<UnifiedCatalogState>()(
           if (data.ok && data.items) {
             set({
               items: data.items,
-              hasMore: false, // Pagination handled per-source in the backend
+              hasMore: false,
             });
             lastCatalogLoad = Date.now();
           }
 
-          // Load source statuses
+          void get().loadInstalled();
           void get().refreshSources();
         } catch (err) {
           console.error('[UnifiedCatalogStore] Failed to load catalog:', err);
@@ -113,7 +126,28 @@ export const useUnifiedCatalogStore = create<UnifiedCatalogState>()(
 
       loadMore: async () => {
         // Pagination is handled server-side; this is a no-op for now
-        // Future: implement cursor-based pagination per source
+      },
+
+      loadInstalled: async () => {
+        try {
+          const mcpResp = await runtimeFetch('/api/config/mcp', {
+            method: 'GET',
+            headers: { Accept: 'application/json' },
+          });
+          if (mcpResp.ok) {
+            const configs = await mcpResp.json();
+            if (Array.isArray(configs)) {
+              const ids: string[] = [];
+              for (const c of configs) {
+                const n = typeof c.name === 'string' ? c.name : '';
+                if (n) ids.push(n);
+              }
+              set({ installedIds: ids });
+            }
+          }
+        } catch {
+          // non-critical
+        }
       },
 
       setTypeFilter: (type) => {
@@ -164,6 +198,11 @@ export const useUnifiedCatalogStore = create<UnifiedCatalogState>()(
 
             const result = await response.json();
             if (result.ok) {
+              set((s) => ({
+                installedIds: s.installedIds.includes(installedKey(item))
+                  ? s.installedIds
+                  : [...s.installedIds, installedKey(item)],
+              }));
               return { ok: true, message: result.message || `${item.name} installed successfully` };
             }
             return { ok: false, message: result.error?.message || 'Failed to install skill' };
@@ -192,6 +231,11 @@ export const useUnifiedCatalogStore = create<UnifiedCatalogState>()(
             });
 
             if (response.ok) {
+              set((s) => ({
+                installedIds: s.installedIds.includes(installedKey(item))
+                  ? s.installedIds
+                  : [...s.installedIds, installedKey(item)],
+              }));
               return { ok: true, message: `${item.name} MCP server added` };
             }
             const err = await response.json().catch(() => null);
@@ -212,6 +256,11 @@ export const useUnifiedCatalogStore = create<UnifiedCatalogState>()(
 
             const result = await response.json();
             if (result.ok !== false) {
+              set((s) => ({
+                installedIds: s.installedIds.includes(installedKey(item))
+                  ? s.installedIds
+                  : [...s.installedIds, installedKey(item)],
+              }));
               return { ok: true, message: `${item.name} plugin installed` };
             }
             return { ok: false, message: result.error || 'Failed to install plugin' };

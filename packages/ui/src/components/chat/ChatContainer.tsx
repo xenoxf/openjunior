@@ -792,7 +792,9 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({ autoOpenDraft = tr
 								: 'flex-1 items-center justify-center bg-background px-0 pb-[6vh]'
 					)}
 				>
-						{promptReadOnly ? <ReadOnlyPromptBanner /> : <ChatInput scrollToBottom={resumeToLatestInstant} />}
+					{promptReadOnly ? <ReadOnlyPromptBanner /> : (
+							<ChatInput scrollToBottom={resumeToLatestInstant} />
+						)}
 				</div>
 			</div>
         );
@@ -933,7 +935,9 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({ autoOpenDraft = tr
                         onClick={navigation.resumeToLatest}
                     />
                 )}
-                {promptReadOnly ? <ReadOnlyPromptBanner /> : <ChatInput scrollToBottom={resumeToLatestInstant} />}
+				{promptReadOnly ? <ReadOnlyPromptBanner /> : (
+							<ChatInput scrollToBottom={resumeToLatestInstant} />
+						)}
             </div>
 
             <TimelineDialog

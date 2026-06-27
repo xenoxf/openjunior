@@ -633,6 +633,7 @@ interface UIStore {
   mobileSessionFilterProjectId: string | null;
   isExpandedInput: boolean;
   reportUsage: boolean;
+  naturalLanguageMode: boolean;
   shortcutOverrides: Record<string, ShortcutCombo>;
   fileEditorKeymap: FileEditorKeymap;
 
@@ -782,6 +783,7 @@ interface UIStore {
   openMultiRunLauncher: () => void;
   openMultiRunLauncherWithPrompt: (prompt: string) => void;
   setReportUsage: (value: boolean) => void;
+  setNaturalLanguageMode: (value: boolean) => void;
   setShortcutOverride: (actionId: string, combo: ShortcutCombo) => void;
   clearShortcutOverride: (actionId: string) => void;
   resetAllShortcutOverrides: () => void;
@@ -914,6 +916,7 @@ export const useUIStore = create<UIStore>()(
         mobileSessionFilterProjectId: null,
         isExpandedInput: false,
         reportUsage: true,
+        naturalLanguageMode: false,
         shortcutOverrides: {},
         fileEditorKeymap: 'default',
 
@@ -2031,6 +2034,9 @@ export const useUIStore = create<UIStore>()(
         setReportUsage: (value) => {
           set({ reportUsage: value });
         },
+        setNaturalLanguageMode: (value) => {
+          set({ naturalLanguageMode: value });
+        },
         viewPagerPage: 'center',
         setViewPagerPage: (page: 'left' | 'center' | 'right') => {
           set({ viewPagerPage: page });
@@ -2256,6 +2262,7 @@ export const useUIStore = create<UIStore>()(
           mobileSessionFilterProjectId: state.mobileSessionFilterProjectId,
           shortcutOverrides: state.shortcutOverrides,
           fileEditorKeymap: state.fileEditorKeymap,
+          naturalLanguageMode: state.naturalLanguageMode,
         })
       }
     ),

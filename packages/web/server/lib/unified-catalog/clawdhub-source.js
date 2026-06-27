@@ -60,7 +60,9 @@ function normalizeClawdHubItem(item) {
   const description = item.description || '';
   const downloads = item.downloads || 0;
   const stars = item.stars || 0;
-  const version = item.version || item.latestVersion || '1.0.0';
+  const version = typeof item.version === 'string'
+    ? item.version
+    : (typeof item.latestVersion === 'string' ? item.latestVersion : '1.0.0');
   const owner = item.owner || item.author || '';
 
   // Normalize popularity to 0-100

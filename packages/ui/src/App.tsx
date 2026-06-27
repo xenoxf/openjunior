@@ -15,6 +15,7 @@ import { useRouter } from '@/hooks/useRouter';
 import { usePushVisibilityBeacon } from '@/hooks/usePushVisibilityBeacon';
 import { useWebNotificationStream } from '@/hooks/useWebNotificationStream';
 import { usePwaInstallPrompt } from '@/hooks/usePwaInstallPrompt';
+import { useAppCleanup } from '@/hooks/useAppCleanup';
 import { useWindowTitle } from '@/hooks/useWindowTitle';
 import { useConfigStore } from '@/stores/useConfigStore';
 import { hasModifier } from '@/lib/utils';
@@ -41,6 +42,9 @@ import { SyncProvider } from '@/sync/sync-context';
 import { useSync } from '@/sync/use-sync';
 import { ConfigUpdateOverlay } from '@/components/ui/ConfigUpdateOverlay';
 import { AboutDialog } from '@/components/ui/AboutDialog';
+import { SetupWizard } from '@/components/setup-wizard/SetupWizard';
+import { useSetupStore } from '@/stores/useSetupStore';
+import { InteractiveTutorial } from '@/components/tutorial';
 import { RuntimeAPIProvider } from '@/contexts/RuntimeAPIProvider';
 import { registerRuntimeAPIs } from '@/contexts/runtimeAPIRegistry';
 import { VoiceProvider } from '@/components/voice';
@@ -204,6 +208,16 @@ const EmbeddedSessionChatContent: React.FC<{
 };
 
 function App({ apis }: AppProps) {
+  const { completeSetup: setupComplete, skipSetup: setupSkip, profile: setupProfile } = useSetupStore();
+
+  const onComplete = React.useCallback(() => {
+    setupComplete(setupProfile || 'developer');
+  }, [setupComplete, setupProfile]);
+
+  const onSkip = React.useCallback(() => {
+    setupSkip();
+  }, [setupSkip]);
+
   React.useEffect(() => {
     markStartupTrace('App:mounted');
     if (startupTraceEnabled()) {
@@ -696,6 +710,8 @@ function App({ apis }: AppProps) {
   useWebNotificationStream({ enabled: embeddedBackgroundWorkEnabled });
   usePwaInstallPrompt();
 
+  useAppCleanup();
+
   useWindowTitle();
 
   useRouter();
@@ -934,6 +950,12 @@ function App({ apis }: AppProps) {
                 <div className={isDesktopRuntime ? 'h-full text-foreground bg-transparent' : 'h-full text-foreground bg-background'}>
                   <SyncAppEffects embeddedBackgroundWorkEnabled={embeddedBackgroundWorkEnabled} />
                   <OpenCodeUpdateToast />
+                  {!isBootShell && (
+                    <>
+                      <SetupWizard onComplete={onComplete} onSkip={onSkip} />
+                      <InteractiveTutorial />
+                    </>
+                  )}
                   <MainLayout />
                   <Toaster />
                   {!isBootShell && (
