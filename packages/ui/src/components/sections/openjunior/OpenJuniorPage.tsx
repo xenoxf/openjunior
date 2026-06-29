@@ -48,7 +48,7 @@ export const OpenJuniorPage: React.FC<OpenJuniorPageProps> = ({ section }) => {
                 outerClassName="h-full"
                 className="w-full"
             >
-                <div className="openchamber-page-body mx-auto max-w-3xl space-y-3 p-3 sm:space-y-6 sm:p-6 sm:pt-8">
+                <div className="openjunior-page-body mx-auto max-w-3xl space-y-3 p-3 sm:space-y-6 sm:p-6 sm:pt-8">
                     <OpenJuniorVisualSettings />
                     <div className="border-t border-border/40 pt-6">
                         <DefaultsSettings />
@@ -110,7 +110,7 @@ export const OpenJuniorPage: React.FC<OpenJuniorPageProps> = ({ section }) => {
             outerClassName="h-full"
             className="w-full"
         >
-            <div className="openchamber-page-body mx-auto max-w-3xl space-y-6 p-3 sm:p-6 sm:pt-8">
+            <div className="openjunior-page-body mx-auto max-w-3xl space-y-6 p-3 sm:p-6 sm:pt-8">
                 {renderSectionContent()}
             </div>
         </ScrollableOverlay>

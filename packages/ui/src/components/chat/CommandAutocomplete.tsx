@@ -10,7 +10,7 @@ import { useI18n } from '@/lib/i18n';
 import { useUIStore } from '@/stores/useUIStore';
 import { isVSCodeRuntime } from '@/lib/desktop';
 
-type CommandSource = 'openchamber' | 'opencode' | 'skill';
+type CommandSource = 'openjunior' | 'opencode' | 'skill';
 
 export interface CommandInfo {
   id: string;
@@ -136,48 +136,48 @@ export const CommandAutocomplete = React.forwardRef<CommandAutocompleteHandle, C
 
         const builtInCommands: CommandInfo[] = [
           ...(hasSession && !hasMessagesInCurrentSession
-            ? [{ id: 'openjunior:init', name: 'init', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.initDescription'), isBuiltIn: true }]
+            ? [{ id: 'openjunior:init', name: 'init', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.initDescription'), isBuiltIn: true }]
             : []
           ),
           ...(hasSession  // Show when session exists, not when hasMessages
             ? [
-                { id: 'openjunior:undo', name: 'undo', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.undoDescription'), isBuiltIn: true },
-                { id: 'openjunior:redo', name: 'redo', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.redoDescription'), isBuiltIn: true },
-                { id: 'openjunior:timeline', name: 'timeline', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.timelineDescription'), isBuiltIn: true },
+                { id: 'openjunior:undo', name: 'undo', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.undoDescription'), isBuiltIn: true },
+                { id: 'openjunior:redo', name: 'redo', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.redoDescription'), isBuiltIn: true },
+                { id: 'openjunior:timeline', name: 'timeline', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.timelineDescription'), isBuiltIn: true },
               ]
             : []
           ),
-          { id: 'openjunior:compact', name: 'compact', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.compactDescription'), isBuiltIn: true },
+          { id: 'openjunior:compact', name: 'compact', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.compactDescription'), isBuiltIn: true },
           ...(hasSession
-            ? [{ id: 'openjunior:summary', name: 'summary', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.summaryDescription'), isOpenJunior: true }]
+            ? [{ id: 'openjunior:summary', name: 'summary', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.summaryDescription'), isOpenJunior: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:workspace-review', name: 'workspace-review', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.workspaceReviewDescription'), isOpenJunior: true }]
+            ? [{ id: 'openjunior:workspace-review', name: 'workspace-review', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.workspaceReviewDescription'), isOpenJunior: true }]
             : []
           ),
           ...(canUseReviewHandoffFlow
-            ? [{ id: 'openjunior:handoff-review', name: 'handoff-review', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.handoffReviewDescription'), isOpenJunior: true }]
+            ? [{ id: 'openjunior:handoff-review', name: 'handoff-review', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.handoffReviewDescription'), isOpenJunior: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:plan-feature', name: 'plan-feature', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.featurePlanDescription'), isOpenJunior: true }]
+            ? [{ id: 'openjunior:plan-feature', name: 'plan-feature', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.featurePlanDescription'), isOpenJunior: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:catch-up', name: 'catch-up', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.catchUpDescription'), isOpenJunior: true }]
+            ? [{ id: 'openjunior:catch-up', name: 'catch-up', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.catchUpDescription'), isOpenJunior: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:debug', name: 'debug', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.debugDescription'), isOpenJunior: true }]
+            ? [{ id: 'openjunior:debug', name: 'debug', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.debugDescription'), isOpenJunior: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:weigh', name: 'weigh', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.weighDescription'), isOpenJunior: true }]
+            ? [{ id: 'openjunior:weigh', name: 'weigh', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.weighDescription'), isOpenJunior: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:explore', name: 'explore', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.exploreDescription'), isOpenJunior: true }]
+            ? [{ id: 'openjunior:explore', name: 'explore', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.exploreDescription'), isOpenJunior: true }]
             : []
           ),
         ];
@@ -205,48 +205,48 @@ export const CommandAutocomplete = React.forwardRef<CommandAutocompleteHandle, C
         const allowInitCommand = !hasMessagesInCurrentSession;
         const builtInCommands: CommandInfo[] = [
           ...(hasSession && !hasMessagesInCurrentSession
-            ? [{ id: 'openjunior:init', name: 'init', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.initDescription'), isBuiltIn: true }]
+            ? [{ id: 'openjunior:init', name: 'init', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.initDescription'), isBuiltIn: true }]
             : []
           ),
           ...(hasSession  // Show when session exists, not when hasMessages
             ? [
-                { id: 'openjunior:undo', name: 'undo', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.undoDescription'), isBuiltIn: true },
-                { id: 'openjunior:redo', name: 'redo', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.redoDescription'), isBuiltIn: true },
-                { id: 'openjunior:timeline', name: 'timeline', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.timelineDescription'), isBuiltIn: true },
+                { id: 'openjunior:undo', name: 'undo', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.undoDescription'), isBuiltIn: true },
+                { id: 'openjunior:redo', name: 'redo', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.redoDescription'), isBuiltIn: true },
+                { id: 'openjunior:timeline', name: 'timeline', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.timelineDescription'), isBuiltIn: true },
               ]
             : []
           ),
-          { id: 'openjunior:compact', name: 'compact', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.compactDescription'), isBuiltIn: true },
+          { id: 'openjunior:compact', name: 'compact', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.compactDescription'), isBuiltIn: true },
           ...(hasSession
-            ? [{ id: 'openjunior:summary', name: 'summary', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.summaryDescription'), isOpenJunior: true }]
+            ? [{ id: 'openjunior:summary', name: 'summary', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.summaryDescription'), isOpenJunior: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:workspace-review', name: 'workspace-review', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.workspaceReviewDescription'), isOpenJunior: true }]
+            ? [{ id: 'openjunior:workspace-review', name: 'workspace-review', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.workspaceReviewDescription'), isOpenJunior: true }]
             : []
           ),
           ...(canUseReviewHandoffFlow
-            ? [{ id: 'openjunior:handoff-review', name: 'handoff-review', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.handoffReviewDescription'), isOpenJunior: true }]
+            ? [{ id: 'openjunior:handoff-review', name: 'handoff-review', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.handoffReviewDescription'), isOpenJunior: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:plan-feature', name: 'plan-feature', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.featurePlanDescription'), isOpenJunior: true }]
+            ? [{ id: 'openjunior:plan-feature', name: 'plan-feature', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.featurePlanDescription'), isOpenJunior: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:catch-up', name: 'catch-up', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.catchUpDescription'), isOpenJunior: true }]
+            ? [{ id: 'openjunior:catch-up', name: 'catch-up', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.catchUpDescription'), isOpenJunior: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:debug', name: 'debug', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.debugDescription'), isOpenJunior: true }]
+            ? [{ id: 'openjunior:debug', name: 'debug', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.debugDescription'), isOpenJunior: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:weigh', name: 'weigh', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.weighDescription'), isOpenJunior: true }]
+            ? [{ id: 'openjunior:weigh', name: 'weigh', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.weighDescription'), isOpenJunior: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:explore', name: 'explore', source: 'openchamber' as const, description: t('chat.commandAutocomplete.command.exploreDescription'), isOpenJunior: true }]
+            ? [{ id: 'openjunior:explore', name: 'explore', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.exploreDescription'), isOpenJunior: true }]
             : []
           ),
         ];

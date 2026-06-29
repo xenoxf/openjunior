@@ -508,14 +508,14 @@ export function ThemeSystemProvider({ children, defaultThemeId }: ThemeSystemPro
     }
 
     const scopedWindow = window as unknown as {
-      __openchamberApplyThemeSync?: (payload: ThemeSyncPayload) => void;
+      __openjuniorApplyThemeSync?: (payload: ThemeSyncPayload) => void;
     };
 
-    scopedWindow.__openchamberApplyThemeSync = applyIncomingThemeSync;
+    scopedWindow.__openjuniorApplyThemeSync = applyIncomingThemeSync;
 
     return () => {
-      if (scopedWindow.__openchamberApplyThemeSync === applyIncomingThemeSync) {
-        delete scopedWindow.__openchamberApplyThemeSync;
+      if (scopedWindow.__openjuniorApplyThemeSync === applyIncomingThemeSync) {
+        delete scopedWindow.__openjuniorApplyThemeSync;
       }
     };
   }, [applyIncomingThemeSync]);

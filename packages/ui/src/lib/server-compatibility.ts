@@ -21,7 +21,7 @@ export type ServerCompatibilityStatus =
 
 export interface ServerCompatibilityPayload {
   status?: unknown;
-  openchamberVersion?: unknown;
+  openjuniorVersion?: unknown;
   runtime?: unknown;
   compatibility?: {
     apiVersion?: unknown;
@@ -32,7 +32,7 @@ export interface ServerCompatibilityPayload {
 
 export interface ServerCompatibilityResult {
   status: ServerCompatibilityStatus;
-  openchamberVersion: string | null;
+  openjuniorVersion: string | null;
   runtime: string | null;
   apiVersion: number | null;
   minClientApiVersion: number | null;
@@ -67,11 +67,11 @@ export const evaluateServerCompatibility = (
   const compatibility = payload?.compatibility ?? null;
   const apiVersion = parsePositiveInteger(compatibility?.apiVersion);
   const minClientApiVersion = parsePositiveInteger(compatibility?.minClientApiVersion);
-  const openchamberVersion = parseString(payload?.openchamberVersion);
+  const openjuniorVersion = parseString(payload?.openjuniorVersion);
   const runtime = parseString(payload?.runtime);
 
   const base = {
-    openchamberVersion,
+    openjuniorVersion,
     runtime,
     apiVersion,
     minClientApiVersion,
@@ -131,7 +131,7 @@ export const checkServerCompatibility = async (): Promise<ServerCompatibilityRes
   } catch (error) {
     return {
       status: 'unreachable',
-      openchamberVersion: null,
+      openjuniorVersion: null,
       runtime: null,
       apiVersion: null,
       minClientApiVersion: null,
@@ -144,7 +144,7 @@ export const checkServerCompatibility = async (): Promise<ServerCompatibilityRes
   if (response.status === 401 || response.status === 403) {
     return {
       status: 'auth-required',
-      openchamberVersion: null,
+      openjuniorVersion: null,
       runtime: null,
       apiVersion: null,
       minClientApiVersion: null,

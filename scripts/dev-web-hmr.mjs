@@ -8,7 +8,6 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '..');
-const useDetachedChildren = process.platform === 'darwin';
 const webRoot = path.join(repoRoot, 'packages/web');
 
 function run(label, command, args, env = {}, options = {}) {
@@ -16,7 +15,7 @@ function run(label, command, args, env = {}, options = {}) {
     cwd: options.cwd || repoRoot,
     stdio: 'inherit',
     env: { ...process.env, ...env },
-    detached: useDetachedChildren,
+    detached: true,
   }).on('error', (error) => {
     console.error(`[dev:web:hmr] Failed to start ${label}:`, error);
   });
@@ -49,7 +48,7 @@ function signalChild(child, signal) {
   }
 
   try {
-    if (useDetachedChildren && process.platform !== 'win32') {
+    if (process.platform !== 'win32') {
       process.kill(-child.pid, signal);
       return;
     }
@@ -81,9 +80,9 @@ async function stopChildTree(child) {
   }
 }
 
-const uiPort = process.env.OPENCHAMBER_HMR_UI_PORT || '5180';
-const backendPort = process.env.OPENCHAMBER_HMR_API_PORT || '3902';
-const hmrHost = process.env.OPENCHAMBER_HMR_HOST || '127.0.0.1';
+const uiPort = process.env.OPENJUNIOR_HMR_UI_PORT || '5180';
+const backendPort = process.env.OPENJUNIOR_HMR_API_PORT || '3902';
+const hmrHost = process.env.OPENJUNIOR_HMR_HOST || '127.0.0.1';
 
 function getLanAddresses() {
   const addresses = [];
@@ -113,15 +112,15 @@ function clearViteCache() {
 clearViteCache();
 
 const api = run('api', 'bun', ['run', '--cwd', 'packages/web', 'dev:server:watch'], {
-  OPENCHAMBER_PORT: backendPort,
+  OPENJUNIOR_PORT: backendPort,
 });
 const vite = run(
   'vite',
   'bun',
   ['x', 'vite', '--force', '--host', hmrHost, '--port', uiPort, '--strictPort'],
   {
-    OPENCHAMBER_PORT: backendPort,
-    OPENCHAMBER_DISABLE_PWA_DEV: '1',
+    OPENJUNIOR_PORT: backendPort,
+    OPENJUNIOR_DISABLE_PWA_DEV: '1',
   },
   { cwd: webRoot },
 );
@@ -146,7 +145,8 @@ async function shutdown(exitCode = 0) {
   if (shuttingDown) return;
   shuttingDown = true;
   await Promise.all([stopChildTree(api), stopChildTree(vite)]);
-  process.exit(exitCode);
+  process.exitCode = exitCode;
+  setTimeout(() => process.exit(exitCode), 1000).unref();
 }
 
 function onChildExit(label) {

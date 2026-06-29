@@ -25,7 +25,7 @@ import {
 } from '@/lib/passkeys';
 
 const STATUS_CHECK_ENDPOINT = '/auth/session';
-const TRUST_DEVICE_STORAGE_KEY = 'openchamber.uiAuth.trustDevice';
+const TRUST_DEVICE_STORAGE_KEY = 'openjunior.uiAuth.trustDevice';
 const LOCAL_DESKTOP_CLIENT_KIND = 'desktop-local';
 const LOCAL_DESKTOP_CLIENT_DEDUPE_KEY = 'desktop-local';
 
@@ -699,7 +699,7 @@ export const SessionAuthGate: React.FC<SessionAuthGateProps> = ({ children }) =>
                 <div className="relative flex-1">
                   <Icon name="lock" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
                   <Input
-                    id="openchamber-ui-password"
+                    id="openjunior-ui-password"
                     ref={passwordInputRef}
                     type="password"
                     autoComplete="current-password"

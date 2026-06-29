@@ -17,7 +17,7 @@ export const getSessionMetadata = (session: Session | null | undefined): Session
 };
 
 const getOpenJuniorMetadata = (metadata: SessionMetadataRecord): OpenJuniorMetadata => {
-  const value = metadata.openchamber;
+  const value = metadata.openjunior;
   return isRecord(value) ? value as OpenJuniorMetadata : {};
 };
 
@@ -41,7 +41,7 @@ export const withReviewSessionLink = (
   const current = getOpenJuniorMetadata(metadata);
   return {
     ...metadata,
-    openchamber: {
+    openjunior: {
       ...current,
       reviewSessionID,
     },
@@ -55,7 +55,7 @@ export const withReviewSessionMarker = (
   const current = getOpenJuniorMetadata(metadata);
   return {
     ...metadata,
-    openchamber: {
+    openjunior: {
       ...current,
       kind: 'review' as const,
       originalSessionID,
@@ -74,9 +74,9 @@ export const withoutReviewSessionLink = (
   delete restOpenJunior.reviewSessionID;
   const next: SessionMetadataRecord = { ...metadata };
   if (Object.keys(restOpenJunior).length > 0) {
-    next.openchamber = restOpenJunior;
+    next.openjunior = restOpenJunior;
   } else {
-    delete next.openchamber;
+    delete next.openjunior;
   }
   return next;
 };

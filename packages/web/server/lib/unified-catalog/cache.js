@@ -2,7 +2,7 @@
  * Unified Catalog — Disk Cache
  *
  * Persists catalog data to disk with TTL-based expiration.
- * Location: ~/.cache/openchamber/catalog-cache.json
+ * Location: ~/.cache/openjunior/catalog-cache.json
  */
 
 import fs from 'fs';
@@ -15,9 +15,9 @@ const CACHE_FILENAME = 'catalog-cache.json';
 
 function getCacheDir() {
   const xdgCache = process.env.XDG_CACHE_HOME;
-  if (xdgCache) return path.join(xdgCache, 'openchamber');
-  if (process.platform === 'darwin') return path.join(os.homedir(), 'Library', 'Caches', 'openchamber');
-  return path.join(os.homedir(), '.cache', 'openchamber');
+  if (xdgCache) return path.join(xdgCache, 'openjunior');
+  if (process.platform === 'darwin') return path.join(os.homedir(), 'Library', 'Caches', 'openjunior');
+  return path.join(os.homedir(), '.cache', 'openjunior');
 }
 
 function getCachePath() {

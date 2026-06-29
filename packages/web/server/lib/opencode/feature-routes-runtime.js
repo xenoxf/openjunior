@@ -38,8 +38,8 @@ export const createFeatureRoutesRuntime = (dependencies) => {
       spawn,
       resolveGitBinaryForSpawn,
       createFsSearchRuntime,
-      openchamberDataDir,
-      openchamberUserConfigRoot,
+      openjuniorDataDir,
+      openjuniorUserConfigRoot,
       normalizeDirectoryPath,
       resolveProjectDirectory,
       resolveOptionalProjectDirectory,
@@ -60,7 +60,7 @@ export const createFeatureRoutesRuntime = (dependencies) => {
       buildAugmentedPath,
       projectConfigRuntime,
       scheduledTasksRuntime,
-      getOpenChamberEventClients,
+      getOpenJuniorEventClients,
       writeSseEvent,
     } = routeDependencies;
 
@@ -94,7 +94,7 @@ export const createFeatureRoutesRuntime = (dependencies) => {
       fsPromises,
       path,
       crypto,
-      openchamberDataDir,
+      openjuniorDataDir,
       sanitizeProjects,
       readSettingsFromDiskMigrated,
       persistSettings,
@@ -108,7 +108,7 @@ export const createFeatureRoutesRuntime = (dependencies) => {
       sanitizeProjects,
       projectConfigRuntime,
       scheduledTasksRuntime,
-      getOpenChamberEventClients,
+      getOpenJuniorEventClients,
       writeSseEvent,
     });
 
@@ -267,12 +267,12 @@ export const createFeatureRoutesRuntime = (dependencies) => {
     registerMagicPromptRoutes(app, {
       fsPromises,
       path,
-      openchamberDataDir,
+      openjuniorDataDir,
     });
     registerSessionFoldersRoutes(app, {
       fsPromises,
       path,
-      openchamberDataDir,
+      openjuniorDataDir,
     });
     registerFsRoutes(app, {
       os,
@@ -284,7 +284,7 @@ export const createFeatureRoutesRuntime = (dependencies) => {
       resolveProjectDirectory,
       buildAugmentedPath,
       resolveGitBinaryForSpawn,
-      openchamberUserConfigRoot,
+      openjuniorUserConfigRoot,
     });
 
     // Unified Catalog routes

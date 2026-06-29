@@ -2483,7 +2483,7 @@ export const dict: Record<I18nKey, string> = {
   'updateDialog.actions.updateNow': '立即更新',
   'updateDialog.status.updating': '更新中...',
   'updateDialog.error.updateFailed': '更新失敗',
-  'updateDialog.error.takingLonger': '更新耗時超出預期。請稍等後重新整理，或執行：openchamber update',
+  'updateDialog.error.takingLonger': '更新耗時超出預期。請稍等後重新整理，或執行：openjunior update',
   'opencodeUpdate.toast.available.title': 'OpenCode 更新',
   'opencodeUpdate.toast.available.description': '版本 {version} 可安裝。',
   'opencodeUpdate.toast.actions.update': '更新',

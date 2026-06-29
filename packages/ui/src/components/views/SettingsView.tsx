@@ -49,7 +49,7 @@ import { buildSettingsSearchResults, type SettingsSearchResult } from '@/lib/set
 const SETTINGS_NAV_MIN_WIDTH = 176;
 const SETTINGS_NAV_MAX_WIDTH = 280;
 const SETTINGS_NAV_RESIZE_STEP = 8;
-const SETTINGS_DETAIL_HISTORY_KEY = '__openchamberSettingsDetail';
+const SETTINGS_DETAIL_HISTORY_KEY = '__openjuniorSettingsDetail';
 
 function clampSettingsNavWidth(width: number): number {
   return Math.min(SETTINGS_NAV_MAX_WIDTH, Math.max(SETTINGS_NAV_MIN_WIDTH, width));
@@ -1289,7 +1289,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
               </ErrorBoundary>
             </div>
 
-            <div className="flex-1 overflow-hidden bg-background">
+            <div className="flex-1 min-h-0 overflow-hidden bg-background">
               {renderDesktopContent()}
             </div>
           </>

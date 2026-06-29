@@ -43,46 +43,46 @@ interface Option<T extends string> {
 const THEME_MODE_OPTIONS: Array<{ value: ThemeMode; labelKey: string }> = [
     {
         value: 'system',
-        labelKey: 'settings.openchamber.visual.option.themeMode.system',
+        labelKey: 'settings.openjunior.visual.option.themeMode.system',
     },
     {
         value: 'light',
-        labelKey: 'settings.openchamber.visual.option.themeMode.light',
+        labelKey: 'settings.openjunior.visual.option.themeMode.light',
     },
     {
         value: 'dark',
-        labelKey: 'settings.openchamber.visual.option.themeMode.dark',
+        labelKey: 'settings.openjunior.visual.option.themeMode.dark',
     },
 ];
 
 const DIFF_LAYOUT_OPTIONS: Option<'dynamic' | 'inline' | 'side-by-side'>[] = [
     {
         id: 'dynamic',
-        labelKey: 'settings.openchamber.visual.option.diffLayout.dynamic.label',
-        descriptionKey: 'settings.openchamber.visual.option.diffLayout.dynamic.description',
+        labelKey: 'settings.openjunior.visual.option.diffLayout.dynamic.label',
+        descriptionKey: 'settings.openjunior.visual.option.diffLayout.dynamic.description',
     },
     {
         id: 'inline',
-        labelKey: 'settings.openchamber.visual.option.diffLayout.inline.label',
-        descriptionKey: 'settings.openchamber.visual.option.diffLayout.inline.description',
+        labelKey: 'settings.openjunior.visual.option.diffLayout.inline.label',
+        descriptionKey: 'settings.openjunior.visual.option.diffLayout.inline.description',
     },
     {
         id: 'side-by-side',
-        labelKey: 'settings.openchamber.visual.option.diffLayout.sideBySide.label',
-        descriptionKey: 'settings.openchamber.visual.option.diffLayout.sideBySide.description',
+        labelKey: 'settings.openjunior.visual.option.diffLayout.sideBySide.label',
+        descriptionKey: 'settings.openjunior.visual.option.diffLayout.sideBySide.description',
     },
 ];
 
 const MERMAID_RENDERING_OPTIONS: Option<'svg' | 'ascii'>[] = [
     {
         id: 'svg',
-        labelKey: 'settings.openchamber.visual.option.mermaidRendering.svg.label',
-        descriptionKey: 'settings.openchamber.visual.option.mermaidRendering.svg.description',
+        labelKey: 'settings.openjunior.visual.option.mermaidRendering.svg.label',
+        descriptionKey: 'settings.openjunior.visual.option.mermaidRendering.svg.description',
     },
     {
         id: 'ascii',
-        labelKey: 'settings.openchamber.visual.option.mermaidRendering.ascii.label',
-        descriptionKey: 'settings.openchamber.visual.option.mermaidRendering.ascii.description',
+        labelKey: 'settings.openjunior.visual.option.mermaidRendering.ascii.label',
+        descriptionKey: 'settings.openjunior.visual.option.mermaidRendering.ascii.description',
     },
 ];
 
@@ -90,42 +90,42 @@ const DEFAULT_PWA_INSTALL_NAME = 'OpenJunior - AI Coding Assistant';
 const PWA_ORIENTATION_OPTIONS: Option<'system' | 'portrait' | 'landscape'>[] = [
     {
         id: 'system',
-        labelKey: 'settings.openchamber.visual.option.pwaOrientation.system.label',
-        descriptionKey: 'settings.openchamber.visual.option.pwaOrientation.system.description',
+        labelKey: 'settings.openjunior.visual.option.pwaOrientation.system.label',
+        descriptionKey: 'settings.openjunior.visual.option.pwaOrientation.system.description',
     },
     {
         id: 'portrait',
-        labelKey: 'settings.openchamber.visual.option.pwaOrientation.portrait.label',
-        descriptionKey: 'settings.openchamber.visual.option.pwaOrientation.portrait.description',
+        labelKey: 'settings.openjunior.visual.option.pwaOrientation.portrait.label',
+        descriptionKey: 'settings.openjunior.visual.option.pwaOrientation.portrait.description',
     },
     {
         id: 'landscape',
-        labelKey: 'settings.openchamber.visual.option.pwaOrientation.landscape.label',
-        descriptionKey: 'settings.openchamber.visual.option.pwaOrientation.landscape.description',
+        labelKey: 'settings.openjunior.visual.option.pwaOrientation.landscape.label',
+        descriptionKey: 'settings.openjunior.visual.option.pwaOrientation.landscape.description',
     },
 ];
 
 const MOBILE_KEYBOARD_MODE_OPTIONS: Option<MobileKeyboardMode>[] = [
     {
         id: 'native',
-        labelKey: 'settings.openchamber.visual.option.mobileKeyboardMode.native.label',
-        descriptionKey: 'settings.openchamber.visual.option.mobileKeyboardMode.native.description',
+        labelKey: 'settings.openjunior.visual.option.mobileKeyboardMode.native.label',
+        descriptionKey: 'settings.openjunior.visual.option.mobileKeyboardMode.native.description',
     },
     {
         id: 'resize-content',
-        labelKey: 'settings.openchamber.visual.option.mobileKeyboardMode.resizeContent.label',
-        descriptionKey: 'settings.openchamber.visual.option.mobileKeyboardMode.resizeContent.description',
+        labelKey: 'settings.openjunior.visual.option.mobileKeyboardMode.resizeContent.label',
+        descriptionKey: 'settings.openjunior.visual.option.mobileKeyboardMode.resizeContent.description',
     },
 ];
 
 const MOBILE_LAYOUT_OPTIONS: Array<{ value: MobileLayoutPreference; labelKey: string }> = [
     {
         value: 'default',
-        labelKey: 'settings.openchamber.visual.option.mobileLayout.default',
+        labelKey: 'settings.openjunior.visual.option.mobileLayout.default',
     },
     {
         value: 'new',
-        labelKey: 'settings.openchamber.visual.option.mobileLayout.new',
+        labelKey: 'settings.openjunior.visual.option.mobileLayout.new',
     },
 ];
 
@@ -142,91 +142,91 @@ const normalizePwaOrientation = (value: unknown): 'system' | 'portrait' | 'lands
 const USER_MESSAGE_RENDERING_OPTIONS: Option<'markdown' | 'plain'>[] = [
     {
         id: 'markdown',
-        labelKey: 'settings.openchamber.visual.option.userMessageRendering.markdown.label',
-        descriptionKey: 'settings.openchamber.visual.option.userMessageRendering.markdown.description',
+        labelKey: 'settings.openjunior.visual.option.userMessageRendering.markdown.label',
+        descriptionKey: 'settings.openjunior.visual.option.userMessageRendering.markdown.description',
     },
     {
         id: 'plain',
-        labelKey: 'settings.openchamber.visual.option.userMessageRendering.plain.label',
-        descriptionKey: 'settings.openchamber.visual.option.userMessageRendering.plain.description',
+        labelKey: 'settings.openjunior.visual.option.userMessageRendering.plain.label',
+        descriptionKey: 'settings.openjunior.visual.option.userMessageRendering.plain.description',
     },
 ];
 
 const CHAT_RENDER_MODE_OPTIONS: Option<'sorted' | 'live'>[] = [
     {
         id: 'sorted',
-        labelKey: 'settings.openchamber.visual.option.chatRenderMode.sorted.label',
-        descriptionKey: 'settings.openchamber.visual.option.chatRenderMode.sorted.description',
+        labelKey: 'settings.openjunior.visual.option.chatRenderMode.sorted.label',
+        descriptionKey: 'settings.openjunior.visual.option.chatRenderMode.sorted.description',
     },
     {
         id: 'live',
-        labelKey: 'settings.openchamber.visual.option.chatRenderMode.live.label',
-        descriptionKey: 'settings.openchamber.visual.option.chatRenderMode.live.description',
+        labelKey: 'settings.openjunior.visual.option.chatRenderMode.live.label',
+        descriptionKey: 'settings.openjunior.visual.option.chatRenderMode.live.description',
     },
 ];
 
 const MESSAGE_STREAM_TRANSPORT_OPTIONS: Option<'auto' | 'ws' | 'sse'>[] = [
     {
         id: 'auto',
-        labelKey: 'settings.openchamber.visual.option.messageTransport.auto.label',
-        descriptionKey: 'settings.openchamber.visual.option.messageTransport.auto.description',
+        labelKey: 'settings.openjunior.visual.option.messageTransport.auto.label',
+        descriptionKey: 'settings.openjunior.visual.option.messageTransport.auto.description',
     },
     {
         id: 'ws',
-        labelKey: 'settings.openchamber.visual.option.messageTransport.ws.label',
-        descriptionKey: 'settings.openchamber.visual.option.messageTransport.ws.description',
+        labelKey: 'settings.openjunior.visual.option.messageTransport.ws.label',
+        descriptionKey: 'settings.openjunior.visual.option.messageTransport.ws.description',
     },
     {
         id: 'sse',
-        labelKey: 'settings.openchamber.visual.option.messageTransport.sse.label',
-        descriptionKey: 'settings.openchamber.visual.option.messageTransport.sse.description',
+        labelKey: 'settings.openjunior.visual.option.messageTransport.sse.label',
+        descriptionKey: 'settings.openjunior.visual.option.messageTransport.sse.description',
     },
 ];
 
 const ACTIVITY_RENDER_MODE_OPTIONS: Option<'collapsed' | 'summary'>[] = [
     {
         id: 'collapsed',
-        labelKey: 'settings.openchamber.visual.option.activityRenderMode.collapsed.label',
-        descriptionKey: 'settings.openchamber.visual.option.activityRenderMode.collapsed.description',
+        labelKey: 'settings.openjunior.visual.option.activityRenderMode.collapsed.label',
+        descriptionKey: 'settings.openjunior.visual.option.activityRenderMode.collapsed.description',
     },
     {
         id: 'summary',
-        labelKey: 'settings.openchamber.visual.option.activityRenderMode.summary.label',
-        descriptionKey: 'settings.openchamber.visual.option.activityRenderMode.summary.description',
+        labelKey: 'settings.openjunior.visual.option.activityRenderMode.summary.label',
+        descriptionKey: 'settings.openjunior.visual.option.activityRenderMode.summary.description',
     },
 ];
 
 const TIME_FORMAT_OPTIONS: Option<'auto' | '12h' | '24h'>[] = [
     {
         id: 'auto',
-        labelKey: 'settings.openchamber.visual.option.timeFormat.auto.label',
-        descriptionKey: 'settings.openchamber.visual.option.timeFormat.auto.description',
+        labelKey: 'settings.openjunior.visual.option.timeFormat.auto.label',
+        descriptionKey: 'settings.openjunior.visual.option.timeFormat.auto.description',
     },
     {
         id: '24h',
-        labelKey: 'settings.openchamber.visual.option.timeFormat.24h.label',
-        descriptionKey: 'settings.openchamber.visual.option.timeFormat.24h.description',
+        labelKey: 'settings.openjunior.visual.option.timeFormat.24h.label',
+        descriptionKey: 'settings.openjunior.visual.option.timeFormat.24h.description',
     },
     {
         id: '12h',
-        labelKey: 'settings.openchamber.visual.option.timeFormat.12h.label',
-        descriptionKey: 'settings.openchamber.visual.option.timeFormat.12h.description',
+        labelKey: 'settings.openjunior.visual.option.timeFormat.12h.label',
+        descriptionKey: 'settings.openjunior.visual.option.timeFormat.12h.description',
     },
 ];
 
 const WEEK_START_OPTIONS: Option<'auto' | 'monday' | 'sunday'>[] = [
     {
         id: 'auto',
-        labelKey: 'settings.openchamber.visual.option.weekStart.auto.label',
-        descriptionKey: 'settings.openchamber.visual.option.weekStart.auto.description',
+        labelKey: 'settings.openjunior.visual.option.weekStart.auto.label',
+        descriptionKey: 'settings.openjunior.visual.option.weekStart.auto.description',
     },
     {
         id: 'monday',
-        labelKey: 'settings.openchamber.visual.option.weekStart.monday.label',
+        labelKey: 'settings.openjunior.visual.option.weekStart.monday.label',
     },
     {
         id: 'sunday',
-        labelKey: 'settings.openchamber.visual.option.weekStart.sunday.label',
+        labelKey: 'settings.openjunior.visual.option.weekStart.sunday.label',
     },
 ];
 
@@ -553,11 +553,11 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
     const [pwaOrientation, setPwaOrientation] = React.useState<'system' | 'portrait' | 'landscape'>('system');
     const selectedTimeFormatLabel = React.useMemo(() => {
         const option = TIME_FORMAT_OPTIONS.find((item) => item.id === timeFormatPreference);
-        return tUnsafe(option?.labelKey ?? 'settings.openchamber.visual.option.timeFormat.auto.label');
+        return tUnsafe(option?.labelKey ?? 'settings.openjunior.visual.option.timeFormat.auto.label');
     }, [timeFormatPreference, tUnsafe]);
     const selectedWeekStartLabel = React.useMemo(() => {
         const option = WEEK_START_OPTIONS.find((item) => item.id === weekStartPreference);
-        return tUnsafe(option?.labelKey ?? 'settings.openchamber.visual.option.weekStart.auto.label');
+        return tUnsafe(option?.labelKey ?? 'settings.openjunior.visual.option.weekStart.auto.label');
     }, [weekStartPreference, tUnsafe]);
     const selectedPwaOrientationLabel = React.useMemo(() => {
         const option = PWA_ORIENTATION_OPTIONS.find((item) => item.id === pwaOrientation);
@@ -689,7 +689,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                         {hasThemeSettings && (
                             <section className="px-2 pb-2 pt-0 space-y-2">
                                 <div className="flex min-w-0 flex-col gap-1.5">
-                                    <span className="typography-ui-header font-medium text-foreground">{t('settings.openchamber.visual.section.colorMode')}</span>
+                                    <span className="typography-ui-header font-medium text-foreground">{t('settings.openjunior.visual.section.colorMode')}</span>
                                     <div className="flex flex-wrap items-center gap-1">
                                         {THEME_MODE_OPTIONS.map((option) => (
                                             <Button
@@ -708,7 +708,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
 
                                 {showMobileLayoutSetting && (
                                     <div className="flex min-w-0 flex-col gap-1.5 py-1.5">
-                                        <span className="typography-ui-header font-medium text-foreground">{t('settings.openchamber.visual.section.mobileLayout')}</span>
+                                        <span className="typography-ui-header font-medium text-foreground">{t('settings.openjunior.visual.section.mobileLayout')}</span>
                                         <div className="flex flex-wrap items-center gap-1">
                                             {MOBILE_LAYOUT_OPTIONS.map((option) => (
                                                 <Button
@@ -728,10 +728,10 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
 
                                 <div className="grid grid-cols-1 gap-2 py-1.5 md:grid-cols-[14rem_auto] md:gap-x-8 md:gap-y-2">
                                     <div data-settings-item="appearance.light-theme" className="flex min-w-0 items-center gap-2">
-                                        <span className="typography-ui-label text-foreground shrink-0">{t('settings.openchamber.visual.field.lightTheme')}</span>
+                                        <span className="typography-ui-label text-foreground shrink-0">{t('settings.openjunior.visual.field.lightTheme')}</span>
                                         <Select value={selectedLightTheme?.metadata.id ?? ''} onValueChange={setLightThemePreference}>
-                                            <SelectTrigger aria-label={t('settings.openchamber.visual.field.selectLightThemeAria')} className="w-fit">
-                                                <SelectValue placeholder={t('settings.openchamber.visual.field.selectThemePlaceholder')}>
+                                            <SelectTrigger aria-label={t('settings.openjunior.visual.field.selectLightThemeAria')} className="w-fit">
+                                                <SelectValue placeholder={t('settings.openjunior.visual.field.selectThemePlaceholder')}>
                                                     {selectedLightTheme
                                                         ? formatThemeLabel(selectedLightTheme.metadata.name, 'light')
                                                         : undefined}
@@ -747,10 +747,10 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                         </Select>
                                     </div>
                                     <div data-settings-item="appearance.dark-theme" className="flex min-w-0 items-center gap-2">
-                                        <span className="typography-ui-label text-foreground shrink-0">{t('settings.openchamber.visual.field.darkTheme')}</span>
+                                        <span className="typography-ui-label text-foreground shrink-0">{t('settings.openjunior.visual.field.darkTheme')}</span>
                                         <Select value={selectedDarkTheme?.metadata.id ?? ''} onValueChange={setDarkThemePreference}>
-                                            <SelectTrigger aria-label={t('settings.openchamber.visual.field.selectDarkThemeAria')} className="w-fit">
-                                                <SelectValue placeholder={t('settings.openchamber.visual.field.selectThemePlaceholder')}>
+                                            <SelectTrigger aria-label={t('settings.openjunior.visual.field.selectDarkThemeAria')} className="w-fit">
+                                                <SelectValue placeholder={t('settings.openjunior.visual.field.selectThemePlaceholder')}>
                                                     {selectedDarkTheme
                                                         ? formatThemeLabel(selectedDarkTheme.metadata.name, 'dark')
                                                         : undefined}
@@ -787,20 +787,20 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                         }}
                                         className="inline-flex items-center typography-ui-label font-normal text-foreground underline decoration-[1px] underline-offset-2 hover:text-foreground/80 disabled:cursor-not-allowed disabled:text-muted-foreground/60"
                                     >
-                                        {themesReloading ? t('settings.openchamber.visual.actions.reloadingThemes') : t('settings.openchamber.visual.actions.reloadThemes')}
+                                        {themesReloading ? t('settings.openjunior.visual.actions.reloadingThemes') : t('settings.openjunior.visual.actions.reloadThemes')}
                                     </button>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <button
                                                 type="button"
                                                 className="flex items-center justify-center rounded-md p-1 text-muted-foreground/70 hover:text-foreground"
-                                                aria-label={t('settings.openchamber.visual.field.themeImportInfoAria')}
+                                                aria-label={t('settings.openjunior.visual.field.themeImportInfoAria')}
                                             >
                                                 <Icon name="information" className="h-3.5 w-3.5" />
                                             </button>
                                         </TooltipTrigger>
                                         <TooltipContent sideOffset={8}>
-                                            {t('settings.openchamber.visual.field.themeImportInfoTooltip')}
+                                            {t('settings.openjunior.visual.field.themeImportInfoTooltip')}
                                         </TooltipContent>
                                     </Tooltip>
                                 </div>
@@ -824,14 +824,14 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                                 checked={vibrancyChecked}
                                                 onChange={setVibrancyChecked}
                                                 disabled={vibrancyRestarting}
-                                                ariaLabel={t('settings.openchamber.visual.field.macVibrancy')}
+                                                ariaLabel={t('settings.openjunior.visual.field.macVibrancy')}
                                             />
                                             <div className="flex min-w-0 flex-col">
                                                 <span className="typography-ui-label text-foreground">
-                                                    {t('settings.openchamber.visual.field.macVibrancy')}
+                                                    {t('settings.openjunior.visual.field.macVibrancy')}
                                                 </span>
                                                 <span className="typography-meta text-muted-foreground">
-                                                    {t('settings.openchamber.visual.field.macVibrancyHint')}
+                                                    {t('settings.openjunior.visual.field.macVibrancyHint')}
                                                 </span>
                                             </div>
                                         </div>
@@ -847,8 +847,8 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                                     }}
                                                 >
                                                     {vibrancyRestarting
-                                                        ? t('settings.openchamber.visual.actions.restarting')
-                                                        : t('settings.openchamber.visual.actions.saveAndRestart')}
+                                                        ? t('settings.openjunior.visual.actions.restarting')
+                                                        : t('settings.openjunior.visual.actions.saveAndRestart')}
                                                 </Button>
                                             </div>
                                         )}
@@ -859,7 +859,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
 
                         {hasLocalizationSettings && (
                             <section className="px-2 pb-2 pt-0 space-y-2">
-                                <h4 className="typography-ui-header font-medium text-foreground">{t('settings.openchamber.visual.section.localization')}</h4>
+                                <h4 className="typography-ui-header font-medium text-foreground">{t('settings.openjunior.visual.section.localization')}</h4>
 
                                 <div data-settings-item="appearance.language" className="grid grid-cols-1 gap-2 py-1.5 md:grid-cols-[14rem_auto] md:gap-x-8 md:gap-y-2">
                                     <div className="flex min-w-0 flex-col">
@@ -884,9 +884,9 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                     <div className="grid grid-cols-1 gap-2 py-1.5 md:grid-cols-[14rem_auto] md:gap-x-8 md:gap-y-2">
                                         {shouldShow('timeFormat') && (
                                             <div data-settings-item="appearance.time-format" className="flex min-w-0 items-center gap-2">
-                                                <span className="typography-ui-label text-foreground shrink-0">{t('settings.openchamber.visual.field.timeFormat')}</span>
+                                                <span className="typography-ui-label text-foreground shrink-0">{t('settings.openjunior.visual.field.timeFormat')}</span>
                                                 <Select value={timeFormatPreference} onValueChange={(value: 'auto' | '12h' | '24h') => handleTimeFormatPreferenceChange(value)}>
-                                                    <SelectTrigger aria-label={t('settings.openchamber.visual.field.selectTimeFormatAria')} className="w-fit">
+                                                    <SelectTrigger aria-label={t('settings.openjunior.visual.field.selectTimeFormatAria')} className="w-fit">
                                                         <SelectValue>{selectedTimeFormatLabel}</SelectValue>
                                                     </SelectTrigger>
                                                     <SelectContent>
@@ -900,9 +900,9 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
 
                                         {shouldShow('weekStart') && (
                                             <div data-settings-item="appearance.week-start" className="flex min-w-0 items-center gap-2">
-                                                <span className="typography-ui-label text-foreground shrink-0">{t('settings.openchamber.visual.field.weekStartsOn')}</span>
+                                                <span className="typography-ui-label text-foreground shrink-0">{t('settings.openjunior.visual.field.weekStartsOn')}</span>
                                                 <Select value={weekStartPreference} onValueChange={(value: 'auto' | 'monday' | 'sunday') => handleWeekStartPreferenceChange(value)}>
-                                                    <SelectTrigger aria-label={t('settings.openchamber.visual.field.selectWeekStartAria')} className="w-fit">
+                                                    <SelectTrigger aria-label={t('settings.openjunior.visual.field.selectWeekStartAria')} className="w-fit">
                                                         <SelectValue>{selectedWeekStartLabel}</SelectValue>
                                                     </SelectTrigger>
                                                     <SelectContent>
@@ -924,8 +924,8 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                             {showPwaInstallNameSetting && (
                                 <div data-settings-item="appearance.pwa-install-name" className="py-1.5 space-y-1.5">
                                     <div className="flex min-w-0 flex-col">
-                                        <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.installAppName')}</span>
-                                        <span className="typography-meta text-muted-foreground">{t('settings.openchamber.visual.field.installAppNameHint')}</span>
+                                        <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.installAppName')}</span>
+                                        <span className="typography-meta text-muted-foreground">{t('settings.openjunior.visual.field.installAppNameHint')}</span>
                                     </div>
                                     <div className="flex w-full max-w-[28rem] items-center gap-2">
                                         <Input
@@ -944,7 +944,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             }}
                                             className="h-7"
                                             maxLength={64}
-                                            aria-label={t('settings.openchamber.visual.field.pwaInstallAppNameAria')}
+                                            aria-label={t('settings.openjunior.visual.field.pwaInstallAppNameAria')}
                                         />
                                         <Button size="sm"
                                             type="button"
@@ -954,7 +954,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                                 void applyPwaInstallName('');
                                             }}
                                             className="h-7 w-7 px-0 text-muted-foreground hover:text-foreground"
-                                            aria-label={t('settings.openchamber.visual.actions.resetInstallAppNameAria')}
+                                            aria-label={t('settings.openjunior.visual.actions.resetInstallAppNameAria')}
                                             title={t('settings.common.actions.reset')}
                                         >
                                             <Icon name="restart" className="h-3.5 w-3.5" />
@@ -966,8 +966,8 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                             {showPwaOrientationSetting && (
                                 <div data-settings-item="appearance.pwa-orientation" className="py-1.5 space-y-1.5">
                                     <div className="flex min-w-0 flex-col">
-                                        <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.installOrientation')}</span>
-                                        <span className="typography-meta text-muted-foreground">{t('settings.openchamber.visual.field.installOrientationHint')}</span>
+                                        <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.installOrientation')}</span>
+                                        <span className="typography-meta text-muted-foreground">{t('settings.openjunior.visual.field.installOrientationHint')}</span>
                                     </div>
                                     <div className="flex w-full max-w-[18rem] items-center gap-2">
                                         <Select
@@ -978,8 +978,8 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                                 void applyPwaOrientation(orientation);
                                             }}
                                         >
-                                            <SelectTrigger aria-label={t('settings.openchamber.visual.field.pwaInstallOrientationAria')} className="w-full">
-                                                <SelectValue placeholder={t('settings.openchamber.visual.field.selectOrientationPlaceholder')}>
+                                            <SelectTrigger aria-label={t('settings.openjunior.visual.field.pwaInstallOrientationAria')} className="w-full">
+                                                <SelectValue placeholder={t('settings.openjunior.visual.field.selectOrientationPlaceholder')}>
                                                     {selectedPwaOrientationLabel}
                                                 </SelectValue>
                                             </SelectTrigger>
@@ -1000,7 +1000,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             }}
                                             disabled={pwaOrientation === 'system'}
                                             className="h-7 w-7 px-0 text-muted-foreground hover:text-foreground"
-                                            aria-label={t('settings.openchamber.visual.actions.resetInstallOrientationAria')}
+                                            aria-label={t('settings.openjunior.visual.actions.resetInstallOrientationAria')}
                                             title={t('settings.common.actions.reset')}
                                         >
                                             <Icon name="restart" className="h-3.5 w-3.5" />
@@ -1012,8 +1012,8 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                             {showMobileKeyboardModeSetting && (
                                 <div data-settings-item="appearance.mobile-keyboard-mode" className="py-1.5 space-y-1.5">
                                     <div className="flex min-w-0 flex-col">
-                                        <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.mobileKeyboardMode')}</span>
-                                        <span className="typography-meta text-muted-foreground">{t('settings.openchamber.visual.field.mobileKeyboardModeHint')}</span>
+                                        <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.mobileKeyboardMode')}</span>
+                                        <span className="typography-meta text-muted-foreground">{t('settings.openjunior.visual.field.mobileKeyboardModeHint')}</span>
                                     </div>
                                     <div className="flex w-full max-w-[18rem] items-center gap-2">
                                         <Select
@@ -1024,8 +1024,8 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                                 void updateDesktopSettings({ mobileKeyboardMode: mode });
                                             }}
                                         >
-                                            <SelectTrigger aria-label={t('settings.openchamber.visual.field.mobileKeyboardModeAria')} className="w-full">
-                                                <SelectValue placeholder={t('settings.openchamber.visual.field.selectMobileKeyboardModePlaceholder')}>
+                                            <SelectTrigger aria-label={t('settings.openjunior.visual.field.mobileKeyboardModeAria')} className="w-full">
+                                                <SelectValue placeholder={t('settings.openjunior.visual.field.selectMobileKeyboardModePlaceholder')}>
                                                     {selectedMobileKeyboardModeLabel}
                                                 </SelectValue>
                                             </SelectTrigger>
@@ -1046,7 +1046,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             }}
                                             disabled={mobileKeyboardMode === 'native'}
                                             className="h-7 w-7 px-0 text-muted-foreground hover:text-foreground"
-                                            aria-label={t('settings.openchamber.visual.actions.resetMobileKeyboardModeAria')}
+                                            aria-label={t('settings.openjunior.visual.actions.resetMobileKeyboardModeAria')}
                                             title={t('settings.common.actions.reset')}
                                         >
                                             <Icon name="restart" className="h-3.5 w-3.5" />
@@ -1063,17 +1063,17 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                 {hasLayoutSettings && (
                     <div className="mb-8 space-y-3">
                         <section className="p-2 space-y-0.5">
-                            <h4 className="typography-ui-header font-medium text-foreground">{t('settings.openchamber.visual.section.spacingAndLayout')}</h4>
+                            <h4 className="typography-ui-header font-medium text-foreground">{t('settings.openjunior.visual.section.spacingAndLayout')}</h4>
                             <div className="pl-2">
 
                             {shouldShow('fontSize') && !isMobile && (
                                 <div data-settings-item="appearance.interface-font-size" className="flex items-center gap-8 py-1">
                                     <div className="flex min-w-0 flex-col w-56 shrink-0">
-                                        <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.interfaceFont')}</span>
+                                        <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.interfaceFont')}</span>
                                     </div>
                                     <div className="flex items-center gap-2 w-fit">
                                         <Select value={uiFont} onValueChange={(value) => setUiFont(value as UiFontOption)}>
-                                            <SelectTrigger aria-label={t('settings.openchamber.visual.field.selectInterfaceFontAria')} className="w-[13rem]">
+                                            <SelectTrigger aria-label={t('settings.openjunior.visual.field.selectInterfaceFontAria')} className="w-[13rem]">
                                                 <SelectValue>{UI_FONT_OPTIONS.find((option) => option.id === uiFont)?.label}</SelectValue>
                                             </SelectTrigger>
                                             <SelectContent>
@@ -1090,7 +1090,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             onClick={() => setUiFont(DEFAULT_UI_FONT)}
                                             disabled={uiFont === DEFAULT_UI_FONT}
                                             className="h-7 w-7 px-0 text-muted-foreground hover:text-foreground"
-                                            aria-label={t('settings.openchamber.visual.actions.resetInterfaceFontAria')}
+                                            aria-label={t('settings.openjunior.visual.actions.resetInterfaceFontAria')}
                                             title={t('settings.common.actions.reset')}
                                         >
                                             <Icon name="restart" className="h-3.5 w-3.5" />
@@ -1102,11 +1102,11 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                             {shouldShow('terminalFontSize') && (
                                 <div className={cn("py-1", isMobile ? "flex flex-col gap-3" : "flex items-center gap-8")}>
                                     <div className={cn("flex min-w-0 flex-col", isMobile ? "w-full" : "w-56 shrink-0")}>
-                                        <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.codeFont')}</span>
+                                        <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.codeFont')}</span>
                                     </div>
                                     <div className={cn("flex items-center gap-2", isMobile ? "w-full" : "w-fit")}>
                                         <Select value={monoFont} onValueChange={(value) => setMonoFont(value as MonoFontOption)}>
-                                            <SelectTrigger aria-label={t('settings.openchamber.visual.field.selectCodeFontAria')} className="w-[13rem]">
+                                            <SelectTrigger aria-label={t('settings.openjunior.visual.field.selectCodeFontAria')} className="w-[13rem]">
                                                 <SelectValue>{CODE_FONT_OPTIONS.find((option) => option.id === monoFont)?.label}</SelectValue>
                                             </SelectTrigger>
                                             <SelectContent>
@@ -1123,7 +1123,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             onClick={() => setMonoFont(DEFAULT_MONO_FONT)}
                                             disabled={monoFont === DEFAULT_MONO_FONT}
                                             className="h-7 w-7 px-0 text-muted-foreground hover:text-foreground"
-                                            aria-label={t('settings.openchamber.visual.actions.resetCodeFontAria')}
+                                            aria-label={t('settings.openjunior.visual.actions.resetCodeFontAria')}
                                             title={t('settings.common.actions.reset')}
                                         >
                                             <Icon name="restart" className="h-3.5 w-3.5" />
@@ -1135,7 +1135,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                             {shouldShow('fontSize') && !isMobile && (
                                 <div className="flex items-center gap-8 py-1">
                                     <div className="flex min-w-0 flex-col w-56 shrink-0">
-                                        <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.interfaceFontSize')}</span>
+                                        <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.interfaceFontSize')}</span>
                                     </div>
                                     <div className="flex items-center gap-2 w-fit">
                                         <NumberInput
@@ -1144,7 +1144,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             min={50}
                                             max={200}
                                             step={5}
-                                            aria-label={t('settings.openchamber.visual.field.fontSizePercentageAria')}
+                                            aria-label={t('settings.openjunior.visual.field.fontSizePercentageAria')}
                                             className="w-16"
                                         />
                                         <Button size="sm"
@@ -1153,7 +1153,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             onClick={() => setFontSize(100)}
                                             disabled={fontSize === 100}
                                             className="h-7 w-7 px-0 text-muted-foreground hover:text-foreground"
-                                            aria-label={t('settings.openchamber.visual.actions.resetFontSizeAria')}
+                                            aria-label={t('settings.openjunior.visual.actions.resetFontSizeAria')}
                                             title={t('settings.common.actions.reset')}
                                         >
                                             <Icon name="restart" className="h-3.5 w-3.5" />
@@ -1165,7 +1165,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                             {shouldShow('terminalFontSize') && (
                                 <div data-settings-item="appearance.terminal-font-size" className={cn("py-1", isMobile ? "flex flex-col gap-3" : "flex items-center gap-8")}>
                                     <div className={cn("flex min-w-0 flex-col", isMobile ? "w-full" : "w-56 shrink-0")}>
-                                        <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.terminalFontSize')}</span>
+                                        <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.terminalFontSize')}</span>
                                     </div>
                                     <div className={cn("flex items-center gap-2", isMobile ? "w-full" : "w-fit")}>
                                         <NumberInput
@@ -1182,7 +1182,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             onClick={() => setTerminalFontSize(13)}
                                             disabled={terminalFontSize === 13}
                                             className="h-7 w-7 px-0 text-muted-foreground hover:text-foreground"
-                                            aria-label={t('settings.openchamber.visual.actions.resetTerminalFontSizeAria')}
+                                            aria-label={t('settings.openjunior.visual.actions.resetTerminalFontSizeAria')}
                                             title={t('settings.common.actions.reset')}
                                         >
                                             <Icon name="restart" className="h-3.5 w-3.5" />
@@ -1194,7 +1194,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                             {shouldShow('spacing') && (
                                 <div data-settings-item="appearance.spacing-density" className={cn("py-1", isMobile ? "flex flex-col gap-3" : "flex items-center gap-8")}>
                                     <div className={cn("flex min-w-0 flex-col", isMobile ? "w-full" : "w-56 shrink-0")}>
-                                        <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.spacingDensity')}</span>
+                                        <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.spacingDensity')}</span>
                                     </div>
                                     <div className={cn("flex items-center gap-2", isMobile ? "w-full" : "w-fit")}>
                                         <NumberInput
@@ -1211,7 +1211,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             onClick={() => setPadding(100)}
                                             disabled={padding === 100}
                                             className="h-7 w-7 px-0 text-muted-foreground hover:text-foreground"
-                                            aria-label={t('settings.openchamber.visual.actions.resetSpacingAria')}
+                                            aria-label={t('settings.openjunior.visual.actions.resetSpacingAria')}
                                             title={t('settings.common.actions.reset')}
                                         >
                                             <Icon name="restart" className="h-3.5 w-3.5" />
@@ -1224,13 +1224,13 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                 <div data-settings-item="appearance.input-bar-offset" className={cn("py-1", isMobile ? "flex flex-col gap-3" : "flex items-center gap-8")}>
                                     <div className={cn("flex min-w-0 flex-col", isMobile ? "w-full" : "w-56 shrink-0")}>
                                         <div className="flex items-center gap-1.5">
-                                            <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.inputBarOffset')}</span>
+                                            <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.inputBarOffset')}</span>
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
                                                     <Icon name="information" className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
                                                 </TooltipTrigger>
                                                 <TooltipContent sideOffset={8} className="max-w-xs">
-                                                    {t('settings.openchamber.visual.field.inputBarOffsetTooltip')}
+                                                    {t('settings.openjunior.visual.field.inputBarOffsetTooltip')}
                                                 </TooltipContent>
                                             </Tooltip>
                                         </div>
@@ -1250,7 +1250,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             onClick={() => setInputBarOffset(0)}
                                             disabled={inputBarOffset === 0}
                                             className="h-7 w-7 px-0 text-muted-foreground hover:text-foreground"
-                                            aria-label={t('settings.openchamber.visual.actions.resetInputBarOffsetAria')}
+                                            aria-label={t('settings.openjunior.visual.actions.resetInputBarOffsetAria')}
                                             title={t('settings.common.actions.reset')}
                                         >
                                             <Icon name="restart" className="h-3.5 w-3.5" />
@@ -1269,20 +1269,20 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                 {hasNavigationSettings && (
                     <div className="space-y-3">
                         <section className="px-2 pb-2 pt-0">
-                            <h4 className="typography-ui-header font-medium text-foreground">{t('settings.openchamber.visual.section.navigation')}</h4>
+                            <h4 className="typography-ui-header font-medium text-foreground">{t('settings.openjunior.visual.section.navigation')}</h4>
                             {shouldShow('fileEditorKeymap') && (
                                 <div data-settings-item="appearance.file-editor-keymap" className="flex flex-col gap-2 py-1.5 sm:flex-row sm:items-start sm:gap-8">
                                     <span className="typography-ui-label text-foreground sm:w-56 shrink-0">
-                                        {t('settings.openchamber.visual.field.fileEditorKeymap')}
+                                        {t('settings.openjunior.visual.field.fileEditorKeymap')}
                                     </span>
                                     <div
                                         role="radiogroup"
-                                        aria-label={t('settings.openchamber.visual.field.fileEditorKeymap')}
+                                        aria-label={t('settings.openjunior.visual.field.fileEditorKeymap')}
                                         className="space-y-0"
                                     >
                                         {(['default', 'vim'] as const).map((keymap) => {
                                             const selected = fileEditorKeymap === keymap;
-                                            const labelText = t(`settings.openchamber.visual.option.fileEditorKeymap.${keymap}`);
+                                            const labelText = t(`settings.openjunior.visual.option.fileEditorKeymap.${keymap}`);
                                             return (
                                                 <button
                                                     key={keymap}
@@ -1330,9 +1330,9 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                     <Checkbox
                                         checked={expandedEditorToolbar}
                                         onChange={handleExpandedEditorToolbarChange}
-                                        ariaLabel={t('settings.openchamber.visual.field.expandedEditorToolbarAria')}
+                                        ariaLabel={t('settings.openjunior.visual.field.expandedEditorToolbarAria')}
                                     />
-                                    <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.expandedEditorToolbar')}</span>
+                                    <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.expandedEditorToolbar')}</span>
                                 </div>
                             )}
                             {shouldShow('terminalQuickKeys') && !isMobile && (
@@ -1353,16 +1353,16 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                     <Checkbox
                                         checked={showTerminalQuickKeysOnDesktop}
                                         onChange={setShowTerminalQuickKeysOnDesktop}
-                                        ariaLabel={t('settings.openchamber.visual.field.terminalQuickKeysAria')}
+                                        ariaLabel={t('settings.openjunior.visual.field.terminalQuickKeysAria')}
                                     />
                                     <div className="flex min-w-0 items-center gap-1.5">
-                                        <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.terminalQuickKeys')}</span>
+                                        <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.terminalQuickKeys')}</span>
                                         <Tooltip>
                                             <TooltipTrigger asChild>
                                                 <Icon name="information" className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
                                             </TooltipTrigger>
                                             <TooltipContent sideOffset={8} className="max-w-xs">
-                                                {t('settings.openchamber.visual.field.terminalQuickKeysTooltip')}
+                                                {t('settings.openjunior.visual.field.terminalQuickKeysTooltip')}
                                             </TooltipContent>
                                         </Tooltip>
                                     </div>
@@ -1379,8 +1379,8 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                 <div className="grid grid-cols-1 gap-y-2 md:grid-cols-[minmax(0,16rem)_minmax(0,16rem)] md:justify-start md:gap-x-2">
                                     {shouldShow('chatRenderMode') && (
                                         <section data-settings-item="chat.render-mode" className="p-2 md:col-span-2">
-                                            <h4 className="typography-ui-header font-medium text-foreground">{t('settings.openchamber.visual.section.chatRenderMode')}</h4>
-                                            <div role="radiogroup" aria-label={t('settings.openchamber.visual.section.chatRenderModeAria')} className="mt-1 grid w-full max-w-[26rem] grid-cols-1 gap-3 sm:grid-cols-2">
+                                            <h4 className="typography-ui-header font-medium text-foreground">{t('settings.openjunior.visual.section.chatRenderMode')}</h4>
+                                            <div role="radiogroup" aria-label={t('settings.openjunior.visual.section.chatRenderModeAria')} className="mt-1 grid w-full max-w-[26rem] grid-cols-1 gap-3 sm:grid-cols-2">
                                                 {CHAT_RENDER_MODE_OPTIONS.map((option) => {
                                                     const selected = chatRenderMode === option.id;
                                                     const previewPhase = chatRenderPreviewTick % 12;
@@ -1463,7 +1463,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
 
                                     {shouldShow('messageTransport') && (
                                         <section data-settings-item="chat.message-transport" className="p-2 md:col-span-2">
-                                            <h4 className="typography-ui-header font-medium text-foreground">{t('settings.openchamber.visual.section.messageStreamTransport')}</h4>
+                                            <h4 className="typography-ui-header font-medium text-foreground">{t('settings.openjunior.visual.section.messageStreamTransport')}</h4>
                                             <div className="mt-1 flex max-w-[24rem] flex-col gap-2">
                                                 <div className="flex flex-wrap items-center gap-1">
                                                     {MESSAGE_STREAM_TRANSPORT_OPTIONS.map((option) => (
@@ -1491,8 +1491,8 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
 
                                     {shouldShow('activityRenderMode') && chatRenderMode === 'sorted' && (
                                         <section className="p-2 md:col-span-2">
-                                            <h4 className="typography-ui-header font-medium text-foreground">{t('settings.openchamber.visual.section.activityDefault')}</h4>
-                                            <div role="radiogroup" aria-label={t('settings.openchamber.visual.section.activityDefaultAria')} className="mt-0.5 space-y-0">
+                                            <h4 className="typography-ui-header font-medium text-foreground">{t('settings.openjunior.visual.section.activityDefault')}</h4>
+                                            <div role="radiogroup" aria-label={t('settings.openjunior.visual.section.activityDefaultAria')} className="mt-0.5 space-y-0">
                                                 {ACTIVITY_RENDER_MODE_OPTIONS.map((option) => {
                                                     const selected = activityRenderMode === option.id;
                                                     return (
@@ -1513,7 +1513,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                                             <Radio
                                                                 checked={selected}
                                                                 onChange={() => handleActivityRenderModeChange(option.id)}
-                                                                ariaLabel={t('settings.openchamber.visual.field.activityDefaultModeAria', { option: tUnsafe(option.labelKey) })}
+                                                                ariaLabel={t('settings.openjunior.visual.field.activityDefaultModeAria', { option: tUnsafe(option.labelKey) })}
                                                             />
                                                             <span className={cn('typography-ui-label font-normal', selected ? 'text-foreground' : 'text-foreground/50')}>
                                                                 {tUnsafe(option.labelKey)}
@@ -1527,7 +1527,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
 
                                     {shouldShow('expandedTools') && (
                                         <section className="p-2 md:col-span-2 space-y-0.5">
-                                            <div className="typography-ui-header font-medium text-foreground py-1.5">{t('settings.openchamber.visual.section.showToolsOpenedByDefault')}</div>
+                                            <div className="typography-ui-header font-medium text-foreground py-1.5">{t('settings.openjunior.visual.section.showToolsOpenedByDefault')}</div>
 
                                             <div
                                                 className="group flex cursor-pointer items-center gap-2 py-0.5"
@@ -1545,9 +1545,9 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                                 <Checkbox
                                                     checked={showExpandedBashTools}
                                                     onChange={handleShowExpandedBashToolsChange}
-                                                    ariaLabel={t('settings.openchamber.visual.field.showExpandedBashToolsAria')}
+                                                    ariaLabel={t('settings.openjunior.visual.field.showExpandedBashToolsAria')}
                                                 />
-                                                <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.bash')}</span>
+                                                <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.bash')}</span>
                                             </div>
 
                                             <div
@@ -1566,17 +1566,17 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                                 <Checkbox
                                                     checked={showExpandedEditTools}
                                                     onChange={handleShowExpandedEditToolsChange}
-                                                    ariaLabel={t('settings.openchamber.visual.field.showExpandedEditToolsAria')}
+                                                    ariaLabel={t('settings.openjunior.visual.field.showExpandedEditToolsAria')}
                                                 />
-                                                <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.editTools')}</span>
+                                                <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.editTools')}</span>
                                             </div>
                                         </section>
                                     )}
 
                                     {shouldShow('userMessageRendering') && (
                                         <section className="p-2">
-                                            <h4 className="typography-ui-header font-medium text-foreground">{t('settings.openchamber.visual.section.userMessageRendering')}</h4>
-                                            <div role="radiogroup" aria-label={t('settings.openchamber.visual.section.userMessageRenderingAria')} className="mt-0.5 space-y-0">
+                                            <h4 className="typography-ui-header font-medium text-foreground">{t('settings.openjunior.visual.section.userMessageRendering')}</h4>
+                                            <div role="radiogroup" aria-label={t('settings.openjunior.visual.section.userMessageRenderingAria')} className="mt-0.5 space-y-0">
                                                 {USER_MESSAGE_RENDERING_OPTIONS.map((option) => {
                                                     const selected = normalizeUserMessageRenderingMode(userMessageRenderingMode) === option.id;
                                                     return (
@@ -1597,7 +1597,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                                             <Radio
                                                                 checked={selected}
                                                                 onChange={() => handleUserMessageRenderingModeChange(option.id)}
-                                                                ariaLabel={t('settings.openchamber.visual.field.userMessageRenderingAria', { option: tUnsafe(option.labelKey) })}
+                                                                ariaLabel={t('settings.openjunior.visual.field.userMessageRenderingAria', { option: tUnsafe(option.labelKey) })}
                                                             />
                                                             <span className={cn('typography-ui-label font-normal', selected ? 'text-foreground' : 'text-foreground/50')}>
                                                                 {tUnsafe(option.labelKey)}
@@ -1611,8 +1611,8 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
 
                                     {shouldShow('mermaidRendering') && (
                                         <section className="p-2">
-                                            <h4 className="typography-ui-header font-medium text-foreground">{t('settings.openchamber.visual.section.mermaidRendering')}</h4>
-                                            <div role="radiogroup" aria-label={t('settings.openchamber.visual.section.mermaidRenderingAria')} className="mt-0.5 space-y-0">
+                                            <h4 className="typography-ui-header font-medium text-foreground">{t('settings.openjunior.visual.section.mermaidRendering')}</h4>
+                                            <div role="radiogroup" aria-label={t('settings.openjunior.visual.section.mermaidRenderingAria')} className="mt-0.5 space-y-0">
                                                 {MERMAID_RENDERING_OPTIONS.map((option) => {
                                                     const selected = mermaidRenderingMode === option.id;
                                                     return (
@@ -1633,7 +1633,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                                             <Radio
                                                                 checked={selected}
                                                                 onChange={() => handleMermaidRenderingModeChange(option.id)}
-                                                                ariaLabel={t('settings.openchamber.visual.field.mermaidRenderingAria', { option: tUnsafe(option.labelKey) })}
+                                                                ariaLabel={t('settings.openjunior.visual.field.mermaidRenderingAria', { option: tUnsafe(option.labelKey) })}
                                                             />
                                                             <span className={cn('typography-ui-label font-normal', selected ? 'text-foreground' : 'text-foreground/50')}>
                                                                 {tUnsafe(option.labelKey)}
@@ -1647,8 +1647,8 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
 
                                     {shouldShow('diffLayout') && !isVSCode && (
                                         <section className="p-2">
-                                            <h4 className="typography-ui-header font-medium text-foreground">{t('settings.openchamber.visual.section.diffLayout')}</h4>
-                                            <div role="radiogroup" aria-label={t('settings.openchamber.visual.section.diffLayoutAria')} className="mt-0.5 space-y-0">
+                                            <h4 className="typography-ui-header font-medium text-foreground">{t('settings.openjunior.visual.section.diffLayout')}</h4>
+                                            <div role="radiogroup" aria-label={t('settings.openjunior.visual.section.diffLayoutAria')} className="mt-0.5 space-y-0">
                                                 {DIFF_LAYOUT_OPTIONS.map((option) => {
                                                     const selected = diffLayoutPreference === option.id;
                                                     return (
@@ -1669,7 +1669,7 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                                             <Radio
                                                                 checked={selected}
                                                                 onChange={() => setDiffLayoutPreference(option.id)}
-                                                                ariaLabel={t('settings.openchamber.visual.field.diffLayoutAria', { option: tUnsafe(option.labelKey) })}
+                                                                ariaLabel={t('settings.openjunior.visual.field.diffLayoutAria', { option: tUnsafe(option.labelKey) })}
                                                             />
                                                             <span className={cn('typography-ui-label font-normal', selected ? 'text-foreground' : 'text-foreground/50')}>
                                                                 {tUnsafe(option.labelKey)}
@@ -1704,9 +1704,9 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             <Checkbox
                                                 checked={showReasoningTraces}
                                                 onChange={setShowReasoningTraces}
-                                                ariaLabel={t('settings.openchamber.visual.field.showReasoningTracesAria')}
+                                                ariaLabel={t('settings.openjunior.visual.field.showReasoningTracesAria')}
                                             />
-                                            <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.showReasoningTraces')}</span>
+                                            <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.showReasoningTraces')}</span>
                                         </div>
                                     )}
 
@@ -1727,9 +1727,9 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             <Checkbox
                                                 checked={collapsibleThinkingBlocks}
                                                 onChange={setCollapsibleThinkingBlocks}
-                                                ariaLabel={t('settings.openchamber.visual.field.collapsibleThinkingBlocksAria')}
+                                                ariaLabel={t('settings.openjunior.visual.field.collapsibleThinkingBlocksAria')}
                                             />
-                                            <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.collapsibleThinkingBlocks')}</span>
+                                            <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.collapsibleThinkingBlocks')}</span>
                                         </div>
                                     )}
 
@@ -1751,9 +1751,9 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             <Checkbox
                                                 checked={collapsibleUserMessages}
                                                 onChange={handleCollapsibleUserMessagesChange}
-                                                ariaLabel={t('settings.openchamber.visual.field.collapsibleUserMessagesAria')}
+                                                ariaLabel={t('settings.openjunior.visual.field.collapsibleUserMessagesAria')}
                                             />
-                                            <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.collapsibleUserMessages')}</span>
+                                            <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.collapsibleUserMessages')}</span>
                                         </div>
                                     )}
 
@@ -1775,9 +1775,9 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             <Checkbox
                                                 checked={stickyUserHeader}
                                                 onChange={handleStickyUserHeaderChange}
-                                                ariaLabel={t('settings.openchamber.visual.field.stickyUserHeaderAria')}
+                                                ariaLabel={t('settings.openjunior.visual.field.stickyUserHeaderAria')}
                                             />
-                                            <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.stickyUserHeader')}</span>
+                                            <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.stickyUserHeader')}</span>
                                         </div>
                                     )}
 
@@ -1799,9 +1799,9 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             <Checkbox
                                                 checked={wideChatLayoutEnabled}
                                                 onChange={handleWideChatLayoutChange}
-                                                ariaLabel={t('settings.openchamber.visual.field.wideChatLayoutAria')}
+                                                ariaLabel={t('settings.openjunior.visual.field.wideChatLayoutAria')}
                                             />
-                                            <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.wideChatLayout')}</span>
+                                            <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.wideChatLayout')}</span>
                                         </div>
                                     )}
 
@@ -1823,16 +1823,16 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             <Checkbox
                                                 checked={showSplitAssistantMessageActions}
                                                 onChange={handleShowSplitAssistantMessageActionsChange}
-                                                ariaLabel={t('settings.openchamber.visual.field.showSplitAssistantMessageActionsAria')}
+                                                ariaLabel={t('settings.openjunior.visual.field.showSplitAssistantMessageActionsAria')}
                                             />
                                             <div className="flex min-w-0 items-center gap-1.5">
-                                                <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.showSplitAssistantMessageActions')}</span>
+                                                <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.showSplitAssistantMessageActions')}</span>
                                                 <Tooltip>
                                                     <TooltipTrigger asChild>
                                                         <Icon name="information" className="h-3.5 w-3.5 cursor-help text-muted-foreground/60" />
                                                     </TooltipTrigger>
                                                     <TooltipContent sideOffset={8} className="max-w-xs">
-                                                        {t('settings.openchamber.visual.field.showSplitAssistantMessageActionsTooltip')}
+                                                        {t('settings.openjunior.visual.field.showSplitAssistantMessageActionsTooltip')}
                                                     </TooltipContent>
                                                 </Tooltip>
                                             </div>
@@ -1857,9 +1857,9 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             <Checkbox
                                                 checked={showToolFileIcons}
                                                 onChange={handleShowToolFileIconsChange}
-                                                ariaLabel={t('settings.openchamber.visual.field.showToolFileIconsAria')}
+                                                ariaLabel={t('settings.openjunior.visual.field.showToolFileIconsAria')}
                                             />
-                                            <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.showToolFileIcons')}</span>
+                                            <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.showToolFileIcons')}</span>
                                         </div>
                                     )}
 
@@ -1881,9 +1881,9 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             <Checkbox
                                                 checked={showTurnChangedFiles}
                                                 onChange={handleShowTurnChangedFilesChange}
-                                                ariaLabel={t('settings.openchamber.visual.field.showTurnChangedFilesAria')}
+                                                ariaLabel={t('settings.openjunior.visual.field.showTurnChangedFilesAria')}
                                             />
-                                            <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.showTurnChangedFiles')}</span>
+                                            <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.showTurnChangedFiles')}</span>
                                         </div>
                                     )}
 
@@ -1905,9 +1905,9 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             <Checkbox
                                                 checked={directoryShowHidden}
                                                 onChange={setDirectoryShowHidden}
-                                                ariaLabel={t('settings.openchamber.visual.field.showDotfilesAria')}
+                                                ariaLabel={t('settings.openjunior.visual.field.showDotfilesAria')}
                                             />
-                                            <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.showDotfiles')}</span>
+                                            <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.showDotfiles')}</span>
                                         </div>
                                     )}
 
@@ -1929,10 +1929,10 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                                 <Checkbox
                                                     checked={settingsDefaultFileViewerPreview}
                                                     onChange={handleFileViewerPreviewChange}
-                                                    ariaLabel={t('settings.openchamber.defaults.field.openFilesPreviewAria')}
+                                                    ariaLabel={t('settings.openjunior.defaults.field.openFilesPreviewAria')}
                                                 />
                                             </span>
-                                            <span className="typography-ui-label text-foreground">{t('settings.openchamber.defaults.field.openFilesPreview')}</span>
+                                            <span className="typography-ui-label text-foreground">{t('settings.openjunior.defaults.field.openFilesPreview')}</span>
                                         </div>
                                     )}
 
@@ -1954,16 +1954,16 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             <Checkbox
                                                 checked={queueModeEnabled}
                                                 onChange={setQueueMode}
-                                                ariaLabel={t('settings.openchamber.visual.field.queueMessagesByDefaultAria')}
+                                                ariaLabel={t('settings.openjunior.visual.field.queueMessagesByDefaultAria')}
                                             />
                                             <div className="flex min-w-0 items-center gap-1.5">
-                                                <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.queueMessagesByDefault')}</span>
+                                                <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.queueMessagesByDefault')}</span>
                                                 <Tooltip>
                                                     <TooltipTrigger asChild>
                                                         <Icon name="information" className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
                                                     </TooltipTrigger>
                                                     <TooltipContent sideOffset={8} className="max-w-xs">
-                                                        {t('settings.openchamber.visual.field.queueMessagesByDefaultTooltip', { modifier: getModifierLabel() })}
+                                                        {t('settings.openjunior.visual.field.queueMessagesByDefaultTooltip', { modifier: getModifierLabel() })}
                                                     </TooltipContent>
                                                 </Tooltip>
                                             </div>
@@ -1988,9 +1988,9 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             <Checkbox
                                                 checked={persistChatDraft}
                                                 onChange={setPersistChatDraft}
-                                                ariaLabel={t('settings.openchamber.visual.field.persistDraftMessagesAria')}
+                                                ariaLabel={t('settings.openjunior.visual.field.persistDraftMessagesAria')}
                                             />
-                                            <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.persistDraftMessages')}</span>
+                                            <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.persistDraftMessages')}</span>
                                         </div>
                                     )}
 
@@ -2012,9 +2012,9 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             <Checkbox
                                                 checked={inputSpellcheckEnabled}
                                                 onChange={handleInputSpellcheckChange}
-                                                ariaLabel={t('settings.openchamber.visual.field.enableSpellcheckInTextInputsAria')}
+                                                ariaLabel={t('settings.openjunior.visual.field.enableSpellcheckInTextInputsAria')}
                                             />
-                                            <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.enableSpellcheckInTextInputs')}</span>
+                                            <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.enableSpellcheckInTextInputs')}</span>
                                         </div>
                                     )}
 
@@ -2087,12 +2087,12 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                 {shouldShow('reportUsage') && (
                     <div className="space-y-3">
                         <section className="px-2 pb-2 pt-0">
-                            <h4 className="typography-ui-header font-medium text-foreground mb-2">{t('settings.openchamber.visual.section.privacy')}</h4>
+                            <h4 className="typography-ui-header font-medium text-foreground mb-2">{t('settings.openjunior.visual.section.privacy')}</h4>
                             <div data-settings-item="appearance.usage-reports" className="flex items-start gap-2 py-1.5">
                                 <Checkbox
                                     checked={reportUsage}
                                     onChange={handleReportUsageChange}
-                                    ariaLabel={t('settings.openchamber.visual.field.sendAnonymousUsageReportsAria')}
+                                    ariaLabel={t('settings.openjunior.visual.field.sendAnonymousUsageReportsAria')}
                                 />
                                 <div className="flex min-w-0 flex-col gap-0.5">
                                     <div
@@ -2108,10 +2108,10 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                                             }
                                         }}
                                     >
-                                        <span className="typography-ui-label text-foreground">{t('settings.openchamber.visual.field.sendAnonymousUsageReports')}</span>
+                                        <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.sendAnonymousUsageReports')}</span>
                                     </div>
                                     <span className="typography-meta text-muted-foreground pointer-events-none">
-                                        {t('settings.openchamber.visual.field.sendAnonymousUsageReportsHint')}
+                                        {t('settings.openjunior.visual.field.sendAnonymousUsageReportsHint')}
                                     </span>
                                 </div>
                             </div>

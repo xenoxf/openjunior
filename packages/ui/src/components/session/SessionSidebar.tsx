@@ -331,7 +331,7 @@ export const SessionSidebar: React.FC<SessionSidebarProps> = ({
   const openNewSessionDraft = useSessionUIStore((state) => state.openNewSessionDraft);
   // The sidebar tree's +-buttons (project / group / folder) open a draft but,
   // unlike selecting an existing session, don't navigate. VS Code's compact view
-  // is driven by the openchamber:navigate event, so switch to chat explicitly
+  // is driven by the openjunior:navigate event, so switch to chat explicitly
   // (a no-op in the expanded side-by-side layout, which is always showing chat).
   const openNewSessionDraftFromTree = React.useCallback<typeof openNewSessionDraft>((options) => {
     openNewSessionDraft(options);

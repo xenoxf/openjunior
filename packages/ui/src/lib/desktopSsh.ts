@@ -53,7 +53,7 @@ export type DesktopSshInstance = {
   };
   auth: {
     sshPassword?: DesktopSshStoredSecret;
-    openchamberPassword?: DesktopSshStoredSecret;
+    openjuniorPassword?: DesktopSshStoredSecret;
   };
   portForwards: DesktopSshPortForward[];
 };
@@ -181,8 +181,8 @@ const parseInstance = (value: unknown): DesktopSshInstance | null => {
 
   const remoteRaw = isRecord(value.remoteOpenchamber)
     ? value.remoteOpenchamber
-    : isRecord(value.remote_openchamber)
-      ? value.remote_openchamber
+    : isRecord(value.remote_openjunior)
+      ? value.remote_openjunior
       : {};
 
   const localRaw = isRecord(value.localForward)
@@ -225,7 +225,7 @@ const parseInstance = (value: unknown): DesktopSshInstance | null => {
   const preferredLocalPort =
     readNumber(localRaw, 'preferredLocalPort') ?? readNumber(localRaw, 'preferred_local_port');
   const sshPassword = parseStoredSecret(authRaw.sshPassword || authRaw.ssh_password);
-  const openchamberPassword = parseStoredSecret(authRaw.openchamberPassword || authRaw.openchamber_password);
+  const openjuniorPassword = parseStoredSecret(authRaw.openjuniorPassword || authRaw.openjunior_password);
 
   return {
     id,
@@ -252,7 +252,7 @@ const parseInstance = (value: unknown): DesktopSshInstance | null => {
     },
     auth: {
       ...(sshPassword ? { sshPassword } : {}),
-      ...(openchamberPassword ? { openchamberPassword } : {}),
+      ...(openjuniorPassword ? { openjuniorPassword } : {}),
     },
     portForwards,
   };

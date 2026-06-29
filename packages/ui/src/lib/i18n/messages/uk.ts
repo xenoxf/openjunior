@@ -2486,7 +2486,7 @@ export const dict: Record<I18nKey, string> = {
   "updateDialog.actions.updateNow": "Оновити зараз",
   "updateDialog.status.updating": "Оновлення...",
   "updateDialog.error.updateFailed": "Помилка оновлення",
-  "updateDialog.error.takingLonger": "Оновлення триває довше, ніж очікувалося. Зачекайте трохи та оновіть або запустіть: openchamber update",
+  "updateDialog.error.takingLonger": "Оновлення триває довше, ніж очікувалося. Зачекайте трохи та оновіть або запустіть: openjunior update",
   "opencodeUpdate.toast.available.title": "Оновлення OpenCode",
   "opencodeUpdate.toast.available.description": "Версія {version} доступна.",
   "opencodeUpdate.toast.actions.update": "Оновити",

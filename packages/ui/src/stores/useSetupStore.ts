@@ -61,7 +61,7 @@ export const useSetupStore = create<SetupState>()(
       skipSetup: () => set({ isComplete: true, currentStep: STEP_COUNT }),
     }),
     {
-      name: 'openchamber_setup',
+      name: 'openjunior_setup',
       version: 1,
     }
   )

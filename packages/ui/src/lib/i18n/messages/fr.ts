@@ -2329,7 +2329,7 @@ export const dict = {
   'updateDialog.changelog.title': 'Nouveautés',
   'updateDialog.status.updating': 'Mise à jour...',
   'updateDialog.error.updateFailed': 'La mise à jour a échoué',
-  'updateDialog.error.takingLonger': 'La mise à jour prend plus de temps que prévu. Attendez un peu et actualisez, ou exécutez : openchamber update',
+  'updateDialog.error.takingLonger': 'La mise à jour prend plus de temps que prévu. Attendez un peu et actualisez, ou exécutez : openjunior update',
   'opencodeUpdate.toast.available.title': 'Mise à jour OpenCode',
   'opencodeUpdate.toast.available.description': 'Version {version} disponible.',
   'opencodeUpdate.toast.actions.update': 'Mise à jour',

@@ -250,13 +250,13 @@ const getSessionIDFromDedupeKey = (dedupeKey: string | undefined): string | null
 };
 
 const DESKTOP_BROWSER_INSPECT_SCRIPT = `new Promise((resolve) => {
-  const existing = document.getElementById('__openchamber_desktop_browser_overlay');
+  const existing = document.getElementById('__openjunior_desktop_browser_overlay');
   if (existing) existing.remove();
-  if (typeof window.__openchamberDesktopBrowserCancelInspect === 'function') {
-    try { window.__openchamberDesktopBrowserCancelInspect(); } catch { /* webview not ready */ }
+  if (typeof window.__openjuniorDesktopBrowserCancelInspect === 'function') {
+    try { window.__openjuniorDesktopBrowserCancelInspect(); } catch { /* webview not ready */ }
   }
   const overlay = document.createElement('div');
-  overlay.id = '__openchamber_desktop_browser_overlay';
+  overlay.id = '__openjunior_desktop_browser_overlay';
   overlay.style.cssText = 'position:fixed;z-index:2147483647;pointer-events:none;border:2px solid #60a5fa;background:rgba(96,165,250,.24);border-radius:3px;display:none;box-sizing:border-box;';
   document.documentElement.appendChild(overlay);
   const cssEscape = (value) => {
@@ -307,8 +307,8 @@ const DESKTOP_BROWSER_INSPECT_SCRIPT = `new Promise((resolve) => {
     window.removeEventListener('mousemove', move, true);
     window.removeEventListener('click', click, true);
     window.removeEventListener('keydown', keydown, true);
-    if (window.__openchamberDesktopBrowserCancelInspect === cancel) {
-      delete window.__openchamberDesktopBrowserCancelInspect;
+    if (window.__openjuniorDesktopBrowserCancelInspect === cancel) {
+      delete window.__openjuniorDesktopBrowserCancelInspect;
     }
   };
   const cancel = () => {
@@ -329,24 +329,24 @@ const DESKTOP_BROWSER_INSPECT_SCRIPT = `new Promise((resolve) => {
     if (event.key !== 'Escape') return;
     cancel();
   };
-  window.__openchamberDesktopBrowserCancelInspect = cancel;
+  window.__openjuniorDesktopBrowserCancelInspect = cancel;
   window.addEventListener('mousemove', move, true);
   window.addEventListener('click', click, true);
   window.addEventListener('keydown', keydown, true);
 });`;
 
 const DESKTOP_BROWSER_CANCEL_INSPECT_SCRIPT = `(() => {
-  if (typeof window.__openchamberDesktopBrowserCancelInspect === 'function') {
-    window.__openchamberDesktopBrowserCancelInspect();
+  if (typeof window.__openjuniorDesktopBrowserCancelInspect === 'function') {
+    window.__openjuniorDesktopBrowserCancelInspect();
     return;
   }
-  const overlay = document.getElementById('__openchamber_desktop_browser_overlay');
+  const overlay = document.getElementById('__openjunior_desktop_browser_overlay');
   if (overlay) overlay.remove();
 })()`;
 
 const DESKTOP_BROWSER_SAME_WEBVIEW_NAVIGATION_SCRIPT = `(() => {
-  if (window.__openchamberSameWebviewNavigationInstalled) return;
-  window.__openchamberSameWebviewNavigationInstalled = true;
+  if (window.__openjuniorSameWebviewNavigationInstalled) return;
+  window.__openjuniorSameWebviewNavigationInstalled = true;
 
   const navigate = (rawUrl) => {
     if (typeof rawUrl !== 'string' || rawUrl.length === 0) return false;
@@ -669,7 +669,7 @@ const PreviewPane: React.FC<PreviewPaneProps> = ({ rawUrl, onNavigate }) => {
       return;
     }
     postPreviewBridgeMessage(frameWindow, proxySrc, {
-      source: 'openchamber-preview-parent',
+      source: 'openjunior-preview-parent',
       version: 1,
       type: 'set-inspect-mode',
       enabled: inspectMode,
@@ -682,7 +682,7 @@ const PreviewPane: React.FC<PreviewPaneProps> = ({ rawUrl, onNavigate }) => {
       return;
     }
     postPreviewBridgeMessage(frameWindow, proxySrc, {
-      source: 'openchamber-preview-parent',
+      source: 'openjunior-preview-parent',
       version: 1,
       type: 'set-color-scheme',
       scheme: previewColorScheme,
@@ -733,7 +733,7 @@ const PreviewPane: React.FC<PreviewPaneProps> = ({ rawUrl, onNavigate }) => {
         return;
       }
       const data = event.data;
-      if (!data || data.source !== 'openchamber-preview-bridge' || data.version !== 1) {
+      if (!data || data.source !== 'openjunior-preview-bridge' || data.version !== 1) {
         return;
       }
 
@@ -1450,7 +1450,7 @@ const IframeBrowserPane: React.FC<DesktopBrowserPaneProps> = ({ initialUrl, dire
     const frameWindow = iframeRef.current?.contentWindow;
     if (!frameWindow) return;
     frameWindow.postMessage({
-      source: 'openchamber-preview-parent',
+      source: 'openjunior-preview-parent',
       version: 1,
       type: 'set-inspect-mode',
       enabled,
@@ -1527,7 +1527,7 @@ const IframeBrowserPane: React.FC<DesktopBrowserPaneProps> = ({ initialUrl, dire
     const handler = (event: MessageEvent<PreviewBridgeMessage>) => {
       if (event.source !== iframeRef.current?.contentWindow) return;
       const data = event.data;
-      if (!data || data.source !== 'openchamber-preview-bridge' || data.version !== 1) return;
+      if (!data || data.source !== 'openjunior-preview-bridge' || data.version !== 1) return;
 
       if (data.type === 'ready') {
         const frameUrl = typeof data.url === 'string' ? data.url : '';
@@ -1947,7 +1947,7 @@ const DesktopBrowserPane: React.FC<DesktopBrowserPaneProps> = ({ initialUrl, dir
         <webview
           ref={webviewRef}
           src={normalizeBrowserUrl(initialUrl)}
-          partition="persist:openchamber-browser"
+          partition="persist:openjunior-browser"
           allowpopups
           style={{ width: '100%', height: '100%', border: 'none' }}
         />
@@ -2207,8 +2207,8 @@ export const ContextPanel: React.FC = () => {
       }
 
       const directThemeSync = (frameWindow as unknown as {
-        __openchamberApplyThemeSync?: (themePayload: typeof payload) => void;
-      }).__openchamberApplyThemeSync;
+        __openjuniorApplyThemeSync?: (themePayload: typeof payload) => void;
+      }).__openjuniorApplyThemeSync;
 
       if (typeof directThemeSync === 'function') {
         try {
@@ -2242,8 +2242,8 @@ export const ContextPanel: React.FC = () => {
 
       const payload = { visible: activeChatTabID === tabID };
       const directVisibilitySync = (frameWindow as unknown as {
-        __openchamberSetEmbeddedVisibility?: (visibilityPayload: typeof payload) => void;
-      }).__openchamberSetEmbeddedVisibility;
+        __openjuniorSetEmbeddedVisibility?: (visibilityPayload: typeof payload) => void;
+      }).__openjuniorSetEmbeddedVisibility;
 
       if (typeof directVisibilitySync === 'function') {
         try {

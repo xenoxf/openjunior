@@ -21,7 +21,7 @@ import { markStartupTrace, measureStartupTrace } from "@/lib/startupTrace";
 import { getSyncConfig, subscribeToSyncConfigChanges } from "@/sync/sync-refs";
 
 const MODELS_DEV_API_URL = "https://models.dev/api.json";
-const MODELS_DEV_PROXY_URL = "/api/openchamber/models-metadata";
+const MODELS_DEV_PROXY_URL = "/api/openjunior/models-metadata";
 const STT_SILENCE_THRESHOLD_DB_MIN = -100;
 const STT_SILENCE_THRESHOLD_DB_MAX = 0;
 const STT_SILENCE_HOLD_MS_MIN = 250;

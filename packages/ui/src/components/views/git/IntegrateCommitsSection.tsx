@@ -89,7 +89,7 @@ export const IntegrateCommitsSection: React.FC<{
 
   const conflictStorageKey = React.useMemo(() => {
     if (!currentSessionId) return null;
-    return `openchamber.integrate.conflict:${currentSessionId}`;
+    return `openjunior.integrate.conflict:${currentSessionId}`;
   }, [currentSessionId]);
 
   React.useEffect(() => {

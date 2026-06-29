@@ -2486,7 +2486,7 @@ export const dict: Record<I18nKey, string> = {
   "updateDialog.actions.updateNow": "Actualizar ahora",
   "updateDialog.status.updating": "Actualizando...",
   "updateDialog.error.updateFailed": "No se pudo actualizar",
-  "updateDialog.error.takingLonger": "La actualización está tardando más de lo esperado. Espera un poco y refresca, o ejecuta: openchamber update",
+  "updateDialog.error.takingLonger": "La actualización está tardando más de lo esperado. Espera un poco y refresca, o ejecuta: openjunior update",
   "opencodeUpdate.toast.available.title": "Actualización de OpenCode",
   "opencodeUpdate.toast.available.description": "Versión {version} disponible.",
   "opencodeUpdate.toast.actions.update": "Actualizar",

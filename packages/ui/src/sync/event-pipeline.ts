@@ -122,7 +122,7 @@ const normalizeOpenJuniorSessionStatus = (payload: Event): Event | null => {
   return {
     id: typeof record.id === "string" && record.id.length > 0
       ? record.id
-      : `openchamber-status-${sessionID}-${Date.now()}`,
+      : `openjunior-status-${sessionID}-${Date.now()}`,
     type: "session.status",
     properties: {
       sessionID,

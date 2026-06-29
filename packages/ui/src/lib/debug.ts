@@ -372,7 +372,7 @@ export const debugUtils = {
         projectInfo,
         health: opencodeHealth,
       },
-      openchamber: {
+      openjunior: {
         settingsInfo,
       },
     };

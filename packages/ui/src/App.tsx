@@ -42,8 +42,8 @@ import { SyncProvider } from '@/sync/sync-context';
 import { useSync } from '@/sync/use-sync';
 import { ConfigUpdateOverlay } from '@/components/ui/ConfigUpdateOverlay';
 import { AboutDialog } from '@/components/ui/AboutDialog';
-import { SetupWizard } from '@/components/setup-wizard/SetupWizard';
-import { useSetupStore } from '@/stores/useSetupStore';
+
+
 import { InteractiveTutorial } from '@/components/tutorial';
 import { RuntimeAPIProvider } from '@/contexts/RuntimeAPIProvider';
 import { registerRuntimeAPIs } from '@/contexts/runtimeAPIRegistry';
@@ -208,16 +208,6 @@ const EmbeddedSessionChatContent: React.FC<{
 };
 
 function App({ apis }: AppProps) {
-  const { completeSetup: setupComplete, skipSetup: setupSkip, profile: setupProfile } = useSetupStore();
-
-  const onComplete = React.useCallback(() => {
-    setupComplete(setupProfile || 'developer');
-  }, [setupComplete, setupProfile]);
-
-  const onSkip = React.useCallback(() => {
-    setupSkip();
-  }, [setupSkip]);
-
   React.useEffect(() => {
     markStartupTrace('App:mounted');
     if (startupTraceEnabled()) {
@@ -550,16 +540,16 @@ function App({ apis }: AppProps) {
     };
 
     const scopedWindow = window as unknown as {
-      __openchamberSetEmbeddedVisibility?: (payload?: EmbeddedVisibilityPayload) => void;
+      __openjuniorSetEmbeddedVisibility?: (payload?: EmbeddedVisibilityPayload) => void;
     };
 
-    scopedWindow.__openchamberSetEmbeddedVisibility = applyVisibility;
+    scopedWindow.__openjuniorSetEmbeddedVisibility = applyVisibility;
     window.addEventListener('message', handleMessage);
 
     return () => {
       window.removeEventListener('message', handleMessage);
-      if (scopedWindow.__openchamberSetEmbeddedVisibility === applyVisibility) {
-        delete scopedWindow.__openchamberSetEmbeddedVisibility;
+      if (scopedWindow.__openjuniorSetEmbeddedVisibility === applyVisibility) {
+        delete scopedWindow.__openjuniorSetEmbeddedVisibility;
       }
     };
   }, [embeddedSessionChat]);
@@ -698,7 +688,7 @@ function App({ apis }: AppProps) {
     if (!isInitialized || isSwitchingDirectory) return;
     if (appReadyDispatchedRef.current) return;
     appReadyDispatchedRef.current = true;
-    (window as unknown as { __openchamberAppReady?: boolean }).__openchamberAppReady = true;
+    (window as unknown as { __openjuniorAppReady?: boolean }).__openjuniorAppReady = true;
     window.dispatchEvent(new Event('openjunior:app-ready'));
   }, [isInitialized, isSwitchingDirectory]);
 
@@ -952,7 +942,6 @@ function App({ apis }: AppProps) {
                   <OpenCodeUpdateToast />
                   {!isBootShell && (
                     <>
-                      <SetupWizard onComplete={onComplete} onSkip={onSkip} />
                       <InteractiveTutorial />
                     </>
                   )}

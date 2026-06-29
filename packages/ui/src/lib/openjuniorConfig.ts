@@ -1,7 +1,7 @@
 /**
  * OpenJunior project-level configuration service.
- * Stores per-project settings in ~/.config/openchamber/<projectId>.json.
- * Migrates from legacy <project>/.openchamber/openchamber.json.
+ * Stores per-project settings in ~/.config/openjunior/<projectId>.json.
+ * Migrates from legacy <project>/.openjunior/openjunior.json.
  */
 
 import type { FilesAPI } from './api/types';
@@ -14,10 +14,10 @@ import { runtimeFetch } from './runtime-fetch';
 
 type ProjectRef = { id: string; path: string };
 
-const CONFIG_FILENAME = 'openchamber.json';
+const CONFIG_FILENAME = 'openjunior.json';
 // LEGACY_PROJECT_CONFIG: legacy per-project config root inside repo.
-const LEGACY_CONFIG_DIR = '.openchamber';
-const USER_PROJECTS_DIR_SEGMENTS = ['.config', 'openchamber', 'projects'];
+const LEGACY_CONFIG_DIR = '.openjunior';
+const USER_PROJECTS_DIR_SEGMENTS = ['.config', 'openjunior', 'projects'];
 
 /**
  * Get the runtime Files API if available (Desktop/VSCode).
@@ -595,8 +595,8 @@ export async function readOpenJuniorConfig(project: ProjectRef): Promise<OpenJun
     }
   }
 
-  // 2) Migrate legacy <project>/.openchamber/openchamber.json.
-  // LEGACY_PROJECT_CONFIG: migrate project-local openchamber.json -> ~/.config/openchamber/projects/<projectId>.json
+  // 2) Migrate legacy <project>/.openjunior/openjunior.json.
+  // LEGACY_PROJECT_CONFIG: migrate project-local openjunior.json -> ~/.config/openjunior/projects/<projectId>.json
   const legacyPath = getLegacyConfigPath(projectDirectory);
   const legacyConfig = parseConfig(await readText(legacyPath));
   if (!legacyConfig) {
@@ -669,7 +669,7 @@ export async function writeOpenJuniorConfig(
     }, null, 2);
     return await writeTextFile(configPath, content);
   } catch (error) {
-    console.error('Failed to write openchamber config:', error);
+    console.error('Failed to write openjunior config:', error);
     return false;
   }
 }

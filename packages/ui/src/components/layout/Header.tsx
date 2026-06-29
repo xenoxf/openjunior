@@ -939,7 +939,7 @@ export const Header: React.FC<HeaderProps> = ({
     setRemoteUpdateError(null);
     try {
       const params = new URLSearchParams({ appType: 'web', instanceMode: 'remote' });
-      const response = await runtimeFetch(`/api/openchamber/update-check?${params.toString()}`, {
+      const response = await runtimeFetch(`/api/openjunior/update-check?${params.toString()}`, {
         method: 'GET',
         headers: { Accept: 'application/json' },
       });

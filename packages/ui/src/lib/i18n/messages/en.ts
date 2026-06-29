@@ -2520,7 +2520,7 @@ export const dict = {
   'updateDialog.actions.updateNow': 'Update Now',
   'updateDialog.status.updating': 'Updating...',
   'updateDialog.error.updateFailed': 'Update failed',
-  'updateDialog.error.takingLonger': 'Update is taking longer than expected. Wait a bit and refresh, or run: openchamber update',
+  'updateDialog.error.takingLonger': 'Update is taking longer than expected. Wait a bit and refresh, or run: openjunior update',
   'opencodeUpdate.toast.available.title': 'OpenCode update',
   'opencodeUpdate.toast.available.description': 'Version {version} available.',
   'opencodeUpdate.toast.actions.update': 'Update',

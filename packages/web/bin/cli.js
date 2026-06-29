@@ -39,7 +39,7 @@ const DEFAULT_TAIL_LINES = 200;
 const DAEMON_READY_TIMEOUT_MS = 30000;
 const LOG_ROTATE_MAX_BYTES = 10 * 1024 * 1024;
 const LOG_ROTATE_KEEP = 5;
-const STARTUP_SERVICE_ID = 'dev.openchamber.web';
+const STARTUP_SERVICE_ID = 'dev.openjunior.web';
 const TUNNEL_PROFILES_VERSION = 1;
 const TUNNEL_PROFILES_FILE_NAME = 'tunnel-profiles.json';
 const LEGACY_CLOUDFLARE_MANAGED_REMOTE_FILE_NAME = 'cloudflare-managed-remote-tunnels.json';
@@ -146,8 +146,8 @@ function isUnsafeBrowserPort(port) {
 function resolveConfiguredBindHost(hostOverride) {
   const configured = typeof hostOverride === 'string' && hostOverride.trim()
     ? hostOverride.trim()
-    : typeof process.env.OPENCHAMBER_HOST === 'string'
-      ? process.env.OPENCHAMBER_HOST.trim()
+    : typeof process.env.OPENJUNIOR_HOST === 'string'
+      ? process.env.OPENJUNIOR_HOST.trim()
       : '';
   return configured || '127.0.0.1';
 }
@@ -228,7 +228,7 @@ async function detectLanIPv4Address() {
 
 async function resolveConnectUrlServerUrl(options) {
   let hostOverride = options.host;
-  if (typeof hostOverride !== 'string' && !process.env.OPENCHAMBER_HOST) {
+  if (typeof hostOverride !== 'string' && !process.env.OPENJUNIOR_HOST) {
     const storedOptions = readInstanceOptions(await getInstanceFilePath(options.port));
     if (typeof storedOptions?.host === 'string' && storedOptions.host.trim()) {
       hostOverride = storedOptions.host.trim();
@@ -293,10 +293,10 @@ function normalizeServerUrlForConnection(value) {
   }
 }
 
-function getOpenChamberDataDir() {
-  return process.env.OPENCHAMBER_DATA_DIR
-    ? path.resolve(process.env.OPENCHAMBER_DATA_DIR)
-    : path.join(os.homedir(), '.config', 'openchamber');
+function getOpenJuniorDataDir() {
+  return process.env.OPENJUNIOR_DATA_DIR
+    ? path.resolve(process.env.OPENJUNIOR_DATA_DIR)
+    : path.join(os.homedir(), '.config', 'openjunior');
 }
 
 function buildClientConnectionPayload({ serverUrl, token, label }) {
@@ -305,11 +305,11 @@ function buildClientConnectionPayload({ serverUrl, token, label }) {
   params.set('server', serverUrl.trim().replace(/\/+$/, ''));
   params.set('token', token.trim());
   if (label?.trim()) params.set('label', label.trim());
-  return `openchamber://connect?${params.toString()}`;
+  return `openjunior://connect?${params.toString()}`;
 }
 
 function formatUnsafePortWarning(port) {
-  return `Port ${port} is browser-unsafe (ERR_UNSAFE_PORT) and is not supported for OpenChamber UI at ${buildLocalUrl(port, '/')}.`;
+  return `Port ${port} is browser-unsafe (ERR_UNSAFE_PORT) and is not supported for OpenJunior UI at ${buildLocalUrl(port, '/')}.`;
 }
 
 function assertSafeBrowserPort(port, { context = 'This action' } = {}) {
@@ -426,7 +426,7 @@ function buildTunnelStartReplayCommand({
   tokenViaStdin,
   tokenFileProvided,
 }) {
-  const parts = ['openchamber', 'tunnel', 'start'];
+  const parts = ['openjunior', 'tunnel', 'start'];
   if (Number.isFinite(port) && port > 0) {
     parts.push('--port', String(port));
   }
@@ -471,7 +471,7 @@ function buildTunnelStartReplayCommand({
 
 function buildTunnelProfileAddCommand({ provider, hostname }) {
   const parts = [
-    'openchamber',
+    'openjunior',
     'tunnel',
     'profile',
     'add',
@@ -727,7 +727,7 @@ function parseArgs(argv = process.argv.slice(2)) {
   const options = {
     port: DEFAULT_PORT,
     host: undefined,
-    uiPassword: process.env.OPENCHAMBER_UI_PASSWORD || undefined,
+    uiPassword: process.env.OPENJUNIOR_UI_PASSWORD || undefined,
     json: false,
     all: false,
     follow: true,
@@ -978,10 +978,10 @@ function parseArgs(argv = process.argv.slice(2)) {
         // may still pass this when starting a remote server.
         break;
       case 'try-cf-tunnel':
-        removedFlagErrors.push('`--try-cf-tunnel` was removed. Use: openchamber tunnel start --provider cloudflare --mode quick');
+        removedFlagErrors.push('`--try-cf-tunnel` was removed. Use: openjunior tunnel start --provider cloudflare --mode quick');
         break;
       case 'tunnel-qr':
-        removedFlagErrors.push('`--tunnel-qr` was removed. Use: openchamber tunnel start ... --qr');
+        removedFlagErrors.push('`--tunnel-qr` was removed. Use: openjunior tunnel start ... --qr');
         break;
       case 'tunnel-password-url':
         removedFlagErrors.push('`--tunnel-password-url` was removed. Use UI password auth directly after tunnel start.');
@@ -992,7 +992,7 @@ function parseArgs(argv = process.argv.slice(2)) {
       case 'tunnel-token':
       case 'tunnel-hostname':
       case 'tunnel':
-        removedFlagErrors.push(`\`--${name}\` was removed from top-level serve flow. Use: openchamber tunnel start ...`);
+        removedFlagErrors.push(`\`--${name}\` was removed from top-level serve flow. Use: openjunior tunnel start ...`);
         break;
       default:
         if (!long && name.length === 1) {
@@ -1031,10 +1031,10 @@ function parseArgs(argv = process.argv.slice(2)) {
 
 function showHelp() {
   console.log(`
- OpenChamber - Web interface for the OpenCode AI coding agent
+ OpenJunior - Web interface for the OpenCode AI coding agent
 
 USAGE:
-  openchamber [COMMAND] [OPTIONS]
+  openjunior [COMMAND] [OPTIONS]
 
 COMMANDS:
   serve          Start the web server (daemon default)
@@ -1043,7 +1043,7 @@ COMMANDS:
   status         Show server status
   tunnel         Tunnel lifecycle commands
   startup        Manage launch at system startup
-  logs           Tail OpenChamber logs
+  logs           Tail OpenJunior logs
   connect-url    Generate URL/QR for connecting another client
   update         Check for and install updates
 
@@ -1061,34 +1061,34 @@ OPTIONS:
   -v, --version           Show version
 
 ENVIRONMENT:
-  OPENCHAMBER_HOST             Bind address (e.g. 0.0.0.0 for all interfaces)
-  OPENCHAMBER_UI_PASSWORD      Alternative to --ui-password flag
-  OPENCHAMBER_API_ONLY         Set to true/1 to start API routes only
-  OPENCHAMBER_DATA_DIR         Override OpenChamber data directory
+  OPENJUNIOR_HOST             Bind address (e.g. 0.0.0.0 for all interfaces)
+  OPENJUNIOR_UI_PASSWORD      Alternative to --ui-password flag
+  OPENJUNIOR_API_ONLY         Set to true/1 to start API routes only
+  OPENJUNIOR_DATA_DIR         Override OpenJunior data directory
   OPENCODE_HOST               External OpenCode server base URL, e.g. http://hostname:4096
   OPENCODE_PORT               Port of external OpenCode server to connect to
   OPENCODE_SKIP_START          Skip starting OpenCode, use external server
-  OPENCHAMBER_OPENCODE_HOSTNAME  Bind hostname for managed OpenCode server (default: 127.0.0.1)
+  OPENJUNIOR_OPENCODE_HOSTNAME  Bind hostname for managed OpenCode server (default: 127.0.0.1)
 
 EXAMPLES:
-  openchamber                    # Start in daemon mode on default port 3000 (or free port)
-  openchamber --port 8080        # Start on port 8080 (daemon)
-  openchamber --lan --port 3002  # Start on LAN at 0.0.0.0:3002
-  openchamber serve --foreground # Start in foreground (for systemd Type=simple)
-  openchamber connect-url --port 3000 --qr
-  openchamber connect-url --server https://openchamber.example.com
-  openchamber startup enable     # Start OpenChamber at user login
-  openchamber tunnel help        # Show tunnel lifecycle help
-  openchamber logs               # Follow logs for latest running instance
+  openjunior                    # Start in daemon mode on default port 3000 (or free port)
+  openjunior --port 8080        # Start on port 8080 (daemon)
+  openjunior --lan --port 3002  # Start on LAN at 0.0.0.0:3002
+  openjunior serve --foreground # Start in foreground (for systemd Type=simple)
+  openjunior connect-url --port 3000 --qr
+  openjunior connect-url --server https://openjunior.example.com
+  openjunior startup enable     # Start OpenJunior at user login
+  openjunior tunnel help        # Show tunnel lifecycle help
+  openjunior logs               # Follow logs for latest running instance
 `);
 }
 
 function showStartupHelp() {
   console.log(`
- OpenChamber Startup Commands
+ OpenJunior Startup Commands
 
 USAGE:
-  openchamber startup <SUBCOMMAND> [OPTIONS]
+  openjunior startup <SUBCOMMAND> [OPTIONS]
 
 SUBCOMMANDS:
   status      Show startup integration status
@@ -1105,23 +1105,23 @@ OPTIONS:
   -q, --quiet             Suppress non-essential output
 
 EXAMPLES:
-  openchamber startup enable
-  openchamber startup enable --port 3000
-  openchamber startup enable --port 3000 --api-only --host 0.0.0.0
-  openchamber startup status --json
+  openjunior startup enable
+  openjunior startup enable --port 3000
+  openjunior startup enable --port 3000 --api-only --host 0.0.0.0
+  openjunior startup status --json
 `);
 }
 
 function showConnectUrlHelp() {
   console.log(`
- OpenChamber Connect URL
+ OpenJunior Connect URL
 
 USAGE:
-  openchamber connect-url [OPTIONS]
+  openjunior connect-url [OPTIONS]
 
 DESCRIPTION:
-  Generate an openchamber:// connection link for adding this server to another
-  OpenChamber app. If no server is running on the selected port, it starts one.
+  Generate an openjunior:// connection link for adding this server to another
+  OpenJunior app. If no server is running on the selected port, it starts one.
 
 OPTIONS:
   -p, --port <port>       Server port to use or start (default: ${DEFAULT_PORT})
@@ -1139,9 +1139,9 @@ OPTIONS:
   -h, --help              Show this help
 
 EXAMPLES:
-  openchamber connect-url --port 3000 --qr
-  openchamber connect-url --port 3000 --api-only --lan --server http://workstation.local:3000 --qr
-  openchamber connect-url --server https://openchamber.example.com --name Workstation
+  openjunior connect-url --port 3000 --qr
+  openjunior connect-url --port 3000 --api-only --lan --server http://workstation.local:3000 --qr
+  openjunior connect-url --server https://openjunior.example.com --name Workstation
 `);
 }
 
@@ -1150,7 +1150,7 @@ function showTunnelHelp() {
  Tunnel Lifecycle Commands
 
 USAGE:
-  openchamber tunnel <SUBCOMMAND> [OPTIONS]
+  openjunior tunnel <SUBCOMMAND> [OPTIONS]
 
 SUBCOMMANDS:
   help        Show this tunnel help
@@ -1163,7 +1163,7 @@ SUBCOMMANDS:
   profile     Manage saved managed-remote profiles
 
 COMMON OPTIONS:
-  -p, --port              Target OpenChamber instance port
+  -p, --port              Target OpenJunior instance port
   --host                  Bind address when auto-starting an instance
   --lan                   Bind to 0.0.0.0 when auto-starting an instance
   --ui-password           Protect browser UI when auto-starting an instance
@@ -1193,36 +1193,36 @@ OUTPUT OPTIONS:
   --json                  Output machine-readable JSON
 
 BEHAVIOR NOTES:
-  - One active tunnel per OpenChamber instance.
+  - One active tunnel per OpenJunior instance.
   - Starting a different mode/provider replaces the current tunnel and revokes old connect links/sessions.
   - Connect links are one-time; generating a new link revokes the previous unused link.
 
 PROFILE USAGE:
-  openchamber tunnel profile list [--provider <id>] [--json]
-  openchamber tunnel profile show --name <name> [--provider <id>] [--json]
-  openchamber tunnel profile add --provider <id> --mode managed-remote --name <name> --hostname <host> --token <token> [--force] [--json]
-  openchamber tunnel profile add --provider <id> --mode managed-remote --name <name> --hostname <host> --token-file <path> [--force] [--json]
-  openchamber tunnel profile remove --name <name> [--provider <id>] [--json]
+  openjunior tunnel profile list [--provider <id>] [--json]
+  openjunior tunnel profile show --name <name> [--provider <id>] [--json]
+  openjunior tunnel profile add --provider <id> --mode managed-remote --name <name> --hostname <host> --token <token> [--force] [--json]
+  openjunior tunnel profile add --provider <id> --mode managed-remote --name <name> --hostname <host> --token-file <path> [--force] [--json]
+  openjunior tunnel profile remove --name <name> [--provider <id>] [--json]
 
 SHELL COMPLETION:
-  openchamber tunnel completion bash   Generate Bash completion script
-  openchamber tunnel completion zsh    Generate Zsh completion script
-  openchamber tunnel completion fish   Generate Fish completion script
+  openjunior tunnel completion bash   Generate Bash completion script
+  openjunior tunnel completion zsh    Generate Zsh completion script
+  openjunior tunnel completion fish   Generate Fish completion script
 
 EXAMPLES:
-  openchamber tunnel providers
-  openchamber tunnel ready --provider cloudflare
-  openchamber tunnel doctor --provider cloudflare
-  openchamber tunnel status
-  openchamber tunnel start --qr
-  openchamber tunnel start --profile prod-main
-  openchamber tunnel start --provider cloudflare --mode managed-remote --token-file ~/.secrets/cf-token --hostname app.example.com
-  openchamber tunnel start --provider cloudflare --mode managed-local --config ~/.cloudflared/config.yml
-  openchamber tunnel start --dry-run --provider cloudflare --mode managed-remote --token-file ~/.secrets/cf-token --hostname app.example.com
-  echo "$TOKEN" | openchamber tunnel profile add --provider cloudflare --mode managed-remote --name prod-main --hostname app.example.com --token-stdin
-  openchamber tunnel profile list --provider cloudflare
-  openchamber tunnel profile list --json --show-secrets
-  openchamber tunnel stop --port 3000
+  openjunior tunnel providers
+  openjunior tunnel ready --provider cloudflare
+  openjunior tunnel doctor --provider cloudflare
+  openjunior tunnel status
+  openjunior tunnel start --qr
+  openjunior tunnel start --profile prod-main
+  openjunior tunnel start --provider cloudflare --mode managed-remote --token-file ~/.secrets/cf-token --hostname app.example.com
+  openjunior tunnel start --provider cloudflare --mode managed-local --config ~/.cloudflared/config.yml
+  openjunior tunnel start --dry-run --provider cloudflare --mode managed-remote --token-file ~/.secrets/cf-token --hostname app.example.com
+  echo "$TOKEN" | openjunior tunnel profile add --provider cloudflare --mode managed-remote --name prod-main --hostname app.example.com --token-stdin
+  openjunior tunnel profile list --provider cloudflare
+  openjunior tunnel profile list --json --show-secrets
+  openjunior tunnel stop --port 3000
 `);
 }
 
@@ -1230,9 +1230,9 @@ function generateCompletionScript(shell) {
   const normalized = typeof shell === 'string' ? shell.trim().toLowerCase() : '';
 
   if (normalized === 'bash') {
-    return `# Bash completion for openchamber tunnel
-# Add to ~/.bashrc: eval "$(openchamber tunnel completion bash)"
-_openchamber_tunnel() {
+    return `# Bash completion for openjunior tunnel
+# Add to ~/.bashrc: eval "$(openjunior tunnel completion bash)"
+_openjunior_tunnel() {
   local cur prev commands tunnel_commands profile_commands common_flags start_flags
   COMPREPLY=()
   cur="\${COMP_WORDS[COMP_CWORD]}"
@@ -1273,16 +1273,16 @@ _openchamber_tunnel() {
   COMPREPLY=( $(compgen -W "\${common_flags}" -- "\${cur}") )
   return 0
 }
-complete -F _openchamber_tunnel openchamber
+complete -F _openjunior_tunnel openjunior
 `;
   }
 
   if (normalized === 'zsh') {
-    return `#compdef openchamber
-# Zsh completion for openchamber tunnel
-# Add to ~/.zshrc: eval "$(openchamber tunnel completion zsh)"
+    return `#compdef openjunior
+# Zsh completion for openjunior tunnel
+# Add to ~/.zshrc: eval "$(openjunior tunnel completion zsh)"
 
-_openchamber() {
+_openjunior() {
   local -a commands tunnel_commands profile_commands
 
   commands=(
@@ -1291,7 +1291,7 @@ _openchamber() {
     'restart:Stop and start the server'
     'status:Show server status'
     'tunnel:Tunnel lifecycle commands'
-    'logs:Tail OpenChamber logs'
+    'logs:Tail OpenJunior logs'
     'update:Check for and install updates'
   )
 
@@ -1338,44 +1338,44 @@ _openchamber() {
   esac
 }
 
-compdef _openchamber openchamber
+compdef _openjunior openjunior
 `;
   }
 
   if (normalized === 'fish') {
-    return `# Fish completion for openchamber tunnel
-# Save to ~/.config/fish/completions/openchamber.fish
+    return `# Fish completion for openjunior tunnel
+# Save to ~/.config/fish/completions/openjunior.fish
 
-complete -c openchamber -n '__fish_use_subcommand' -a 'serve' -d 'Start the web server'
-complete -c openchamber -n '__fish_seen_subcommand_from serve' -l foreground -d 'Run in foreground (for systemd/process managers)'
-complete -c openchamber -n '__fish_seen_subcommand_from serve' -l no-daemon -d 'Run in foreground (alias for --foreground)'
-complete -c openchamber -n '__fish_use_subcommand' -a 'stop' -d 'Stop running instance(s)'
-complete -c openchamber -n '__fish_use_subcommand' -a 'restart' -d 'Stop and start the server'
-complete -c openchamber -n '__fish_use_subcommand' -a 'status' -d 'Show server status'
-complete -c openchamber -n '__fish_use_subcommand' -a 'tunnel' -d 'Tunnel lifecycle commands'
-complete -c openchamber -n '__fish_use_subcommand' -a 'logs' -d 'Tail logs'
-complete -c openchamber -n '__fish_use_subcommand' -a 'update' -d 'Check for updates'
+complete -c openjunior -n '__fish_use_subcommand' -a 'serve' -d 'Start the web server'
+complete -c openjunior -n '__fish_seen_subcommand_from serve' -l foreground -d 'Run in foreground (for systemd/process managers)'
+complete -c openjunior -n '__fish_seen_subcommand_from serve' -l no-daemon -d 'Run in foreground (alias for --foreground)'
+complete -c openjunior -n '__fish_use_subcommand' -a 'stop' -d 'Stop running instance(s)'
+complete -c openjunior -n '__fish_use_subcommand' -a 'restart' -d 'Stop and start the server'
+complete -c openjunior -n '__fish_use_subcommand' -a 'status' -d 'Show server status'
+complete -c openjunior -n '__fish_use_subcommand' -a 'tunnel' -d 'Tunnel lifecycle commands'
+complete -c openjunior -n '__fish_use_subcommand' -a 'logs' -d 'Tail logs'
+complete -c openjunior -n '__fish_use_subcommand' -a 'update' -d 'Check for updates'
 
-complete -c openchamber -n '__fish_seen_subcommand_from tunnel; and not __fish_seen_subcommand_from help providers ready doctor status start stop profile completion' -a 'help' -d 'Show tunnel help'
-complete -c openchamber -n '__fish_seen_subcommand_from tunnel; and not __fish_seen_subcommand_from help providers ready doctor status start stop profile completion' -a 'providers' -d 'Show providers'
-complete -c openchamber -n '__fish_seen_subcommand_from tunnel; and not __fish_seen_subcommand_from help providers ready doctor status start stop profile completion' -a 'ready' -d 'Check readiness'
-complete -c openchamber -n '__fish_seen_subcommand_from tunnel; and not __fish_seen_subcommand_from help providers ready doctor status start stop profile completion' -a 'doctor' -d 'Run diagnostics'
-complete -c openchamber -n '__fish_seen_subcommand_from tunnel; and not __fish_seen_subcommand_from help providers ready doctor status start stop profile completion' -a 'status' -d 'Show tunnel status'
-complete -c openchamber -n '__fish_seen_subcommand_from tunnel; and not __fish_seen_subcommand_from help providers ready doctor status start stop profile completion' -a 'start' -d 'Start a tunnel'
-complete -c openchamber -n '__fish_seen_subcommand_from tunnel; and not __fish_seen_subcommand_from help providers ready doctor status start stop profile completion' -a 'stop' -d 'Stop tunnel'
-complete -c openchamber -n '__fish_seen_subcommand_from tunnel; and not __fish_seen_subcommand_from help providers ready doctor status start stop profile completion' -a 'profile' -d 'Manage profiles'
-complete -c openchamber -n '__fish_seen_subcommand_from tunnel; and not __fish_seen_subcommand_from help providers ready doctor status start stop profile completion' -a 'completion' -d 'Generate completions'
+complete -c openjunior -n '__fish_seen_subcommand_from tunnel; and not __fish_seen_subcommand_from help providers ready doctor status start stop profile completion' -a 'help' -d 'Show tunnel help'
+complete -c openjunior -n '__fish_seen_subcommand_from tunnel; and not __fish_seen_subcommand_from help providers ready doctor status start stop profile completion' -a 'providers' -d 'Show providers'
+complete -c openjunior -n '__fish_seen_subcommand_from tunnel; and not __fish_seen_subcommand_from help providers ready doctor status start stop profile completion' -a 'ready' -d 'Check readiness'
+complete -c openjunior -n '__fish_seen_subcommand_from tunnel; and not __fish_seen_subcommand_from help providers ready doctor status start stop profile completion' -a 'doctor' -d 'Run diagnostics'
+complete -c openjunior -n '__fish_seen_subcommand_from tunnel; and not __fish_seen_subcommand_from help providers ready doctor status start stop profile completion' -a 'status' -d 'Show tunnel status'
+complete -c openjunior -n '__fish_seen_subcommand_from tunnel; and not __fish_seen_subcommand_from help providers ready doctor status start stop profile completion' -a 'start' -d 'Start a tunnel'
+complete -c openjunior -n '__fish_seen_subcommand_from tunnel; and not __fish_seen_subcommand_from help providers ready doctor status start stop profile completion' -a 'stop' -d 'Stop tunnel'
+complete -c openjunior -n '__fish_seen_subcommand_from tunnel; and not __fish_seen_subcommand_from help providers ready doctor status start stop profile completion' -a 'profile' -d 'Manage profiles'
+complete -c openjunior -n '__fish_seen_subcommand_from tunnel; and not __fish_seen_subcommand_from help providers ready doctor status start stop profile completion' -a 'completion' -d 'Generate completions'
 
-complete -c openchamber -n '__fish_seen_subcommand_from tunnel; and __fish_seen_subcommand_from start' -l provider -d 'Provider id'
-complete -c openchamber -n '__fish_seen_subcommand_from tunnel; and __fish_seen_subcommand_from start' -l mode -d 'Tunnel mode'
-complete -c openchamber -n '__fish_seen_subcommand_from tunnel; and __fish_seen_subcommand_from start' -l profile -d 'Profile name'
-complete -c openchamber -n '__fish_seen_subcommand_from tunnel; and __fish_seen_subcommand_from start' -l config -d 'Config path'
-complete -c openchamber -n '__fish_seen_subcommand_from tunnel; and __fish_seen_subcommand_from start' -l token -d 'Token'
-complete -c openchamber -n '__fish_seen_subcommand_from tunnel; and __fish_seen_subcommand_from start' -l token-file -d 'Token file path'
-complete -c openchamber -n '__fish_seen_subcommand_from tunnel; and __fish_seen_subcommand_from start' -l token-stdin -d 'Read token from stdin'
-complete -c openchamber -n '__fish_seen_subcommand_from tunnel; and __fish_seen_subcommand_from start' -l hostname -d 'Hostname'
-complete -c openchamber -n '__fish_seen_subcommand_from tunnel; and __fish_seen_subcommand_from start' -l dry-run -d 'Validate without applying'
-complete -c openchamber -n '__fish_seen_subcommand_from tunnel; and __fish_seen_subcommand_from start' -l qr -d 'Show QR code'
+complete -c openjunior -n '__fish_seen_subcommand_from tunnel; and __fish_seen_subcommand_from start' -l provider -d 'Provider id'
+complete -c openjunior -n '__fish_seen_subcommand_from tunnel; and __fish_seen_subcommand_from start' -l mode -d 'Tunnel mode'
+complete -c openjunior -n '__fish_seen_subcommand_from tunnel; and __fish_seen_subcommand_from start' -l profile -d 'Profile name'
+complete -c openjunior -n '__fish_seen_subcommand_from tunnel; and __fish_seen_subcommand_from start' -l config -d 'Config path'
+complete -c openjunior -n '__fish_seen_subcommand_from tunnel; and __fish_seen_subcommand_from start' -l token -d 'Token'
+complete -c openjunior -n '__fish_seen_subcommand_from tunnel; and __fish_seen_subcommand_from start' -l token-file -d 'Token file path'
+complete -c openjunior -n '__fish_seen_subcommand_from tunnel; and __fish_seen_subcommand_from start' -l token-stdin -d 'Read token from stdin'
+complete -c openjunior -n '__fish_seen_subcommand_from tunnel; and __fish_seen_subcommand_from start' -l hostname -d 'Hostname'
+complete -c openjunior -n '__fish_seen_subcommand_from tunnel; and __fish_seen_subcommand_from start' -l dry-run -d 'Validate without applying'
+complete -c openjunior -n '__fish_seen_subcommand_from tunnel; and __fish_seen_subcommand_from start' -l qr -d 'Show QR code'
 `;
   }
 
@@ -1383,10 +1383,10 @@ complete -c openchamber -n '__fish_seen_subcommand_from tunnel; and __fish_seen_
 }
 
 function getDataDir() {
-  if (typeof process.env.OPENCHAMBER_DATA_DIR === 'string' && process.env.OPENCHAMBER_DATA_DIR.trim().length > 0) {
-    return path.resolve(process.env.OPENCHAMBER_DATA_DIR.trim());
+  if (typeof process.env.OPENJUNIOR_DATA_DIR === 'string' && process.env.OPENJUNIOR_DATA_DIR.trim().length > 0) {
+    return path.resolve(process.env.OPENJUNIOR_DATA_DIR.trim());
   }
-  return path.join(os.homedir(), '.config', 'openchamber');
+  return path.join(os.homedir(), '.config', 'openjunior');
 }
 
 function getLogsDir() {
@@ -1416,7 +1416,7 @@ function ensureLogsDir() {
 }
 
 function getLogFilePath(port) {
-  return path.join(getLogsDir(), `openchamber-${port}.log`);
+  return path.join(getLogsDir(), `openjunior-${port}.log`);
 }
 
 function getTunnelProfilesFilePath() {
@@ -1798,7 +1798,7 @@ function resolveProfileByName(profiles, profileName, provider) {
   });
 
   if (matches.length === 0) {
-    return { profile: null, error: `No tunnel profile found for name '${profileName}'. Run 'openchamber tunnel profile list'.` };
+    return { profile: null, error: `No tunnel profile found for name '${profileName}'. Run 'openjunior tunnel profile list'.` };
   }
   if (matches.length > 1) {
     return { profile: null, error: `Profile name '${profileName}' exists for multiple providers. Use --provider <id>.` };
@@ -1939,9 +1939,9 @@ async function resolveAvailablePort(desiredPort, explicitPort = false, onNotice)
   const occupant = await fetchSystemInfoFromPort(startPort);
   let message;
   if (occupant?.runtime === 'desktop') {
-    message = `Port ${startPort} is used by OpenChamber Desktop; using a free port`;
+    message = `Port ${startPort} is used by OpenJunior Desktop; using a free port`;
   } else if (occupant?.runtime) {
-    message = `Port ${startPort} is used by an existing OpenChamber instance; using a free port`;
+    message = `Port ${startPort} is used by an existing OpenJunior instance; using a free port`;
   } else {
     message = `Port ${startPort} in use; using a free port`;
   }
@@ -1973,7 +1973,7 @@ function getStartupServicePaths() {
   if (process.platform === 'linux') {
     return {
       platform: 'linux',
-      servicePath: path.join(os.homedir(), '.config', 'systemd', 'user', 'openchamber.service'),
+      servicePath: path.join(os.homedir(), '.config', 'systemd', 'user', 'openjunior.service'),
     };
   }
   if (process.platform === 'win32') {
@@ -2024,7 +2024,7 @@ function getStartupEnvFilePath() {
 }
 
 function getMacosStartupWrapperPath() {
-  return path.join(getDataDir(), 'bin', 'OpenChamber');
+  return path.join(getDataDir(), 'bin', 'OpenJunior');
 }
 
 function collectStartupEnv(options = {}) {
@@ -2042,13 +2042,13 @@ function collectStartupEnv(options = {}) {
   }
   const uiPassword = hasUiPasswordConfigured(options.uiPassword) ? options.uiPassword : undefined;
   if (uiPassword) {
-    env.OPENCHAMBER_UI_PASSWORD = uiPassword;
+    env.OPENJUNIOR_UI_PASSWORD = uiPassword;
   }
   if (options.apiOnly === true) {
-    env.OPENCHAMBER_API_ONLY = 'true';
+    env.OPENJUNIOR_API_ONLY = 'true';
   }
-  if (typeof process.env.OPENCHAMBER_DATA_DIR === 'string' && process.env.OPENCHAMBER_DATA_DIR.trim().length > 0) {
-    env.OPENCHAMBER_DATA_DIR = path.resolve(process.env.OPENCHAMBER_DATA_DIR.trim());
+  if (typeof process.env.OPENJUNIOR_DATA_DIR === 'string' && process.env.OPENJUNIOR_DATA_DIR.trim().length > 0) {
+    env.OPENJUNIOR_DATA_DIR = path.resolve(process.env.OPENJUNIOR_DATA_DIR.trim());
   }
   return env;
 }
@@ -2146,7 +2146,7 @@ function buildMacosLaunchAgent(options = {}) {
   const wrapperPath = writeMacosStartupWrapper(options);
   const args = [wrapperPath];
   const env = collectStartupEnv(options);
-  const logDir = path.join(os.homedir(), 'Library', 'Logs', 'OpenChamber');
+  const logDir = path.join(os.homedir(), 'Library', 'Logs', 'OpenJunior');
   const argXml = args.map((arg) => `    <string>${escapeXml(arg)}</string>`).join('\n');
   const envXml = Object.entries(env).length > 0
     ? `  <key>EnvironmentVariables</key>\n  <dict>\n${Object.entries(env).map(([key, value]) => `    <key>${escapeXml(key)}</key>\n    <string>${escapeXml(value)}</string>`).join('\n')}\n  </dict>\n`
@@ -2182,7 +2182,7 @@ function buildSystemdUserService(options = {}) {
   const args = buildStartupArgs(options).map((arg) => `"${systemdEscapeArg(arg)}"`).join(' ');
   const envFilePath = getStartupEnvFilePath();
   return `[Unit]
-Description=OpenChamber web server
+Description=OpenJunior web server
 After=network-online.target
 
 [Service]
@@ -2224,8 +2224,8 @@ function getStartupStatus() {
     return { supported: true, platform: paths.platform, enabled: result.status === 0, active: null, servicePath: paths.servicePath };
   }
   if (paths.platform === 'linux') {
-    const enabledResult = runStartupCommand('systemctl', ['--user', 'is-enabled', 'openchamber.service'], { allowFailure: true });
-    const activeResult = runStartupCommand('systemctl', ['--user', 'is-active', 'openchamber.service'], { allowFailure: true });
+    const enabledResult = runStartupCommand('systemctl', ['--user', 'is-enabled', 'openjunior.service'], { allowFailure: true });
+    const activeResult = runStartupCommand('systemctl', ['--user', 'is-active', 'openjunior.service'], { allowFailure: true });
     const activeState = (activeResult.stdout || '').trim() || 'inactive';
     return {
       supported: true,
@@ -2254,7 +2254,7 @@ function enableStartupService(options = {}) {
   if (paths.platform === 'macos') {
     removeStartupEnvFile();
     fs.mkdirSync(path.dirname(paths.servicePath), { recursive: true, mode: 0o700 });
-    fs.mkdirSync(path.join(os.homedir(), 'Library', 'Logs', 'OpenChamber'), { recursive: true, mode: 0o700 });
+    fs.mkdirSync(path.join(os.homedir(), 'Library', 'Logs', 'OpenJunior'), { recursive: true, mode: 0o700 });
     fs.writeFileSync(paths.servicePath, buildMacosLaunchAgent(options), { mode: 0o600 });
     runStartupCommand('/bin/launchctl', ['bootout', `gui/${process.getuid()}`, paths.servicePath], { allowFailure: true });
     runStartupCommand('/bin/launchctl', ['bootstrap', `gui/${process.getuid()}`, paths.servicePath]);
@@ -2267,7 +2267,7 @@ function enableStartupService(options = {}) {
     fs.mkdirSync(path.dirname(paths.servicePath), { recursive: true, mode: 0o700 });
     fs.writeFileSync(paths.servicePath, buildSystemdUserService(options), { mode: 0o600 });
     runStartupCommand('systemctl', ['--user', 'daemon-reload']);
-    runStartupCommand('systemctl', ['--user', 'enable', '--now', 'openchamber.service']);
+    runStartupCommand('systemctl', ['--user', 'enable', '--now', 'openjunior.service']);
     return getStartupStatus();
   }
 
@@ -2304,7 +2304,7 @@ function disableStartupService() {
   }
 
   if (paths.platform === 'linux') {
-    runStartupCommand('systemctl', ['--user', 'disable', '--now', 'openchamber.service'], { allowFailure: true });
+    runStartupCommand('systemctl', ['--user', 'disable', '--now', 'openjunior.service'], { allowFailure: true });
     try { fs.unlinkSync(paths.servicePath); } catch {}
     runStartupCommand('systemctl', ['--user', 'daemon-reload'], { allowFailure: true });
     return getStartupStatus();
@@ -2316,11 +2316,11 @@ function disableStartupService() {
 }
 
 async function getPidFilePath(port) {
-  return path.join(getRunDir(), `openchamber-${port}.pid`);
+  return path.join(getRunDir(), `openjunior-${port}.pid`);
 }
 
 async function getInstanceFilePath(port) {
-  return path.join(getRunDir(), `openchamber-${port}.json`);
+  return path.join(getRunDir(), `openjunior-${port}.json`);
 }
 
 function readPidFile(pidFilePath) {
@@ -2439,15 +2439,15 @@ function isOpenchamberCmdline(cmdline) {
   if (typeof cmdline !== 'string' || cmdline.length === 0) {
     return false;
   }
-  // Every install path contains the "openchamber" segment — the npm package
-  // (@openchamber/web) and the source checkout both do, for the foreground
+  // Every install path contains the "openjunior" segment — the npm package
+  // (@openjunior/web) and the source checkout both do, for the foreground
   // (bin/cli.js) and daemon (server/index.js) entrypoints alike. Matching the
   // path segment (not a generic "cli.js") keeps a recycled stranger such as
   // "npm-cli.js" or "agentmemory" from being mistaken for us.
-  return cmdline.toLowerCase().includes('openchamber');
+  return cmdline.toLowerCase().includes('openjunior');
 }
 
-// Liveness + identity — "is the OpenChamber instance recorded in a pid file
+// Liveness + identity — "is the OpenJunior instance recorded in a pid file
 // still the process running under this PID". Use this (not isProcessRunning)
 // when validating a PID read from a pid file. After an ungraceful shutdown
 // removePidFile never runs, so the stale PID can be recycled to an unrelated
@@ -2487,8 +2487,8 @@ function createLivePortInstance(port, info, host) {
   return {
     port,
     pid: Number.isFinite(info.pid) ? info.pid : null,
-    pidFilePath: path.join(getRunDir(), `openchamber-${port}.pid`),
-    instanceFilePath: path.join(getRunDir(), `openchamber-${port}.json`),
+    pidFilePath: path.join(getRunDir(), `openjunior-${port}.pid`),
+    instanceFilePath: path.join(getRunDir(), `openjunior-${port}.json`),
     mtime: 0,
     startedAt: 0,
     launchMode: 'daemon',
@@ -2796,7 +2796,7 @@ async function resolveDoctorPortStatuses(options = {}) {
         available: false,
         status: 'warning',
         line: `port ${requestedPort} not available (desktop runtime)`,
-        detail: 'Use a CLI instance port from `openchamber serve` for tunneling.',
+        detail: 'Use a CLI instance port from `openjunior serve` for tunneling.',
       });
       return { statuses, availableEntries: [] };
     }
@@ -2806,7 +2806,7 @@ async function resolveDoctorPortStatuses(options = {}) {
       available: false,
       status: 'error',
       line: `port ${requestedPort} not available (no running instance)`,
-      detail: `Start one with \`openchamber serve --port ${requestedPort}\`.`,
+      detail: `Start one with \`openjunior serve --port ${requestedPort}\`.`,
     });
     return { statuses, availableEntries: [] };
   }
@@ -2827,7 +2827,7 @@ async function resolveDoctorPortStatuses(options = {}) {
       available: false,
       status: 'warning',
       line: `port ${desktopEntry.port} not available (desktop runtime)`,
-      detail: 'Use a CLI instance port from `openchamber serve` for tunneling.',
+      detail: 'Use a CLI instance port from `openjunior serve` for tunneling.',
     });
   }
 
@@ -2837,7 +2837,7 @@ async function resolveDoctorPortStatuses(options = {}) {
       available: false,
       status: 'warning',
       line: 'no CLI ports available for tunneling',
-      detail: 'Start one with `openchamber serve`.',
+      detail: 'Start one with `openjunior serve`.',
     });
   }
 
@@ -2853,19 +2853,19 @@ async function discoverRunningInstances(options = {}) {
     : (pid) => getOpenchamberProcessState(pid, options);
   try {
     const files = fs.readdirSync(runDir);
-    const pidFiles = files.filter((file) => file.startsWith('openchamber-') && file.endsWith('.pid'));
+    const pidFiles = files.filter((file) => file.startsWith('openjunior-') && file.endsWith('.pid'));
     for (const file of pidFiles) {
-      const port = parseInt(file.replace('openchamber-', '').replace('.pid', ''), 10);
+      const port = parseInt(file.replace('openjunior-', '').replace('.pid', ''), 10);
       if (!Number.isFinite(port) || port <= 0) continue;
       const pidFilePath = path.join(runDir, file);
       const pid = readPidFile(pidFilePath);
       if (!pid) {
         removePidFile(pidFilePath);
-        removeInstanceFile(path.join(runDir, `openchamber-${port}.json`));
+        removeInstanceFile(path.join(runDir, `openjunior-${port}.json`));
         continue;
       }
 
-      const instanceFilePath = path.join(runDir, `openchamber-${port}.json`);
+      const instanceFilePath = path.join(runDir, `openjunior-${port}.json`);
       const storedOptions = readInstanceOptions(instanceFilePath);
       const processState = getProcessState(pid);
       if (processState === 'dead') {
@@ -2875,8 +2875,8 @@ async function discoverRunningInstances(options = {}) {
       }
 
       // A live PID-file is only the right instance if the recorded port also
-      // confirms OpenChamber. Cmdline identity alone can match a recycled PID
-      // from another OpenChamber process on a different port. Try all plausible
+      // confirms OpenJunior. Cmdline identity alone can match a recycled PID
+      // from another OpenJunior process on a different port. Try all plausible
       // hosts first; if matched/unknown identity still can't be confirmed, keep
       // the registry files but don't claim the instance is running.
       const { info: liveInfo, host: confirmedHost } = await fetchSystemInfoFromPortCandidates(
@@ -2931,7 +2931,7 @@ async function discoverRunningInstances(options = {}) {
   return instances;
 }
 
-async function discoverOpenChamberInstanceOnPort(port, options = {}) {
+async function discoverOpenJuniorInstanceOnPort(port, options = {}) {
   if (!Number.isFinite(port) || port <= 0) return null;
   const runningInstances = Array.isArray(options.runningInstances)
     ? options.runningInstances
@@ -2954,7 +2954,7 @@ async function discoverLifecycleInstances(options = {}, deps = {}) {
   }
   const found = runningInstances.find((entry) => entry.port === options.port);
   if (found) return [found];
-  const liveInstance = await discoverOpenChamberInstanceOnPort(options.port, {
+  const liveInstance = await discoverOpenJuniorInstanceOnPort(options.port, {
     ...deps,
     host: options.host,
     runningInstances,
@@ -3019,7 +3019,7 @@ async function fetchTunnelProvidersFromPort(port, fetchImpl = globalThis.fetch) 
     return null;
   }
   try {
-    const response = await fetchImpl(buildLocalUrl(port, '/api/openchamber/tunnel/providers'));
+    const response = await fetchImpl(buildLocalUrl(port, '/api/openjunior/tunnel/providers'));
     if (!response.ok) return null;
     const body = await response.json().catch(() => null);
     if (!body || !Array.isArray(body.providers)) return null;
@@ -3131,7 +3131,7 @@ async function resolveTargetInstance({
 
   if (options.all && requireAll) {
     if (running.length === 0) {
-      throw new Error('No running OpenChamber instance found. Start one with `openchamber serve`.');
+      throw new Error('No running OpenJunior instance found. Start one with `openjunior serve`.');
     }
     return running;
   }
@@ -3144,11 +3144,11 @@ async function resolveTargetInstance({
         if (!attachability.attachable) {
           if (attachability.reason === 'desktop') {
             throw new Error(
-              `Port ${options.port} is used by OpenChamber Desktop app. Tunnel attach requires a CLI instance from \`openchamber serve\`.`
+              `Port ${options.port} is used by OpenJunior Desktop app. Tunnel attach requires a CLI instance from \`openjunior serve\`.`
             );
           }
           throw new Error(
-            `Port ${options.port} is not an attachable OpenChamber tunnel instance. Ensure it is healthy and running OpenChamber CLI runtime.`
+            `Port ${options.port} is not an attachable OpenJunior tunnel instance. Ensure it is healthy and running OpenJunior CLI runtime.`
           );
         }
       }
@@ -3159,7 +3159,7 @@ async function resolveTargetInstance({
       const systemInfo = await fetchSystemInfoFromPort(options.port, globalThis.fetch, options.host);
       if (systemInfo?.runtime === 'desktop') {
         throw new Error(
-          `Port ${options.port} is used by OpenChamber Desktop app. Tunnel attach requires a CLI instance from \`openchamber serve\`.`
+          `Port ${options.port} is used by OpenJunior Desktop app. Tunnel attach requires a CLI instance from \`openjunior serve\`.`
         );
       }
     }
@@ -3179,7 +3179,7 @@ async function resolveTargetInstance({
       const started = running.find((entry) => entry.port === options.port);
       if (started) return { ...started, autoStarted: true };
     }
-    throw new Error(`No running OpenChamber instance found on port ${options.port}.`);
+    throw new Error(`No running OpenJunior instance found on port ${options.port}.`);
   }
 
   if (rejectDesktopRuntime) {
@@ -3201,7 +3201,7 @@ async function resolveTargetInstance({
 
     if (attachableEntries.length > 1) {
       const ports = attachableEntries.map((entry) => entry.port).join(', ');
-      throw new Error(`Multiple attachable OpenChamber instances found: ${ports}. Use --port <port> or --all.`);
+      throw new Error(`Multiple attachable OpenJunior instances found: ${ports}. Use --port <port> or --all.`);
     }
 
     if (allowAutoStart) {
@@ -3218,10 +3218,10 @@ async function resolveTargetInstance({
     }
 
     if (sawDesktop) {
-      throw new Error('Only OpenChamber Desktop instance(s) detected. Tunnel attach requires a CLI instance from `openchamber serve`.');
+      throw new Error('Only OpenJunior Desktop instance(s) detected. Tunnel attach requires a CLI instance from `openjunior serve`.');
     }
 
-    throw new Error('No attachable OpenChamber instance found. Start one with `openchamber serve`.');
+    throw new Error('No attachable OpenJunior instance found. Start one with `openjunior serve`.');
   }
 
   if (running.length === 1) {
@@ -3240,11 +3240,11 @@ async function resolveTargetInstance({
       const started = running.find((entry) => entry.port === startedPort) || getLatestInstance(running);
       if (started) return { ...started, autoStarted: true };
     }
-    throw new Error('No running OpenChamber instance found. Start one with `openchamber serve`.');
+    throw new Error('No running OpenJunior instance found. Start one with `openjunior serve`.');
   }
 
   const ports = running.map((entry) => entry.port).join(', ');
-  throw new Error(`Multiple OpenChamber instances found: ${ports}. Use --port <port> or --all.`);
+  throw new Error(`Multiple OpenJunior instances found: ${ports}. Use --port <port> or --all.`);
 }
 
 async function resolveTunnelReadEntries(options) {
@@ -3253,13 +3253,13 @@ async function resolveTunnelReadEntries(options) {
   if (options.explicitPort) {
     const found = running.find((entry) => entry.port === options.port);
     if (!found) {
-      throw new Error(`No running OpenChamber instance found on port ${options.port}.`);
+      throw new Error(`No running OpenJunior instance found on port ${options.port}.`);
     }
     return [found];
   }
 
   if (running.length === 0) {
-    throw new Error('No running OpenChamber instance found. Start one with `openchamber serve`.');
+    throw new Error('No running OpenJunior instance found. Start one with `openjunior serve`.');
   }
 
   return running;
@@ -3373,10 +3373,10 @@ async function handleTunnelProfileSubcommand(options, action) {
     if (!isQuietMode(options)) {
       clackIntro('Tunnel Profile');
       logStatus('info', 'Available subcommands', 'list, show, add, remove');
-      clackLog.step('List profiles: `openchamber tunnel profile list`');
-      clackLog.step('Show one profile: `openchamber tunnel profile show --name <name>`');
-      clackLog.step('Add profile: `openchamber tunnel profile add --provider cloudflare --mode managed-remote --name <name> --hostname <host> --token <token>`');
-      clackLog.step('Remove profile: `openchamber tunnel profile remove --name <name>`');
+      clackLog.step('List profiles: `openjunior tunnel profile list`');
+      clackLog.step('Show one profile: `openjunior tunnel profile show --name <name>`');
+      clackLog.step('Add profile: `openjunior tunnel profile add --provider cloudflare --mode managed-remote --name <name> --hostname <host> --token <token>`');
+      clackLog.step('Remove profile: `openjunior tunnel profile remove --name <name>`');
       clackOutro('Choose a subcommand');
     }
     return;
@@ -3619,7 +3619,7 @@ async function handleTunnelProfileSubcommand(options, action) {
     clackIntro(boldText('Tunnel Profile Saved'));
     logStatus('success', `${added.name} (${added.provider}/${added.mode})`, `${added.hostname} ${formatProfileTokenStatus(added, options.showSecrets)}`);
     clackOutro('save complete');
-    logStatus('info', '[START_PROFILE]', `openchamber tunnel start --profile ${added.name}`);
+    logStatus('info', '[START_PROFILE]', `openjunior tunnel start --profile ${added.name}`);
     clackOutro('');
     return;
   }
@@ -3659,7 +3659,7 @@ async function handleTunnelProfileSubcommand(options, action) {
   const suggestion = findClosestMatch(sub, knownProfileActions);
   const hint = suggestion ? ` Did you mean '${suggestion}'?` : '';
   throw new TunnelCliError(
-    `Unknown tunnel profile subcommand '${sub}'.${hint} Use 'openchamber tunnel help'.`,
+    `Unknown tunnel profile subcommand '${sub}'.${hint} Use 'openjunior tunnel help'.`,
     EXIT_CODE.USAGE_ERROR
   );
 }
@@ -3701,33 +3701,33 @@ const commands = {
     const targetPort = await resolveAvailablePort(options.port, explicitPort, emitNotice);
 
     if (targetPort !== 0 && !options.suppressUnsafePortWarning) {
-      assertSafeBrowserPort(targetPort, { context: 'OpenChamber serve' });
+      assertSafeBrowserPort(targetPort, { context: 'OpenJunior serve' });
     }
 
     if (targetPort !== 0) {
-      const existingInstance = await discoverOpenChamberInstanceOnPort(targetPort, { host: effectiveHost });
+      const existingInstance = await discoverOpenJuniorInstanceOnPort(targetPort, { host: effectiveHost });
       if (existingInstance?.runtime === 'desktop') {
         throw new Error(
-          `Port ${targetPort} is used by OpenChamber Desktop app. Choose another port or stop the desktop app.`
+          `Port ${targetPort} is used by OpenJunior Desktop app. Choose another port or stop the desktop app.`
         );
       }
       if (existingInstance) {
         const pidSuffix = Number.isFinite(existingInstance.pid) ? ` (PID: ${existingInstance.pid})` : '';
         if (existingInstance.source === 'probe') {
-          throw new Error(`OpenChamber is already running on port ${targetPort}. Use \`openchamber status\` or \`openchamber stop --port ${targetPort}\`.`);
+          throw new Error(`OpenJunior is already running on port ${targetPort}. Use \`openjunior status\` or \`openjunior stop --port ${targetPort}\`.`);
         }
-        throw new Error(`OpenChamber is already running on port ${targetPort}${pidSuffix}`);
+        throw new Error(`OpenJunior is already running on port ${targetPort}${pidSuffix}`);
       }
 
       if (explicitPort && !(await isPortAvailable(targetPort, effectiveHost))) {
         const systemInfo = await fetchSystemInfoFromPort(targetPort, globalThis.fetch, effectiveHost);
         if (systemInfo?.runtime === 'desktop') {
           throw new Error(
-            `Port ${targetPort} is used by OpenChamber Desktop app. Choose another port or stop the desktop app.`
+            `Port ${targetPort} is used by OpenJunior Desktop app. Choose another port or stop the desktop app.`
           );
         }
         if (systemInfo?.runtime) {
-          throw new Error(`OpenChamber is already running on port ${targetPort}. Use \`openchamber status\` or \`openchamber stop --port ${targetPort}\`.`);
+          throw new Error(`OpenJunior is already running on port ${targetPort}. Use \`openjunior status\` or \`openjunior stop --port ${targetPort}\`.`);
         }
         throw new Error(`Port ${targetPort} is already in use by another process.`);
       }
@@ -3752,11 +3752,11 @@ const commands = {
     if (!effectiveUiPassword && !options.suppressUiPasswordWarning) {
       const bindHost = effectiveHost;
       const networkExposed = isNetworkExposedBindHost(bindHost);
-      const warningLine = 'OPENCHAMBER_UI_PASSWORD is not set';
+      const warningLine = 'OPENJUNIOR_UI_PASSWORD is not set';
       const warningDetail = networkExposed
         ? `server is bound to ${bindHost} and reachable on your network with no UI auth. `
-          + 'Set --ui-password or OPENCHAMBER_UI_PASSWORD before exposing it over LAN.'
-        : 'browser UI is unsecured. Use --ui-password or OPENCHAMBER_UI_PASSWORD.';
+          + 'Set --ui-password or OPENJUNIOR_UI_PASSWORD before exposing it over LAN.'
+        : 'browser UI is unsecured. Use --ui-password or OPENJUNIOR_UI_PASSWORD.';
       if (showOutput) {
         logStatus('warning', warningLine, warningDetail);
       } else if (isJsonMode(options)) {
@@ -3787,9 +3787,9 @@ const commands = {
         process.env.OPENCODE_BINARY = opencodeBinary;
       }
       if (effectiveUiPassword) {
-        process.env.OPENCHAMBER_UI_PASSWORD = effectiveUiPassword;
+        process.env.OPENJUNIOR_UI_PASSWORD = effectiveUiPassword;
       }
-      process.env.OPENCHAMBER_HOST = effectiveHost;
+      process.env.OPENJUNIOR_HOST = effectiveHost;
 
       // In --quiet mode, redirect stdout/stderr to the log file so that
       // server runtime output (console.log calls) does not pollute the
@@ -3817,7 +3817,7 @@ const commands = {
       }
 
       if (!isQuietMode(options)) {
-        console.log(`Starting OpenChamber on port ${targetPort === 0 ? 'auto' : targetPort} (foreground)`);
+        console.log(`Starting OpenJunior on port ${targetPort === 0 ? 'auto' : targetPort} (foreground)`);
       }
 
       const { startWebUiServer } = await import(pathToFileURL(serverPath).href);
@@ -3902,17 +3902,17 @@ const commands = {
       stdio: ['ignore', logFd, logFd, 'ipc'],
       env: {
         ...process.env,
-        OPENCHAMBER_PORT: String(targetPort),
+        OPENJUNIOR_PORT: String(targetPort),
         OPENCODE_BINARY: opencodeBinary,
-        OPENCHAMBER_HOST: effectiveHost,
-        ...(effectiveUiPassword ? { OPENCHAMBER_UI_PASSWORD: effectiveUiPassword } : {}),
-        ...(options.apiOnly === true ? { OPENCHAMBER_API_ONLY: 'true' } : {}),
-        ...(process.env.OPENCODE_SKIP_START ? { OPENCHAMBER_SKIP_OPENCODE_START: process.env.OPENCODE_SKIP_START } : {}),
+        OPENJUNIOR_HOST: effectiveHost,
+        ...(effectiveUiPassword ? { OPENJUNIOR_UI_PASSWORD: effectiveUiPassword } : {}),
+        ...(options.apiOnly === true ? { OPENJUNIOR_API_ONLY: 'true' } : {}),
+        ...(process.env.OPENCODE_SKIP_START ? { OPENJUNIOR_SKIP_OPENCODE_START: process.env.OPENCODE_SKIP_START } : {}),
       },
     });
 
     child.unref();
-    serveSpin?.start(`Starting OpenChamber on port ${targetPort === 0 ? 'auto' : targetPort}...`);
+    serveSpin?.start(`Starting OpenJunior on port ${targetPort === 0 ? 'auto' : targetPort}...`);
 
     let resolvedPort;
     try {
@@ -3921,12 +3921,12 @@ const commands = {
         const timeout = setTimeout(() => {
           if (settled) return;
           settled = true;
-          reject(new Error(`OpenChamber daemon did not report ready within ${DAEMON_READY_TIMEOUT_MS / 1000}s`));
+          reject(new Error(`OpenJunior daemon did not report ready within ${DAEMON_READY_TIMEOUT_MS / 1000}s`));
         }, DAEMON_READY_TIMEOUT_MS);
 
         child.on('message', (msg) => {
           if (settled) return;
-          if (msg && msg.type === 'openchamber:ready' && typeof msg.port === 'number') {
+          if (msg && msg.type === 'openjunior:ready' && typeof msg.port === 'number') {
             settled = true;
             clearTimeout(timeout);
             resolve(msg.port);
@@ -3944,7 +3944,7 @@ const commands = {
           if (settled) return;
           settled = true;
           clearTimeout(timeout);
-          reject(new Error(`OpenChamber daemon exited before reporting ready${signal ? ` (${signal})` : ` (code ${code ?? 'unknown'})`}`));
+          reject(new Error(`OpenJunior daemon exited before reporting ready${signal ? ` (${signal})` : ` (code ${code ?? 'unknown'})`}`));
         });
       });
     } catch (error) {
@@ -3973,7 +3973,7 @@ const commands = {
     }
 
     if (!isProcessRunning(child.pid)) {
-      serveSpin?.error('Failed to start OpenChamber');
+      serveSpin?.error('Failed to start OpenJunior');
       throw new Error('Failed to start server in daemon mode');
     }
 
@@ -3992,7 +3992,7 @@ const commands = {
       port: resolvedPort,
       pid: child.pid,
       url: buildLocalUrl(resolvedPort, '/'),
-      logs: `openchamber logs -p ${resolvedPort}`,
+      logs: `openjunior logs -p ${resolvedPort}`,
       launchMode: 'daemon',
     };
 
@@ -4012,7 +4012,7 @@ const commands = {
     serveSpin?.clear();
 
     if (!options.suppressStartupSummary && showOutput) {
-      clackIntro('OpenChamber Started');
+      clackIntro('OpenJunior Started');
       logStatus('success', `port ${serveResult.port} (PID: ${serveResult.pid})`);
       logStatus('info', `visit: ${serveResult.url}`);
       logStatus('info', `logs: ${serveResult.logs}`);
@@ -4023,7 +4023,7 @@ const commands = {
   },
 
   async 'connect-url'(options = {}) {
-    assertSafeBrowserPort(options.port, { context: 'OpenChamber connect-url' });
+    assertSafeBrowserPort(options.port, { context: 'OpenJunior connect-url' });
     const explicitServerUrl = options.server ? normalizeServerUrlForConnection(options.server) : null;
     if (options.server && !explicitServerUrl) {
       throw new TunnelCliError('Invalid --server URL. Use an http:// or https:// URL.', EXIT_CODE.USAGE_ERROR);
@@ -4033,12 +4033,12 @@ const commands = {
       ? { serverUrl: explicitServerUrl, source: 'explicit' }
       : await resolveConnectUrlServerUrl(options);
     const serverUrl = resolvedServerUrl.serverUrl;
-    const label = options.name || `OpenChamber ${serverUrl}`;
+    const label = options.name || `OpenJunior ${serverUrl}`;
     const runtime = createRemoteClientAuthRuntime({
       fsPromises: fs.promises,
       path,
       crypto,
-      storePath: path.join(getOpenChamberDataDir(), REMOTE_CLIENTS_FILE_NAME),
+      storePath: path.join(getOpenJuniorDataDir(), REMOTE_CLIENTS_FILE_NAME),
     });
     const result = await runtime.createClient({ label });
     const connectUrl = buildClientConnectionPayload({ serverUrl, token: result.token, label });
@@ -4053,18 +4053,18 @@ const commands = {
       return;
     }
 
-    clackIntro('OpenChamber connect URL');
+    clackIntro('OpenJunior connect URL');
     if (serverState.autoStarted) {
-      logStatus('success', `started OpenChamber on port ${options.port}`);
+      logStatus('success', `started OpenJunior on port ${options.port}`);
     }
     logStatus('success', connectUrl);
     clackLog.info(`Server URL: ${serverUrl}`);
     if (resolvedServerUrl.source === 'lan-detected') {
-      clackLog.info('Detected a LAN address because OpenChamber is bound to all interfaces. Use --server to override it.');
+      clackLog.info('Detected a LAN address because OpenJunior is bound to all interfaces. Use --server to override it.');
     } else if (resolvedServerUrl.source === 'loopback-fallback') {
-      clackLog.warn('OpenChamber is bound to all interfaces, but no LAN address was detected. Use --server to provide a reachable URL.');
+      clackLog.warn('OpenJunior is bound to all interfaces, but no LAN address was detected. Use --server to provide a reachable URL.');
     }
-    clackLog.info('Copy this connection link into another OpenChamber client. The token is shown only once.');
+    clackLog.info('Copy this connection link into another OpenJunior client. The token is shown only once.');
     if (options.qr === true) {
       await displayTunnelQrCode(connectUrl);
     }
@@ -4097,7 +4097,7 @@ const commands = {
     };
 
     if (showOutput) {
-      clackIntro('OpenChamber Stop');
+      clackIntro('OpenJunior Stop');
     }
 
     let runningInstances = await discoverLifecycleInstances(options);
@@ -4115,7 +4115,7 @@ const commands = {
           printJson({ stoppedCount: 0, results: jsonResults });
         }
         if (showOutput) {
-          logStatus('info', `no OpenChamber instance found on port ${options.port}`);
+          logStatus('info', `no OpenJunior instance found on port ${options.port}`);
           finish('nothing to stop');
         }
         printQuietStopResults();
@@ -4126,10 +4126,10 @@ const commands = {
       if (explicitInstance.runtime === 'desktop') {
         jsonResults.push({ port: options.port, runtime: 'desktop', stopped: false, reason: 'desktop-managed' });
         if (isJsonMode(options)) {
-          printJson({ stoppedCount: 0, results: jsonResults, messages: [{ level: 'warning', code: 'DESKTOP_MANAGED_PORT', message: `Port ${options.port} is managed by OpenChamber Desktop and cannot be stopped with this command.` }] });
+          printJson({ stoppedCount: 0, results: jsonResults, messages: [{ level: 'warning', code: 'DESKTOP_MANAGED_PORT', message: `Port ${options.port} is managed by OpenJunior Desktop and cannot be stopped with this command.` }] });
         }
         if (showOutput) {
-          logStatus('warning', `port ${options.port} is managed by OpenChamber Desktop`, 'cannot be stopped with this command');
+          logStatus('warning', `port ${options.port} is managed by OpenJunior Desktop`, 'cannot be stopped with this command');
           finish('no changes applied');
         }
         printQuietStopResults();
@@ -4139,9 +4139,9 @@ const commands = {
       if (explicitInstance.source === 'probe') {
         const unmanagedStopSpin = showOutput ? createSpinner(options) : null;
         if (showOutput && !unmanagedStopSpin) {
-          logStatus('info', `found unmanaged OpenChamber instance on port ${options.port}`, 'attempting shutdown');
+          logStatus('info', `found unmanaged OpenJunior instance on port ${options.port}`, 'attempting shutdown');
         }
-        unmanagedStopSpin?.start(`Stopping unmanaged OpenChamber on port ${options.port}...`);
+        unmanagedStopSpin?.start(`Stopping unmanaged OpenJunior on port ${options.port}...`);
         const requested = await requestServerShutdown(options.port, options.host);
 
         if (Number.isFinite(explicitInstance.pid) && isProcessRunning(explicitInstance.pid)) {
@@ -4154,13 +4154,13 @@ const commands = {
 
         const stopped = await isPortAvailable(options.port, options.host);
         if (stopped) {
-          unmanagedStopSpin?.stop(`Stopped unmanaged OpenChamber on port ${options.port}`);
+          unmanagedStopSpin?.stop(`Stopped unmanaged OpenJunior on port ${options.port}`);
           jsonResults.push({ port: options.port, runtime: 'unmanaged', stopped: true });
           if (isJsonMode(options)) {
             printJson({ stoppedCount: 1, results: jsonResults });
           }
           if (showOutput && !unmanagedStopSpin) {
-            logStatus('success', `stopped OpenChamber on port ${options.port}`);
+            logStatus('success', `stopped OpenJunior on port ${options.port}`);
             finish('stop complete');
           }
           printQuietStopResults();
@@ -4181,18 +4181,18 @@ const commands = {
           }
           printQuietStopResults();
         } else {
-          unmanagedStopSpin?.error(`Could not stop OpenChamber on port ${options.port}`);
+          unmanagedStopSpin?.error(`Could not stop OpenJunior on port ${options.port}`);
           jsonResults.push({ port: options.port, runtime: 'unmanaged', stopped: false, reason: 'stop-failed' });
           if (isJsonMode(options)) {
             printJson({
               status: 'error',
               stoppedCount: 0,
               results: jsonResults,
-              messages: [{ level: 'error', code: 'STOP_FAILED', message: `Could not stop OpenChamber on port ${options.port}.` }],
+              messages: [{ level: 'error', code: 'STOP_FAILED', message: `Could not stop OpenJunior on port ${options.port}.` }],
             });
           }
           if (showOutput && !unmanagedStopSpin) {
-            logStatus('error', `could not stop OpenChamber on port ${options.port}`);
+            logStatus('error', `could not stop OpenJunior on port ${options.port}`);
             finish('failed');
           }
           printQuietStopResults();
@@ -4203,9 +4203,9 @@ const commands = {
       if (explicitInstance.source === 'registry-unconfirmed') {
         const unconfirmedStopSpin = showOutput ? createSpinner(options) : null;
         if (showOutput && !unconfirmedStopSpin) {
-          logStatus('info', `found unconfirmed OpenChamber pid ${explicitInstance.pid} on port ${options.port}`, 'HTTP shutdown endpoint is unreachable; stopping by PID');
+          logStatus('info', `found unconfirmed OpenJunior pid ${explicitInstance.pid} on port ${options.port}`, 'HTTP shutdown endpoint is unreachable; stopping by PID');
         }
-        unconfirmedStopSpin?.start(`Stopping unconfirmed OpenChamber on port ${options.port}...`);
+        unconfirmedStopSpin?.start(`Stopping unconfirmed OpenJunior on port ${options.port}...`);
         const stopped = await stopInstanceProcess(explicitInstance.pid, {
           shutdownWaitMs: 0,
           gracefulTimeoutMs: 2500,
@@ -4215,7 +4215,7 @@ const commands = {
         if (stopped || !isProcessRunning(explicitInstance.pid)) {
           removePidFile(explicitInstance.pidFilePath);
           removeInstanceFile(explicitInstance.instanceFilePath);
-          unconfirmedStopSpin?.stop(`Stopped OpenChamber PID ${explicitInstance.pid}`);
+          unconfirmedStopSpin?.stop(`Stopped OpenJunior PID ${explicitInstance.pid}`);
           jsonResults.push({ port: options.port, pid: explicitInstance.pid, runtime: 'unconfirmed', stopped: true });
           if (isJsonMode(options)) {
             printJson({ stoppedCount: 1, results: jsonResults });
@@ -4228,14 +4228,14 @@ const commands = {
           return;
         }
 
-        unconfirmedStopSpin?.error(`Could not stop OpenChamber PID ${explicitInstance.pid}`);
+        unconfirmedStopSpin?.error(`Could not stop OpenJunior PID ${explicitInstance.pid}`);
         jsonResults.push({ port: options.port, pid: explicitInstance.pid, runtime: 'unconfirmed', stopped: false, reason: 'stop-failed' });
         if (isJsonMode(options)) {
           printJson({
             status: 'error',
             stoppedCount: 0,
             results: jsonResults,
-            messages: [{ level: 'error', code: 'STOP_FAILED', message: `Could not stop OpenChamber PID ${explicitInstance.pid}.` }],
+            messages: [{ level: 'error', code: 'STOP_FAILED', message: `Could not stop OpenJunior PID ${explicitInstance.pid}.` }],
           });
         }
         if (showOutput && !unconfirmedStopSpin) {
@@ -4250,7 +4250,7 @@ const commands = {
         printJson({ stoppedCount: 0, results: jsonResults });
       }
       if (showOutput) {
-        logStatus('info', 'No running OpenChamber instances found');
+        logStatus('info', 'No running OpenJunior instances found');
         finish('nothing to stop');
       }
       printQuietStopResults();
@@ -4262,7 +4262,7 @@ const commands = {
       if (showOutput && !stopSpin) {
         logStatus('info', `stopping port ${instance.port} (PID: ${instance.pid})`);
       }
-      stopSpin?.start(`Stopping OpenChamber on port ${instance.port}...`);
+      stopSpin?.start(`Stopping OpenJunior on port ${instance.port}...`);
       try {
         const requested = await requestServerShutdown(instance.port, instance.host || options.host);
         const stopped = await stopInstanceProcess(instance.pid, {
@@ -4275,13 +4275,13 @@ const commands = {
         }
         removePidFile(instance.pidFilePath);
         removeInstanceFile(instance.instanceFilePath);
-        stopSpin?.stop(`Stopped OpenChamber on port ${instance.port}`);
+        stopSpin?.stop(`Stopped OpenJunior on port ${instance.port}`);
         jsonResults.push({ port: instance.port, pid: instance.pid, stopped: true });
         if (showOutput && !stopSpin) {
           logStatus('success', `stopped port ${instance.port}`);
         }
       } catch (error) {
-        stopSpin?.error(`Failed to stop OpenChamber on port ${instance.port}`);
+        stopSpin?.error(`Failed to stop OpenJunior on port ${instance.port}`);
         jsonResults.push({ port: instance.port, pid: instance.pid, stopped: false, reason: error instanceof Error ? error.message : String(error) });
         if (showOutput) {
           logStatus('error', `error stopping port ${instance.port}`, error.message);
@@ -4311,7 +4311,7 @@ const commands = {
     const restarted = [];
 
     if (showOutput) {
-      clackIntro('OpenChamber Restart');
+      clackIntro('OpenJunior Restart');
     }
 
     let runningInstances = await discoverLifecycleInstances(options);
@@ -4320,7 +4320,7 @@ const commands = {
         printJson({ restartedCount: 0, results: restarted });
       }
       if (showOutput) {
-        logStatus('info', 'No running OpenChamber instances to restart');
+        logStatus('info', 'No running OpenJunior instances to restart');
         clackOutro('nothing to restart');
       } else if (isQuietMode(options)) {
         process.stdout.write('restarted 0\n');
@@ -4330,7 +4330,7 @@ const commands = {
 
     for (const instance of runningInstances) {
       if (instance.runtime === 'desktop') {
-        const message = `Port ${instance.port} is managed by OpenChamber Desktop and cannot be restarted with this command.`;
+        const message = `Port ${instance.port} is managed by OpenJunior Desktop and cannot be restarted with this command.`;
         if (isJsonMode(options)) {
           printJson({
             status: 'warning',
@@ -4341,7 +4341,7 @@ const commands = {
           return;
         }
         if (showOutput) {
-          logStatus('warning', `port ${instance.port} is managed by OpenChamber Desktop`, 'cannot be restarted with this command');
+          logStatus('warning', `port ${instance.port} is managed by OpenJunior Desktop`, 'cannot be restarted with this command');
           clackOutro('no changes applied');
         } else if (isQuietMode(options)) {
           process.stdout.write('restarted 0\n');
@@ -4362,7 +4362,7 @@ const commands = {
       if (showOutput && !restartSpin) {
         logStatus('info', `restarting port ${instance.port}`, `mode: ${launchMode}`);
       }
-      restartSpin?.start(`Restarting OpenChamber on port ${instance.port}...`);
+      restartSpin?.start(`Restarting OpenJunior on port ${instance.port}...`);
       try {
         await this.stop({
           explicitPort: true,
@@ -4399,13 +4399,13 @@ const commands = {
           suppressQuietOutput: true,
         });
         restarted.push({ fromPort: instance.port, toPort: restartedPort, launchMode, ok: true });
-        restartSpin?.stop(`Restarted OpenChamber on port ${restartedPort}`);
+        restartSpin?.stop(`Restarted OpenJunior on port ${restartedPort}`);
         if (showOutput && !restartSpin) {
           logStatus('success', `port ${restartedPort} restarted`, `mode: ${launchMode}`);
         }
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        restartSpin?.error(`Failed to restart OpenChamber on port ${instance.port}`);
+        restartSpin?.error(`Failed to restart OpenJunior on port ${instance.port}`);
         if (showOutput && !restartSpin) {
           logStatus('error', `failed to restart port ${instance.port}`, message);
         }
@@ -4504,7 +4504,7 @@ const commands = {
       return;
     }
 
-    clackIntro('OpenChamber Status');
+    clackIntro('OpenJunior Status');
 
     if (runningCount === 0) {
       logStatus('warning', 'stopped');
@@ -4577,7 +4577,7 @@ const commands = {
         const results = [];
         for (const entry of entries) {
           try {
-            const { response, body } = await requestJson(entry.port, `/api/openchamber/tunnel/check?provider=${encodeURIComponent(provider)}`);
+            const { response, body } = await requestJson(entry.port, `/api/openjunior/tunnel/check?provider=${encodeURIComponent(provider)}`);
             if (!response.ok) {
               results.push({ port: entry.port, error: body?.error || `check ${response.status}` });
               continue;
@@ -4633,7 +4633,7 @@ const commands = {
         const results = [];
         for (const entry of entries) {
           try {
-            const { response, body } = await requestJson(entry.port, '/api/openchamber/tunnel/status');
+            const { response, body } = await requestJson(entry.port, '/api/openjunior/tunnel/status');
             if (!response.ok) {
               results.push({ port: entry.port, error: body?.error || `status ${response.status}` });
               continue;
@@ -4767,7 +4767,7 @@ const commands = {
               }
               const { response, body } = await requestJson(
                 diagnosticsEntry.port,
-                `/api/openchamber/tunnel/doctor?${query.toString()}`,
+                `/api/openjunior/tunnel/doctor?${query.toString()}`,
                 doctorFetchOptions,
               );
               if (response.ok && body?.ok && isValidTunnelDoctorResponse(body)) {
@@ -4872,16 +4872,16 @@ const commands = {
           logStatus('error', `port ${entry.port} — No running instance`);
         }
         if (desktopUnavailablePorts.length > 0) {
-          clackLog.message('Only CLI instances (openchamber serve) support tunneling.');
+          clackLog.message('Only CLI instances (openjunior serve) support tunneling.');
         }
 
         if (cliPorts.length === 0 && unavailablePorts.length === 0) {
-          logStatus('warning', 'No running instances found', 'Start one with `openchamber serve`.');
+          logStatus('warning', 'No running instances found', 'Start one with `openjunior serve`.');
           clackOutro('No ports available');
           return;
         }
         if (cliPorts.length === 0) {
-          logStatus('warning', 'No CLI instances available for tunneling', 'Start one with `openchamber serve`.');
+          logStatus('warning', 'No CLI instances available for tunneling', 'Start one with `openjunior serve`.');
           clackOutro('No CLI ports available');
           return;
         }
@@ -4982,9 +4982,9 @@ const commands = {
                 key: 'managed-remote-port',
                 code: '[PORT_MISMATCH]',
                 lines: [
-                  'Cloudflare target must match the active OpenChamber CLI port.',
+                  'Cloudflare target must match the active OpenJunior CLI port.',
                   'Example: `http://127.0.0.1:<port>`',
-                  'If CLI picked a different port, update Cloudflare or run `openchamber serve --port <port>`.',
+                  'If CLI picked a different port, update Cloudflare or run `openjunior serve --port <port>`.',
                 ],
               });
             }
@@ -5337,7 +5337,7 @@ const commands = {
             const safeInstances = runningInstances.filter((entry) => !isUnsafeBrowserPort(entry.port));
             if (safeInstances.length === 0) {
               throw new TunnelCliError(
-                'All discovered OpenChamber instance ports are browser-unsafe. Start or target a safe port (3000, 5173, 8080, or high ephemeral).',
+                'All discovered OpenJunior instance ports are browser-unsafe. Start or target a safe port (3000, 5173, 8080, or high ephemeral).',
                 EXIT_CODE.USAGE_ERROR,
               );
             }
@@ -5354,13 +5354,13 @@ const commands = {
 
             if (attachableSafeInstances.length === 0) {
               throw new TunnelCliError(
-                'No attachable OpenChamber CLI instances found on safe ports. Start one with `openchamber serve --port 3000`.',
+                'No attachable OpenJunior CLI instances found on safe ports. Start one with `openjunior serve --port 3000`.',
                 EXIT_CODE.USAGE_ERROR,
               );
             }
 
             const selectedPort = await clackSelect({
-              message: 'Select OpenChamber instance port',
+              message: 'Select OpenJunior instance port',
               options: attachableSafeInstances.map((entry) => ({
                 value: entry.port,
                 label: `port ${entry.port}`,
@@ -5380,7 +5380,7 @@ const commands = {
           logStatus(
             'info',
             `Using auto-started instance on port ${instance.port}`,
-            `logs: openchamber logs -p ${instance.port}`,
+            `logs: openjunior logs -p ${instance.port}`,
           );
         }
 
@@ -5395,7 +5395,7 @@ const commands = {
 
         if (instance?.autoStarted) {
           const healthProgress = await createProgress(options, { max: 60 });
-          healthProgress?.start(`Waiting for OpenChamber on port ${instance.port} to become healthy (up to 60s)...`);
+          healthProgress?.start(`Waiting for OpenJunior on port ${instance.port} to become healthy (up to 60s)...`);
           let progressedSeconds = 0;
           const healthy = await waitForServerHealth(instance.port, {
             timeoutMs: 60000,
@@ -5407,7 +5407,7 @@ const commands = {
               if (delta > 0) {
                 healthProgress.advance(delta);
                 progressedSeconds = elapsedSeconds;
-                healthProgress.message(`Waiting for OpenChamber health (${progressedSeconds}s / 60s)...`);
+                healthProgress.message(`Waiting for OpenJunior health (${progressedSeconds}s / 60s)...`);
               }
               if (complete && progressedSeconds < 60) {
                 const remaining = 60 - progressedSeconds;
@@ -5419,12 +5419,12 @@ const commands = {
             },
           });
           if (!healthy) {
-            healthProgress?.stop('OpenChamber is still starting');
+            healthProgress?.stop('OpenJunior is still starting');
             throw new Error(
-              `OpenChamber on port ${instance.port} is still starting after 60s. Startup time can vary by machine performance. ` +
+              `OpenJunior on port ${instance.port} is still starting after 60s. Startup time can vary by machine performance. ` +
               `Wait another minute, then check health with \`curl -fsS ${buildLocalUrl(instance.port, '/health')}\`. ` +
-              `If health is OK, retry tunnel start with \`openchamber tunnel start --port ${instance.port}\`. ` +
-              `For diagnostics run \`openchamber logs -p ${instance.port}\`.`
+              `If health is OK, retry tunnel start with \`openjunior tunnel start --port ${instance.port}\`. ` +
+              `For diagnostics run \`openjunior logs -p ${instance.port}\`.`
             );
           }
           healthProgress?.stop(`Instance ${instance.port} is healthy`);
@@ -5437,7 +5437,7 @@ const commands = {
             managedRemoteTunnelHostname: hostname,
             managedRemoteTunnelToken: token,
           };
-          const { response: presetResponse, body: presetBody } = await requestJson(instance.port, '/api/openchamber/tunnel/managed-remote-token', {
+          const { response: presetResponse, body: presetBody } = await requestJson(instance.port, '/api/openjunior/tunnel/managed-remote-token', {
             method: 'PUT',
             body: JSON.stringify(tokenSyncPayload),
           });
@@ -5467,21 +5467,21 @@ const commands = {
         let response;
         let body;
         try {
-          ({ response, body } = await requestJson(instance.port, '/api/openchamber/tunnel/start', {
+          ({ response, body } = await requestJson(instance.port, '/api/openjunior/tunnel/start', {
             method: 'POST',
             body: JSON.stringify(payload),
             timeoutMs: 60000,
           }));
         } catch (error) {
-          if (error instanceof Error && /\/api\/openchamber\/tunnel\/start/.test(error.message) && /timed out/.test(error.message)) {
+          if (error instanceof Error && /\/api\/openjunior\/tunnel\/start/.test(error.message) && /timed out/.test(error.message)) {
             spin?.error('Tunnel start timed out');
             throw new Error(
-              `Tunnel start timed out after 60s. cloudflared may still be starting; check with \`openchamber tunnel status --port ${instance.port}\`. Run \`openchamber logs -p ${instance.port}\` for details.`
+              `Tunnel start timed out after 60s. cloudflared may still be starting; check with \`openjunior tunnel status --port ${instance.port}\`. Run \`openjunior logs -p ${instance.port}\` for details.`
             );
           }
           spin?.error('Tunnel start failed');
           const message = error instanceof Error ? error.message : String(error);
-          throw new Error(`${message} Run \`openchamber logs -p ${instance.port}\` for details.`);
+          throw new Error(`${message} Run \`openjunior logs -p ${instance.port}\` for details.`);
         }
 
         if (!response.ok || !body?.ok) {
@@ -5491,7 +5491,7 @@ const commands = {
           const userError = isCloudflareTimeout
             ? `Cloudflare quick tunnel request timed out. ${baseError}`
             : baseError;
-          throw new Error(`${userError} Run \`openchamber logs -p ${instance.port}\` for details.`);
+          throw new Error(`${userError} Run \`openjunior logs -p ${instance.port}\` for details.`);
         }
 
         // Avoid duplicate "Tunnel started" lines: spinner completion is implied by
@@ -5537,15 +5537,15 @@ const commands = {
           clackOutro('');
 
           const optionalTips = [
-            { line: 'Check status', detail: 'openchamber tunnel status' },
-            { line: 'Stop tunnel', detail: 'openchamber tunnel stop' },
+            { line: 'Check status', detail: 'openjunior tunnel status' },
+            { line: 'Stop tunnel', detail: 'openjunior tunnel stop' },
             { line: 'If needed, repeat with same settings', detail: replayCommand },
           ];
 
           if (!selectedProfile && mode === 'managed-remote' && typeof hostname === 'string' && hostname.trim().length > 0) {
             const profileSaveCommand = buildTunnelProfileAddCommand({ provider, hostname });
             optionalTips.push({ line: 'Optional: save reusable profile (stores hostname + token locally)', detail: profileSaveCommand });
-            optionalTips.push({ line: 'Start from saved profile', detail: 'openchamber tunnel start --profile <name>' });
+            optionalTips.push({ line: 'Start from saved profile', detail: 'openjunior tunnel start --profile <name>' });
           }
 
           console.log('');
@@ -5588,7 +5588,7 @@ const commands = {
           const tunnelStopSpin = shouldRenderHumanOutput(options) ? createSpinner(options) : null;
           tunnelStopSpin?.start(`Stopping tunnel on port ${entry.port}...`);
           try {
-            const { response, body } = await requestJson(entry.port, '/api/openchamber/tunnel/stop', {
+            const { response, body } = await requestJson(entry.port, '/api/openjunior/tunnel/stop', {
               method: 'POST',
             });
             if (!response.ok) {
@@ -5648,7 +5648,7 @@ const commands = {
         const suggestion = findClosestMatch(subcommand, knownTunnelSubcommands);
         const hint = suggestion ? ` Did you mean '${suggestion}'?` : '';
         throw new TunnelCliError(
-          `Unknown tunnel subcommand '${subcommand}'.${hint} Use 'openchamber tunnel help'.`,
+          `Unknown tunnel subcommand '${subcommand}'.${hint} Use 'openjunior tunnel help'.`,
           EXIT_CODE.USAGE_ERROR
         );
       }
@@ -5664,18 +5664,18 @@ const commands = {
     if (options.all) {
       targets = running;
       if (targets.length === 0) {
-        throw new Error('No running OpenChamber instance found.');
+        throw new Error('No running OpenJunior instance found.');
       }
     } else if (options.explicitPort) {
       const found = running.find((entry) => entry.port === options.port);
       if (!found) {
-        throw new Error(`No running OpenChamber instance found on port ${options.port}.`);
+        throw new Error(`No running OpenJunior instance found on port ${options.port}.`);
       }
       targets = [found];
     } else {
       const latest = getLatestInstance(running);
       if (!latest) {
-        throw new Error('No running OpenChamber instance found.');
+        throw new Error('No running OpenJunior instance found.');
       }
       targets = [latest];
       if (shouldRenderHumanOutput(options)) {
@@ -5685,7 +5685,7 @@ const commands = {
 
     if (isJsonMode(options)) {
       if (options.follow) {
-        throw new Error('`openchamber logs --json` requires `--no-follow` for deterministic JSON output.');
+        throw new Error('`openjunior logs --json` requires `--no-follow` for deterministic JSON output.');
       }
       const entries = targets.map((target) => {
         const logPath = getLogFilePath(target.port);
@@ -5700,7 +5700,7 @@ const commands = {
     }
 
     if (showFrames) {
-      clackIntro('OpenChamber Logs');
+      clackIntro('OpenJunior Logs');
     }
 
     for (const target of targets) {
@@ -5756,7 +5756,7 @@ const commands = {
     const normalized = typeof action === 'string' ? action.trim().toLowerCase() : 'status';
     if (!['status', 'enable', 'disable'].includes(normalized)) {
       throw new TunnelCliError(
-        `Unknown startup subcommand '${action}'. Use 'openchamber startup --help'.`,
+        `Unknown startup subcommand '${action}'. Use 'openjunior startup --help'.`,
         EXIT_CODE.USAGE_ERROR
       );
     }
@@ -5779,7 +5779,7 @@ const commands = {
     }
     if (normalized === 'enable' && result.activeState === 'failed') {
       throw new TunnelCliError(
-        'Startup service was installed but failed to start. Run `journalctl --user -u openchamber.service -n 80 --no-pager` for details.',
+        'Startup service was installed but failed to start. Run `journalctl --user -u openjunior.service -n 80 --no-pager` for details.',
         EXIT_CODE.GENERAL_ERROR
       );
     }
@@ -5793,13 +5793,13 @@ const commands = {
       return;
     }
 
-    clackIntro('OpenChamber Startup');
+    clackIntro('OpenJunior Startup');
     logStatus(result.enabled ? 'success' : 'info', `startup ${result.enabled ? 'enabled' : 'disabled'}`, result.servicePath || undefined);
     if (typeof result.activeState === 'string') {
       logStatus(result.active ? 'success' : result.activeState === 'failed' ? 'error' : 'warning', `service ${result.activeState}`);
     }
     if (normalized === 'enable') {
-      logStatus('info', 'service command', 'openchamber serve --foreground');
+      logStatus('info', 'service command', 'openjunior serve --foreground');
     }
     clackOutro(normalized === 'status' ? 'status complete' : `${normalized} complete`);
   },
@@ -5820,7 +5820,7 @@ const commands = {
     const currentVersion = getCurrentVersion();
 
     if (showOutput) {
-      clackIntro('OpenChamber Update');
+      clackIntro('OpenJunior Update');
     }
 
     if (showOutput && !updateSpin) {
@@ -6002,7 +6002,7 @@ async function main() {
   await commands[command](options);
 }
 
-const isCliExecution = isModuleCliExecution(process.argv[1], import.meta.url, fs.realpathSync, 'openchamber');
+const isCliExecution = isModuleCliExecution(process.argv[1], import.meta.url, fs.realpathSync, 'openjunior');
 
 if (isCliExecution) {
   let isHandlingSigint = false;
@@ -6099,7 +6099,7 @@ export {
   fetchTunnelProvidersFromPort,
   fetchSystemInfoFromPort,
   discoverRunningInstances,
-  discoverOpenChamberInstanceOnPort,
+  discoverOpenJuniorInstanceOnPort,
   discoverLifecycleInstances,
   discoverUnconfirmedRegistryInstanceOnPort,
   ensureTunnelProfilesMigrated,

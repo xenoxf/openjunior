@@ -133,7 +133,7 @@ const connect = () => {
 
   cleanupSource();
 
-  const source = new EventSource(getRuntimeUrlResolver().sse('/api/openchamber/events'));
+  const source = new EventSource(getRuntimeUrlResolver().sse('/api/openjunior/events'));
   source.onopen = () => {
     resetHeartbeatTimer();
   };

@@ -196,7 +196,7 @@ export const useOpenInAppsStore = create<OpenInAppsState>()((set, get) => ({
     window.addEventListener('openjunior:app-ready', appReadyHandler);
     window.addEventListener('openjunior:installed-apps-updated', updateHandler);
 
-    const appReady = (window as unknown as { __openchamberAppReady?: boolean }).__openchamberAppReady;
+    const appReady = (window as unknown as { __openjuniorAppReady?: boolean }).__openjuniorAppReady;
     if (appReady) {
       void loadInstalledApps();
     }

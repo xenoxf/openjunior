@@ -190,7 +190,7 @@ export const VSCodeLayout: React.FC = () => {
       return;
     }
 
-    void vscodeApi.executeCommand('openchamber.setActiveSession', currentSessionId, activeSessionTitle);
+    void vscodeApi.executeCommand('openjunior.setActiveSession', currentSessionId, activeSessionTitle);
   }, [activeSessionTitle, currentSessionId, runtimeApis.vscode]);
 
   React.useEffect(() => {
@@ -203,7 +203,7 @@ export const VSCodeLayout: React.FC = () => {
       return;
     }
 
-    void vscodeApi.executeCommand('openchamber.updateSessionEditorTitle', currentSessionId, activeSessionTitle);
+    void vscodeApi.executeCommand('openjunior.updateSessionEditorTitle', currentSessionId, activeSessionTitle);
   }, [activeSessionTitle, currentSessionId, runtimeApis.vscode, viewMode]);
 
   // If the active session disappears (e.g., deleted), go back to sessions list
@@ -373,7 +373,7 @@ export const VSCodeLayout: React.FC = () => {
         const debugEnabled = (() => {
           if (typeof window === 'undefined') return false;
           try {
-            return window.localStorage.getItem('openchamber_stream_debug') === '1';
+            return window.localStorage.getItem('openjunior_stream_debug') === '1';
           } catch {
             return false;
           }

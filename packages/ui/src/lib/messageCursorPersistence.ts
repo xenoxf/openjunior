@@ -1,7 +1,7 @@
-const DB_NAME = 'openchamber-message-cursors';
+const DB_NAME = 'openjunior-message-cursors';
 const STORE_NAME = 'cursors';
 const DB_VERSION = 1;
-const FALLBACK_KEY = 'openchamber.messageCursors';
+const FALLBACK_KEY = 'openjunior.messageCursors';
 
 type CursorRecord = {
   messageId: string;

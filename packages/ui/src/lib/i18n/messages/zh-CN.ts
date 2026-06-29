@@ -2486,7 +2486,7 @@ export const dict: Record<I18nKey, string> = {
   'updateDialog.actions.updateNow': '立即更新',
   'updateDialog.status.updating': '更新中...',
   'updateDialog.error.updateFailed': '更新失败',
-  'updateDialog.error.takingLonger': '更新耗时超出预期。请稍等后刷新，或运行：openchamber update',
+  'updateDialog.error.takingLonger': '更新耗时超出预期。请稍等后刷新，或运行：openjunior update',
   'opencodeUpdate.toast.available.title': 'OpenCode 更新',
   'opencodeUpdate.toast.available.description': '版本 {version} 可用。',
   'opencodeUpdate.toast.actions.update': '更新',

@@ -17,8 +17,8 @@
     "paths": {
       "@/*": ["../ui/src/*", "./src/*"],
       "@web/*": ["./src/*"],
-      "@openchamber/ui/*": ["../ui/src/*"],
-      "@openchamber/web/*": ["./src/*"]
+      "@openjunior/ui/*": ["../ui/src/*"],
+      "@openjunior/web/*": ["./src/*"]
     }
   },
   "include": ["src", "../ui/src", "../ui/src/types/**/*"]

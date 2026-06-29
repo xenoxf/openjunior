@@ -2520,7 +2520,7 @@ export const dict: Record<I18nKey, string> = {
   'updateDialog.actions.updateNow': '지금 업데이트',
   'updateDialog.status.updating': '업데이트 중…',
   'updateDialog.error.updateFailed': '업데이트 실패',
-  'updateDialog.error.takingLonger': '업데이트가 예상보다 오래 걸립니다. 잠시 기다린 뒤 새로고침하거나 `openchamber update`를 실행하세요.',
+  'updateDialog.error.takingLonger': '업데이트가 예상보다 오래 걸립니다. 잠시 기다린 뒤 새로고침하거나 `openjunior update`를 실행하세요.',
   'opencodeUpdate.toast.available.title': 'OpenCode 업데이트',
   'opencodeUpdate.toast.available.description': '버전 {version} 사용 가능.',
   'opencodeUpdate.toast.actions.update': '업데이트',

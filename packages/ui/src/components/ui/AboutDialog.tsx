@@ -68,8 +68,8 @@ export const AboutDialog: React.FC<AboutDialogProps> = ({
         const response = await runtimeFetch('/api/system/info');
         if (response.ok) {
           const data = await response.json();
-          if (typeof data.openchamberVersion === 'string' && data.openchamberVersion.trim()) {
-            setVersion(data.openchamberVersion);
+          if (typeof data.openjuniorVersion === 'string' && data.openjuniorVersion.trim()) {
+            setVersion(data.openjuniorVersion);
             return;
           }
         }
@@ -184,7 +184,7 @@ export const AboutDialog: React.FC<AboutDialogProps> = ({
           <div className="flex flex-col items-center gap-2 pt-2">
             <div className="flex items-center justify-center gap-4">
               <a
-                href="https://github.com/btriapitsyn/openchamber"
+                href="https://github.com/btriapitsyn/openjunior"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-1.5 typography-meta text-muted-foreground hover:text-foreground transition-colors"
@@ -203,13 +203,13 @@ export const AboutDialog: React.FC<AboutDialogProps> = ({
               </a>
             </div>
             <a
-              href="https://x.com/openchamber_dev"
+              href="https://x.com/openjunior_dev"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 typography-meta text-muted-foreground hover:text-foreground transition-colors"
             >
               <Icon name="twitter-xfill" className="h-4 w-4" />
-              <span>@openchamber_dev</span>
+              <span>@openjunior_dev</span>
             </a>
           </div>
 

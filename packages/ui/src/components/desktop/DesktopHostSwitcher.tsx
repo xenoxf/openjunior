@@ -268,7 +268,7 @@ const resolveCurrentHost = (hosts: DesktopHost[]) => {
     return { id: match.id, label: match.label, url: normalizeHostUrl(match.url) || match.url };
   }
 
-  if (currentHref.startsWith('openchamber-ui://')) {
+  if (currentHref.startsWith('openjunior-ui://')) {
     return { id: LOCAL_HOST_ID, label: 'Local', url: normalizedLocal };
   }
 
