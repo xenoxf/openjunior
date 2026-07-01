@@ -78,6 +78,7 @@ jobs:
     needs: calc-version
     runs-on: macos-latest
     strategy:
+      fail-fast: false
       matrix:
         arch: [x64, arm64]
     steps:
@@ -97,26 +98,37 @@ jobs:
       - name: Build web assets
         run: bun run build:web
 
+      - name: Generate macOS icon assets
+        run: |
+          cd packages/electron
+          bun run generate:macos-icon
+
       - name: Build Electron (macOS ${{ matrix.arch }})
         run: |
+          # Only set signing credentials when secrets are actually available
+          if [ -n "${{ secrets.CSC_LINK }}" ]; then
+            export CSC_LINK="${{ secrets.CSC_LINK }}"
+            export CSC_KEY_PASSWORD="${{ secrets.CSC_KEY_PASSWORD }}"
+          fi
+          if [ -n "${{ secrets.APPLE_ID }}" ]; then
+            export APPLE_ID="${{ secrets.APPLE_ID }}"
+            export APPLE_APP_SPECIFIC_PASSWORD="${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}"
+            export APPLE_TEAM_ID="${{ secrets.APPLE_TEAM_ID }}"
+          fi
+          export CSC_IDENTITY_AUTO_DISCOVERY=false
           cd packages/electron
           bun run build:web-assets
           bun run bundle:main
           bun run rebuild:native
           bun x electron-builder --mac --${{ matrix.arch }} --publish=never
-        env:
-          CSC_LINK: ${{ secrets.CSC_LINK || '' }}
-          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD || '' }}
-          APPLE_ID: ${{ secrets.APPLE_ID || '' }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID || '' }}
-          CSC_IDENTITY_AUTO_DISCOVERY: ${{ secrets.CSC_LINK == '' && 'false' || 'true' }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: openjunior-mac-${{ matrix.arch }}-${{ needs.calc-version.outputs.version }}
-          path: packages/electron/dist/*.dmg
+          path: |
+            packages/electron/dist/*.dmg
+            packages/electron/dist/*.zip
           if-no-files-found: warn
 
   # ─── 3. Build Windows ─────────────────────────────
@@ -141,16 +153,25 @@ jobs:
       - name: Build web assets
         run: bun run build:web
 
+      - name: Configure Visual Studio for node-gyp
+        run: |
+          # Pre-configure VS version to avoid maxBuffer overflow in PS detection
+          npm config set msvs_version 2022 --global
+          echo "GYP_MSVS_VERSION=2022" >> $env:GITHUB_ENV
+
       - name: Build Electron (Windows)
         run: |
+          if ("${{ secrets.WINDOWS_CSC_LINK }}" -ne "") {
+            $env:CSC_LINK = "${{ secrets.WINDOWS_CSC_LINK }}"
+            $env:CSC_KEY_PASSWORD = "${{ secrets.WINDOWS_CSC_KEY_PASSWORD }}"
+          }
+          $env:CSC_IDENTITY_AUTO_DISCOVERY = "false"
+          $env:GYP_MSVS_VERSION = "2022"
           cd packages/electron
           bun run build:web-assets
           bun run bundle:main
           bun run rebuild:native
-          CSC_IDENTITY_AUTO_DISCOVERY=false bun x electron-builder --win --x64 --publish=never
-        env:
-          CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK || '' }}
-          CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD || '' }}
+          bun x electron-builder --win --x64 --publish=never
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -165,6 +186,7 @@ jobs:
     needs: calc-version
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         arch: [x64, arm64]
     steps:
@@ -259,19 +281,21 @@ jobs:
           git tag "v${VERSION}"
           git push origin "v${VERSION}"
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ needs.calc-version.outputs.version }}
-          name: v${{ needs.calc-version.outputs.version }}
-          body: ${{ steps.changelog.outputs.changelog }}
-          fail_on_unmatched_files: false
-          files: |
-            release-artifacts/*.dmg
-            release-artifacts/*.exe
-            release-artifacts/*.AppImage
-            release-artifacts/*.deb
-            release-artifacts/*.rpm
-            release-artifacts/latest*.yml
-          draft: false
-          prerelease: false
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v${{ needs.calc-version.outputs.version }}"
+          if gh release view "$TAG" --json tagName > /dev/null 2>&1; then
+            echo "Release $TAG already exists — uploading artifacts"
+            for f in release-artifacts/*; do
+              [ -f "$f" ] && gh release upload "$TAG" "$f" --clobber
+            done
+          else
+            echo "Creating new release $TAG"
+            gh release create "$TAG" \
+              --title "$TAG" \
+              --notes "${{ steps.changelog.outputs.changelog }}" \
+              --target "${{ github.sha }}" \
+              release-artifacts/*
+          fi
