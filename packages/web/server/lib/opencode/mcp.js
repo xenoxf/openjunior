@@ -1,4 +1,5 @@
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import {
   CONFIG_FILE,
@@ -9,6 +10,28 @@ import {
   getJsonWriteTarget,
   writeConfig,
 } from './shared.js';
+
+const OPENJUNIOR_CONFIG_DIR = path.join(os.homedir(), '.config', 'openjunior');
+const MCP_SEED_STATE_FILE = path.join(OPENJUNIOR_CONFIG_DIR, 'mcp-seed.json');
+
+function ensureOpenJuniorConfigDir() {
+  if (!fs.existsSync(OPENJUNIOR_CONFIG_DIR)) {
+    fs.mkdirSync(OPENJUNIOR_CONFIG_DIR, { recursive: true });
+  }
+}
+
+function hasMcpSeedFlag() {
+  try {
+    return fs.existsSync(MCP_SEED_STATE_FILE);
+  } catch {
+    return false;
+  }
+}
+
+function writeMcpSeedFlag() {
+  ensureOpenJuniorConfigDir();
+  fs.writeFileSync(MCP_SEED_STATE_FILE, JSON.stringify({ seeded: true }), 'utf-8');
+}
 
 // ============== DEFAULT BUILT-IN MCPS ==============
 
@@ -69,9 +92,7 @@ function getDefaultMcps() {
 }
 
 function seedDefaultMcps(workingDirectory) {
-  let config = readConfigFile(CONFIG_FILE);
-
-  if (config._builtInMcpSeeded === true) return;
+  if (hasMcpSeedFlag()) return;
 
   for (const mcp of DEFAULT_MCPS) {
     try {
@@ -81,9 +102,18 @@ function seedDefaultMcps(workingDirectory) {
     }
   }
 
-  config = readConfigFile(CONFIG_FILE);
-  config._builtInMcpSeeded = true;
-  writeConfig(config, CONFIG_FILE);
+  writeMcpSeedFlag();
+
+  // Clean up legacy _builtInMcpSeeded key from opencode config if present
+  try {
+    const oldConfig = readConfigFile(CONFIG_FILE);
+    if (oldConfig && oldConfig._builtInMcpSeeded !== undefined) {
+      delete oldConfig._builtInMcpSeeded;
+      writeConfig(oldConfig, CONFIG_FILE);
+    }
+  } catch {
+    // ignore cleanup failures
+  }
 }
 
 // ============== MCP CONFIG HELPERS ==============

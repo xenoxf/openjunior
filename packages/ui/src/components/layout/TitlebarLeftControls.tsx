@@ -32,11 +32,11 @@ export const TitlebarLeftControls: React.FC = () => {
   const clusterRef = React.useRef<HTMLDivElement | null>(null);
 
   const toggleShortcut = formatShortcutForDisplay(getEffectiveShortcutCombo('toggle_sidebar', shortcutOverrides));
-  const isWindowsElectronDesktop = React.useMemo(() => {
+  const hasCustomWindowControls = React.useMemo(() => {
     if (typeof window === 'undefined') {
       return false;
     }
-    return Boolean(window.__OPENJUNIOR_ELECTRON__) && window.__OPENJUNIOR_PLATFORM__ === 'win32';
+    return Boolean(window.__OPENJUNIOR_ELECTRON__) && window.__OPENJUNIOR_PLATFORM__ !== 'darwin';
   }, []);
 
   const handleOpenWindowsAppMenu = React.useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
@@ -88,7 +88,7 @@ export const TitlebarLeftControls: React.FC = () => {
       }}
     >
       <div ref={clusterRef} className="flex items-center gap-2">
-        {isWindowsElectronDesktop ? (
+        {hasCustomWindowControls ? (
           <Tooltip>
             <TooltipTrigger asChild>
               <button

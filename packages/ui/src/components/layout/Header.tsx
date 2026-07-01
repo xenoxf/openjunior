@@ -32,7 +32,7 @@ import { useFeatureFlagsStore } from '@/stores/useFeatureFlagsStore';
 import { useGitHubAuthStore } from '@/stores/useGitHubAuthStore';
 import { useRuntimeAPIs } from '@/hooks/useRuntimeAPIs';
 import { ContextUsageDisplay } from '@/components/ui/ContextUsageDisplay';
-import { WindowsWindowControls } from '@/components/desktop/WindowsWindowControls';
+import { DesktopWindowControls } from '@/components/desktop/DesktopWindowControls';
 import { UpdateDialog } from '@/components/ui/UpdateDialog';
 import { useDeviceInfo, useTabletStandalonePwaRuntime } from '@/lib/device';
 import { cn, hasModifier } from '@/lib/utils';
@@ -792,11 +792,11 @@ export const Header: React.FC<HeaderProps> = ({
     return /Macintosh|Mac OS X/.test(navigator.userAgent || '');
   }, []);
 
-  const isWindowsElectronDesktop = React.useMemo(() => {
+  const hasCustomWindowControls = React.useMemo(() => {
     if (typeof window === 'undefined') {
       return false;
     }
-    return Boolean(window.__OPENJUNIOR_ELECTRON__) && window.__OPENJUNIOR_PLATFORM__ === 'win32';
+    return Boolean(window.__OPENJUNIOR_ELECTRON__) && window.__OPENJUNIOR_PLATFORM__ !== 'darwin';
   }, []);
 
   const macosMajorVersion = React.useMemo(() => {
@@ -1601,11 +1601,11 @@ export const Header: React.FC<HeaderProps> = ({
     if (isTabletStandalonePwa) {
       return 'max(calc(0.75rem + var(--oc-wco-left-inset, 0px)), 5.5rem)';
     }
-    if ((!isDesktopApp || isWindowsElectronDesktop) && !isVSCode) {
+    if ((!isDesktopApp || hasCustomWindowControls) && !isVSCode) {
       return 'calc(0.75rem + var(--oc-wco-left-inset, 0px))';
     }
     return '0.75rem';
-  }, [isDesktopApp, isDesktopWindowFullscreen, isMacPlatform, isTabletStandalonePwa, isVSCode, isWindowsElectronDesktop]);
+  }, [isDesktopApp, isDesktopWindowFullscreen, isMacPlatform, isTabletStandalonePwa, isVSCode, hasCustomWindowControls]);
 
   useEffect(() => {
     if (typeof document === 'undefined') {
@@ -1674,18 +1674,16 @@ export const Header: React.FC<HeaderProps> = ({
   }, [isDesktopApp, isMacPlatform, macosMajorVersion]);
 
   const webWindowControlsOverlayStyle = React.useMemo<React.CSSProperties | undefined>(() => {
-    if ((isDesktopApp && !isWindowsElectronDesktop) || isVSCode) {
+    if ((isDesktopApp && !hasCustomWindowControls) || isVSCode) {
       return undefined;
     }
 
     return {
-      // Left inset is handled by the no-drag spacer (see renderDesktop); only
-      // the right inset / titlebar height are owned by the window-controls overlay.
       paddingRight: 'calc(0.75rem + var(--oc-wco-right-inset, 0px))',
       minHeight: 'max(3rem, var(--oc-wco-titlebar-height, 0px))',
       height: 'max(3rem, var(--oc-wco-titlebar-height, 0px))',
     };
-  }, [isDesktopApp, isVSCode, isWindowsElectronDesktop]);
+  }, [isDesktopApp, isVSCode, hasCustomWindowControls]);
 
   const updateHeaderHeight = React.useCallback(() => {
     if (typeof document === 'undefined') {
@@ -2224,7 +2222,7 @@ export const Header: React.FC<HeaderProps> = ({
             Icon={'picture-in-picture-2'}
           />
           {desktopSidebarActions}
-          <WindowsWindowControls visible={isWindowsElectronDesktop} />
+          <DesktopWindowControls visible={hasCustomWindowControls} />
         </div>
       </div>
     </div>
