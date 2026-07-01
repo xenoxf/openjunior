@@ -542,6 +542,11 @@ export const createOpenCodeLifecycleRuntime = (deps) => {
         if (error?.code === 'OPENCODE_BINARY_INVALID') {
           break;
         }
+        const msg = error instanceof Error ? error.message : String(error);
+        if (msg.includes('ConfigInvalidError') || msg.includes('Configuration is invalid')) {
+          console.error(`[OpenCode] ConfigInvalidError detected — your opencode config file has invalid keys. Check ~/.config/opencode/ for syntax errors.`);
+          break;
+        }
         if (attempt >= START_OPEN_CODE_MAX_ATTEMPTS) {
           break;
         }
@@ -835,9 +840,19 @@ export const createOpenCodeLifecycleRuntime = (deps) => {
         console.error(`OpenCode readiness check failed: ${error.message}`);
       }
     } catch (error) {
-      console.error(`Failed to start OpenCode: ${error.message}`);
+      const msg = error instanceof Error ? error.message : String(error);
+      console.error(`Failed to start OpenCode: ${msg}`);
+      if (msg.includes('ConfigInvalidError') || msg.includes('Configuration is invalid')) {
+        console.log('');
+        console.log('╔══════════════════════════════════════════════════════════════╗');
+        console.log('║  OpenCode config file has invalid entries.                 ║');
+        console.log('║  Check ~/.config/opencode/opencode.jsonc or config.json   ║');
+        console.log('║  for keys not recognized by the opencode binary.          ║');
+        console.log('╚══════════════════════════════════════════════════════════════╝');
+        console.log('');
+      }
       console.log('Continuing without OpenCode integration...');
-      state.lastOpenCodeError = error.message;
+      state.lastOpenCodeError = msg;
     }
   };
 

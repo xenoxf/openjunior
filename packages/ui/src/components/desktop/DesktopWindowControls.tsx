@@ -5,11 +5,11 @@ import { useI18n } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { invokeDesktop } from '@/lib/desktop';
 
-type WindowsWindowControlsProps = {
+type DesktopWindowControlsProps = {
   visible: boolean;
 };
 
-export const WindowsWindowControls = React.memo(function WindowsWindowControls({ visible }: WindowsWindowControlsProps) {
+export const DesktopWindowControls = React.memo(function DesktopWindowControls({ visible }: DesktopWindowControlsProps) {
   const { t } = useI18n();
   const [isMaximized, setIsMaximized] = React.useState(false);
 
