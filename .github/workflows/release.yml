@@ -25,6 +25,8 @@ on:
     branches:
       - production
       - experiment
+    tags:
+      - 'v*'
   workflow_dispatch:
 
 # ─── Environment ─────────────────────────────────────
@@ -96,11 +98,12 @@ jobs:
           bun run rebuild:native
           bun x electron-builder --mac --${{ matrix.arch }} --publish=never
         env:
-          CSC_LINK: ${{ secrets.CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          CSC_LINK: ${{ secrets.CSC_LINK || '' }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD || '' }}
+          APPLE_ID: ${{ secrets.APPLE_ID || '' }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID || '' }}
+          CSC_IDENTITY_AUTO_DISCOVERY: ${{ secrets.CSC_LINK == '' && 'false' || 'true' }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -137,10 +140,10 @@ jobs:
           bun run build:web-assets
           bun run bundle:main
           bun run rebuild:native
-          bun x electron-builder --win --x64 --publish=never
+          CSC_IDENTITY_AUTO_DISCOVERY=false bun x electron-builder --win --x64 --publish=never
         env:
-          CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD }}
+          CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK || '' }}
+          CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD || '' }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
