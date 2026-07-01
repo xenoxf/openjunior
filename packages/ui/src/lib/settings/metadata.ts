@@ -130,7 +130,7 @@ export const SETTINGS_PAGE_METADATA: readonly SettingsPageMeta[] = [
     title: 'Integrations',
     group: 'integrations',
     kind: 'single',
-    keywords: ['integrations', 'mcp', 'plugins', 'skills', 'connect', 'services', 'tools', 'catalog', 'extensions'],
+    keywords: ['integrations', 'mcp', 'registry', 'servers', 'connect', 'services', 'tools', 'marketplace'],
   },
   {
     slug: 'git',

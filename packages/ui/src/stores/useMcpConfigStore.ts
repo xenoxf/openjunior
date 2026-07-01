@@ -63,7 +63,7 @@ export interface McpRemoteConfig {
   enabled: boolean;
 }
 
-export type McpServerConfig = (McpLocalConfig | McpRemoteConfig) & { name: string };
+export type McpServerConfig = (McpLocalConfig | McpRemoteConfig) & { name: string; isBuiltIn?: boolean };
 export type McpServerWithScope = McpServerConfig & { scope?: McpScope | null };
 
 export interface McpDraft {
@@ -81,6 +81,7 @@ export interface McpDraft {
   oauthRedirectUri: string;
   timeout: string;
   enabled: boolean;
+  isBuiltIn?: boolean;
 }
 
 // ============== HELPERS ==============

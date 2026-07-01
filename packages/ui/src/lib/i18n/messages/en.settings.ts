@@ -1825,4 +1825,9 @@ export const settingsDict = {
   'settings.integrations.detail.installing': 'Installing...',
   'settings.integrations.toast.installed': '{name} installed successfully',
   'settings.integrations.toast.installFailed': 'Installation failed',
+
+  'settings.openjunior.visual.section.layoutPanels': 'Interface Layout',
+  'settings.openjunior.visual.field.showTerminalButton': 'Show terminal button',
+  'settings.openjunior.visual.field.showMiniBrowser': 'Show mini browser button',
+  'settings.openjunior.visual.field.showRightSidebar': 'Show right sidebar button',
 } as const;

@@ -75,6 +75,7 @@ import { createServerStartupRuntime } from './lib/opencode/server-startup-runtim
 import { createTunnelWiringRuntime } from './lib/opencode/tunnel-wiring-runtime.js';
 import { createStartupPipelineRuntime } from './lib/opencode/startup-pipeline-runtime.js';
 import { runCliEntryIfMain } from './lib/opencode/cli-entry-runtime.js';
+import { seedDefaultMcps } from './lib/opencode/mcp.js';
 import { registerNotificationRoutes } from './lib/notifications/routes.js';
 import { createNotificationEmitterRuntime } from './lib/notifications/emitter-runtime.js';
 import { createNotificationTriggerRuntime } from './lib/notifications/runtime.js';
@@ -981,6 +982,11 @@ const bootstrapOpenCodeAtStartup = async (...args) => {
     void ensureGlobalWatcherStarted().catch((error) => {
       console.warn(`Global event watcher startup failed: ${error?.message || error}`);
     });
+  }
+  try {
+    seedDefaultMcps(process.cwd());
+  } catch (err) {
+    console.warn(`[startup] Failed to seed built-in MCPs: ${err?.message || err}`);
   }
 };
 const killProcessOnPort = (...args) => openCodeLifecycleRuntime.killProcessOnPort(...args);

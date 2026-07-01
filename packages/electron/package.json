@@ -1,9 +1,10 @@
 {
   "name": "@openjunior/electron",
-  "version": "1.13.3",
+  "version": "1.14.0",
   "private": true,
   "description": "Electron desktop runtime for OpenJunior",
-  "author": "OpenJunior",
+  "author": "OpenJunior <dev@openjunior.dev>",
+  "homepage": "https://openjunior.dev",
   "type": "module",
   "main": "./dist-bundle/main.mjs",
   "dependencies": {
@@ -87,6 +88,25 @@
       ],
       "verifyUpdateCodeSignature": false,
       "artifactName": "${productName}-${version}-win-${arch}.${ext}"
+    },
+    "linux": {
+      "icon": "resources/icons",
+      "category": "Development",
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "deb",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "rpm",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "artifactName": "${productName}-${version}-linux-${arch}.${ext}"
     },
     "nsis": {
       "oneClick": true,

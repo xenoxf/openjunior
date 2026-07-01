@@ -51,6 +51,8 @@ import { VoiceProvider } from '@/components/voice';
 import { useUIStore } from '@/stores/useUIStore';
 import { useGitHubAuthStore } from '@/stores/useGitHubAuthStore';
 import { useFeatureFlagsStore } from '@/stores/useFeatureFlagsStore';
+import { useMcpConfigStore } from '@/stores/useMcpConfigStore';
+import { useMcpStore } from '@/stores/useMcpStore';
 import type { RuntimeAPIs } from '@/lib/api/types';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { McpOAuthCallbackPage } from '@/components/sections/mcp/McpOAuthCallbackPage';
@@ -452,10 +454,38 @@ function App({ apis }: AppProps) {
     };
   }, [initRetryEpoch, isInitialized, isVSCodeRuntime]);
 
+  const autoConnectedDefaultMcpRef = React.useRef(false);
+
   React.useEffect(() => {
     if (isInitialized) {
       setInitRetryExhausted(false);
     }
+  }, [isInitialized]);
+
+  React.useEffect(() => {
+    if (!isInitialized || autoConnectedDefaultMcpRef.current) return;
+    autoConnectedDefaultMcpRef.current = true;
+
+    const connectDefaultMcps = async () => {
+      const directory = useDirectoryStore.getState().currentDirectory ?? null;
+      await useMcpConfigStore.getState().loadMcpConfigs({ force: true });
+      const { mcpServers } = useMcpConfigStore.getState();
+      for (const server of mcpServers) {
+        if (!server.enabled || server.scope !== 'user') continue;
+        if (server.isBuiltIn) {
+          try {
+            const status = useMcpStore.getState().getStatusForDirectory(directory)[server.name];
+            if (!status || status.status !== 'connected') {
+              await useMcpStore.getState().connect(server.name, directory);
+            }
+          } catch {
+            // Error stored in diagnostics; visible in status
+          }
+        }
+      }
+    };
+
+    void connectDefaultMcps();
   }, [isInitialized]);
 
   React.useEffect(() => {

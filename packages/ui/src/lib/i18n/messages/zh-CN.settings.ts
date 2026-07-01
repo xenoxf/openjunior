@@ -1785,4 +1785,8 @@ export const settingsDict = {
   'settings.promptTemplates.page.toast.created': '模板已创建',
   'settings.promptTemplates.page.toast.createFailed': '创建模板失败',
   'settings.promptTemplates.page.toast.saveUnexpectedError': '保存时发生意外错误',
+  'settings.openjunior.visual.section.layoutPanels': '界面布局',
+  'settings.openjunior.visual.field.showTerminalButton': '显示终端按钮',
+  'settings.openjunior.visual.field.showMiniBrowser': '显示迷你浏览器按钮',
+  'settings.openjunior.visual.field.showRightSidebar': '显示右侧栏按钮',
 } as const;

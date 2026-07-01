@@ -85,13 +85,16 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={isDark ? "dark" : "light"}
       className="toaster group"
+      position="bottom-right"
+      duration={3000}
       closeButton={false}
+      visibleToasts={3}
       toastOptions={{
         classNames: {
           toast:
-            "group/toast toast !rounded-[var(--radius-xl)] !border-0 !px-3.5 !py-3 !gap-2.5 !text-foreground",
+            "group/toast toast !rounded-[var(--radius-xl)] !border-0 !px-3.5 !py-3 !gap-2.5 !text-foreground !cursor-pointer",
           title: "typography-ui-label !font-medium !text-foreground",
-          description: "typography-meta !text-muted-foreground !mt-0.5",
+          description: "hidden",
           actionButton:
             "!rounded-[var(--radius-md)] !bg-[var(--primary-base)] !text-[var(--primary-foreground)] hover:!opacity-85 !px-2 !py-1 typography-meta !font-medium transition-opacity",
           cancelButton:
@@ -99,33 +102,36 @@ const Toaster = ({ ...props }: ToasterProps) => {
           closeButton:
             "!rounded-[var(--radius-md)] !bg-[var(--interactive-hover)] !text-foreground hover:!bg-[var(--interactive-active)]",
           icon: "!text-muted-foreground",
-          success: "[&_[data-icon]]:!text-[var(--status-success)]",
+          success: "[&_[data-icon]]:hidden",
           error: "[&_[data-icon]]:!text-[var(--status-error)]",
           warning: "[&_[data-icon]]:!text-[var(--status-warning)]",
-          info: "[&_[data-icon]]:!text-[var(--status-info)]",
+          info: "[&_[data-icon]]:hidden",
         },
         style: {
-          borderRadius: "var(--radius-xl)",
+          borderRadius: "12px",
+          fontSize: "14px",
+          border: "1px solid var(--interactive-border)",
           backgroundColor: "var(--surface-elevated)",
+          color: "var(--surface-foreground)",
         },
       }}
       style={
         {
           "--normal-bg": "var(--surface-elevated)",
           "--normal-text": "var(--foreground)",
-          "--normal-border": "transparent",
+          "--normal-border": "1px solid var(--interactive-border)",
           "--error-bg": "var(--surface-elevated)",
           "--error-text": "var(--foreground)",
-          "--error-border": "transparent",
+          "--error-border": "1px solid var(--interactive-border)",
           "--success-bg": "var(--surface-elevated)",
           "--success-text": "var(--foreground)",
-          "--success-border": "transparent",
+          "--success-border": "1px solid var(--interactive-border)",
           "--warning-bg": "var(--surface-elevated)",
           "--warning-text": "var(--foreground)",
-          "--warning-border": "transparent",
+          "--warning-border": "1px solid var(--interactive-border)",
           "--info-bg": "var(--surface-elevated)",
           "--info-text": "var(--foreground)",
-          "--info-border": "transparent",
+          "--info-border": "1px solid var(--interactive-border)",
         } as React.CSSProperties
       }
       {...props}

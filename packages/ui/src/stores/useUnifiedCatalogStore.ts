@@ -8,6 +8,8 @@ import type {
   UnifiedCatalogResponse,
   UnifiedCatalogSourcesResponse,
 } from '@/lib/api/types';
+import { useMcpConfigStore } from '@/stores/useMcpConfigStore';
+import { useMcpStore } from '@/stores/useMcpStore';
 
 export type UnifiedCatalogCategory = 'all' | 'files' | 'tools' | 'chat' | 'agents' | 'services';
 
@@ -218,7 +220,7 @@ export const useUnifiedCatalogStore = create<UnifiedCatalogState>()(
               mcpConfig.command = config.command;
             }
             if (config.env) {
-              mcpConfig.env = config.env;
+              mcpConfig.environment = config.env;
             }
             if (config.url) {
               mcpConfig.url = config.url;
@@ -236,6 +238,8 @@ export const useUnifiedCatalogStore = create<UnifiedCatalogState>()(
                   ? s.installedIds
                   : [...s.installedIds, installedKey(item)],
               }));
+              useMcpConfigStore.getState().loadMcpConfigs({ force: true });
+              useMcpStore.getState().refresh({ silent: true });
               return { ok: true, message: `${item.name} MCP server added` };
             }
             const err = await response.json().catch(() => null);

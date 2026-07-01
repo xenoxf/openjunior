@@ -11,6 +11,7 @@ import { registerScheduledTaskRoutes } from '../scheduled-tasks/routes.js';
 import { registerSkillRoutes } from './skill-routes.js';
 import { registerPluginRoutes } from './plugin-routes.js';
 import catalogRoutes from '../unified-catalog/routes.js';
+import mcpRegistryRoutes from '../mcp-registry/routes.js';
 import { getNpmInfo, clearCache as clearNpmCache } from './npm-registry.js';
 import { parseNpmSpec, parsePathSpec, isExactSemver } from './plugin-spec.js';
 import { registerOpenCodeRoutes } from './routes.js';
@@ -289,6 +290,9 @@ export const createFeatureRoutesRuntime = (dependencies) => {
 
     // Unified Catalog routes
     app.use('/api/catalog', catalogRoutes);
+
+    // MCP Registry proxy
+    app.use('/api/mcp-registry', mcpRegistryRoutes);
   };
 
   return {

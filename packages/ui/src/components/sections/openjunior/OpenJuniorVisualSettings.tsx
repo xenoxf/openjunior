@@ -286,6 +286,12 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
     const setDiffLayoutPreference = useUIStore(state => state.setDiffLayoutPreference);
     const showTerminalQuickKeysOnDesktop = useUIStore(state => state.showTerminalQuickKeysOnDesktop);
     const setShowTerminalQuickKeysOnDesktop = useUIStore(state => state.setShowTerminalQuickKeysOnDesktop);
+    const showTerminalButton = useUIStore(state => state.showTerminalButton);
+    const setShowTerminalButton = useUIStore(state => state.setShowTerminalButton);
+    const showMiniBrowserButton = useUIStore(state => state.showMiniBrowserButton);
+    const setShowMiniBrowserButton = useUIStore(state => state.setShowMiniBrowserButton);
+    const showRightSidebarButton = useUIStore(state => state.showRightSidebarButton);
+    const setShowRightSidebarButton = useUIStore(state => state.setShowRightSidebarButton);
     const fileEditorKeymap = useUIStore(state => state.fileEditorKeymap);
     const setFileEditorKeymap = useUIStore(state => state.setFileEditorKeymap);
     const queueModeEnabled = useMessageQueueStore(state => state.queueModeEnabled);
@@ -2024,64 +2030,25 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                     </div>
                 )}
 
-                {/* --- Advanced Settings --- */}
-                <div className="space-y-3">
-                    <section className="px-2 pb-2 pt-0">
-                        <h4 className="typography-ui-header font-medium text-foreground mb-2">Advanced</h4>
-
-                        <div
-                            className="group flex cursor-pointer items-center gap-2 py-1.5"
-                            role="button"
-                            tabIndex={0}
-                            aria-pressed={useUIStore.getState().naturalLanguageMode}
-                            onClick={() => {
-                                const current = useUIStore.getState().naturalLanguageMode;
-                                useUIStore.getState().setNaturalLanguageMode(!current);
-                            }}
-                            onKeyDown={(event) => {
-                                if (event.key === ' ' || event.key === 'Enter') {
-                                    event.preventDefault();
-                                    const current = useUIStore.getState().naturalLanguageMode;
-                                    useUIStore.getState().setNaturalLanguageMode(!current);
-                                }
-                            }}
-                        >
-                            <Checkbox
-                                checked={useUIStore.getState().naturalLanguageMode}
-                                onChange={(v) => useUIStore.getState().setNaturalLanguageMode(v)}
-                                ariaLabel="Enable natural language input mode"
-                            />
-                            <div className="flex min-w-0 items-center gap-1.5">
-                                <span className="typography-ui-label text-foreground">Natural Language Input</span>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Icon name="information" className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
-                                    </TooltipTrigger>
-                                    <TooltipContent sideOffset={8} className="max-w-xs">
-                                        Show a friendly text input bar instead of the command palette for non-technical users
-                                    </TooltipContent>
-                                </Tooltip>
+                {!isMobile && (
+                    <div className="space-y-3">
+                        <section className="px-2 pb-2 pt-0 space-y-2">
+                            <h4 className="typography-ui-header font-medium text-foreground">{t('settings.openjunior.visual.section.layoutPanels')}</h4>
+                            <div data-settings-item="appearance.show-terminal-button" className="group flex cursor-pointer items-center gap-2 py-1.5" role="button" tabIndex={0} aria-pressed={showTerminalButton} onClick={() => setShowTerminalButton(!showTerminalButton)} onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setShowTerminalButton(!showTerminalButton); }}}>
+                                <Checkbox checked={showTerminalButton} onChange={setShowTerminalButton} ariaLabel={t('settings.openjunior.visual.field.showTerminalButton')} />
+                                <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.showTerminalButton')}</span>
                             </div>
-                        </div>
-
-                        <div
-                            className="group flex cursor-pointer items-center gap-2 py-1.5"
-                            role="button"
-                            tabIndex={0}
-                            aria-pressed={useUIStore.getState().showTerminalQuickKeysOnDesktop}
-                        >
-                            <span className="typography-ui-label text-foreground">Hide Keyboard Shortcuts</span>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Icon name="information" className="h-3.5 w-3.5 text-muted-foreground/60 cursor-help" />
-                                </TooltipTrigger>
-                                <TooltipContent sideOffset={8} className="max-w-xs">
-                                    Hide shortcut hints from the UI for a cleaner interface
-                                </TooltipContent>
-                            </Tooltip>
-                        </div>
-                    </section>
-                </div>
+                            <div data-settings-item="appearance.show-mini-browser-button" className="group flex cursor-pointer items-center gap-2 py-1.5" role="button" tabIndex={0} aria-pressed={showMiniBrowserButton} onClick={() => setShowMiniBrowserButton(!showMiniBrowserButton)} onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setShowMiniBrowserButton(!showMiniBrowserButton); }}}>
+                                <Checkbox checked={showMiniBrowserButton} onChange={setShowMiniBrowserButton} ariaLabel={t('settings.openjunior.visual.field.showMiniBrowser')} />
+                                <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.showMiniBrowser')}</span>
+                            </div>
+                            <div data-settings-item="appearance.show-right-sidebar-button" className="group flex cursor-pointer items-center gap-2 py-1.5" role="button" tabIndex={0} aria-pressed={showRightSidebarButton} onClick={() => setShowRightSidebarButton(!showRightSidebarButton)} onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setShowRightSidebarButton(!showRightSidebarButton); }}}>
+                                <Checkbox checked={showRightSidebarButton} onChange={setShowRightSidebarButton} ariaLabel={t('settings.openjunior.visual.field.showRightSidebar')} />
+                                <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.showRightSidebar')}</span>
+                            </div>
+                        </section>
+                    </div>
+                )}
 
                 {/* --- Privacy & Data --- */}
                 {shouldShow('reportUsage') && (

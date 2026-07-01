@@ -21,6 +21,7 @@ import { computeMcpHealth, useMcpStore } from '@/stores/useMcpStore';
 import { McpIcon } from '@/components/icons/McpIcon';
 import { Icon } from "@/components/icon/Icon";
 import { useI18n } from '@/lib/i18n';
+import { toast } from '@/components/ui';
 
 const statusTooltip = (
   status: McpStatus | undefined,
@@ -198,6 +199,9 @@ export const McpDropdownContent: React.FC<McpDropdownContentProps> = ({ active, 
                     } else {
                       await disconnect(serverName, directory);
                     }
+                  } catch (err) {
+                    const message = err instanceof Error ? err.message : 'Connection failed';
+                    toast.error(message);
                   } finally {
                     setBusyName(null);
                   }
@@ -352,6 +356,9 @@ export const McpDropdown: React.FC<McpDropdownProps> = ({ headerIconButtonClass 
                   } else {
                     await disconnect(serverName, directory);
                   }
+                } catch (err) {
+                  const message = err instanceof Error ? err.message : 'Connection failed';
+                  toast.error(message);
                 } finally {
                   setBusyName(null);
                 }

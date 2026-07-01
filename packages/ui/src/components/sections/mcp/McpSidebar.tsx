@@ -141,6 +141,7 @@ export const McpSidebar: React.FC<McpSidebarProps> = ({ onItemSelect }) => {
       oauthRedirectUri: '',
       timeout: '',
       enabled: true,
+      isBuiltIn: false,
     };
     setMcpDraft(draft);
     setSelectedMcp(newName);
@@ -166,18 +167,23 @@ export const McpSidebar: React.FC<McpSidebarProps> = ({ onItemSelect }) => {
     setIsDeleting(false);
   };
 
-  const renderMcpMenuItems = (server: McpServerConfig, Item: React.ElementType) => (
-    <Item
-      onClick={(e: React.MouseEvent) => {
-        e.stopPropagation();
-        setDeleteTarget(server);
-      }}
-      className="text-destructive focus:text-destructive"
-    >
-      <Icon name="delete-bin" className="h-4 w-4 mr-px" />
-      {t('settings.common.actions.delete')}
-    </Item>
-  );
+  const renderMcpMenuItems = (server: McpServerConfig, Item: React.ElementType) => {
+    if (server.isBuiltIn) {
+      return null;
+    }
+    return (
+      <Item
+        onClick={(e: React.MouseEvent) => {
+          e.stopPropagation();
+          setDeleteTarget(server);
+        }}
+        className="text-destructive focus:text-destructive"
+      >
+        <Icon name="delete-bin" className="h-4 w-4 mr-px" />
+        {t('settings.common.actions.delete')}
+      </Item>
+    );
+  };
 
   return (
     <div className={cn('flex h-full flex-col', bgClass)}>
@@ -210,6 +216,12 @@ export const McpSidebar: React.FC<McpSidebarProps> = ({ onItemSelect }) => {
             <Icon name="add" className="h-3.5 w-3.5" />
           </Button>
         </div>
+        {mcpServers.some((s) => s.isBuiltIn) && (
+          <p className="typography-micro text-muted-foreground/60 mt-1.5 px-1">
+            <Icon name="star" className="h-3 w-3 inline mr-0.5 align-text-bottom" />
+            Built-in MCPs are provided by default and cannot be deleted.
+          </p>
+        )}
       </div>
 
       {/* List */}
@@ -232,10 +244,11 @@ export const McpSidebar: React.FC<McpSidebarProps> = ({ onItemSelect }) => {
                   const tone = statusToneFromMcp(runtimeStatus?.status);
                   const isSelected = selectedMcpName === server.name;
                   const isMobile = isMobileDeviceViaCSS();
+                  const isBuiltIn = server.isBuiltIn === true;
 
                   return (
-                    <ContextMenu key={server.name} open={rightClickMenuMcp === server.name} onOpenChange={(open) => setRightClickMenuMcp(open ? server.name : null)}>
-                      <ContextMenuTrigger render={<div className={cn('group relative flex items-center rounded-md px-1.5 py-1 transition-all duration-200 select-none', isSelected ? 'bg-interactive-selection' : 'hover:bg-interactive-hover')} onContextMenu={!isMobile ? (e) => { e.preventDefault(); setRightClickMenuMcp(server.name); } : undefined} />}>
+                    <ContextMenu key={server.name} open={!isBuiltIn && rightClickMenuMcp === server.name} onOpenChange={(open) => setRightClickMenuMcp(open ? server.name : null)}>
+                      <ContextMenuTrigger render={<div className={cn('group relative flex items-center rounded-md px-1.5 py-1 transition-all duration-200 select-none', isSelected ? 'bg-interactive-selection' : 'hover:bg-interactive-hover')} onContextMenu={!isMobile && !isBuiltIn ? (e) => { e.preventDefault(); setRightClickMenuMcp(server.name); } : undefined} />}>
                       <button
                         onClick={() => {
                           setSelectedMcp(server.name);
@@ -257,6 +270,12 @@ export const McpSidebar: React.FC<McpSidebarProps> = ({ onItemSelect }) => {
                               <Icon name="global" className="h-3 w-3 text-muted-foreground/60 flex-shrink-0" />
                             )}
                           </span>
+                          {isBuiltIn && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--status-info)]/10 px-2 py-0.5 typography-micro text-[var(--status-info)] font-medium">
+                              <Icon name="star" className="h-3 w-3" />
+                              Built-in
+                            </span>
+                          )}
                         </div>
                         <div className="typography-micro text-muted-foreground/60 truncate leading-tight pl-4">
                           {server.type === 'local'
@@ -265,20 +284,28 @@ export const McpSidebar: React.FC<McpSidebarProps> = ({ onItemSelect }) => {
                         </div>
                       </button>
 
-                      <DropdownMenu open={openMenuMcp === server.name} onOpenChange={(open) => { if (open) setRightClickMenuMcp(null); setOpenMenuMcp(open ? server.name : null); }}>
-                        <DropdownMenuTrigger asChild>
-                          <Button size="xs" variant="ghost" className="flex-shrink-0 -mr-1 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100">
-                            <Icon name="more-2" className="h-3.5 w-3.5" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-fit min-w-20">
-                          {renderMcpMenuItems(server, DropdownMenuItem)}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      {isBuiltIn ? (
+                        <Button size="xs" variant="ghost" disabled className="flex-shrink-0 -mr-1 text-muted-foreground/40" title="Built-in MCP (cannot be deleted)">
+                          <Icon name="lock" className="h-3.5 w-3.5" />
+                        </Button>
+                      ) : (
+                        <DropdownMenu open={openMenuMcp === server.name} onOpenChange={(open) => { if (open) setRightClickMenuMcp(null); setOpenMenuMcp(open ? server.name : null); }}>
+                          <DropdownMenuTrigger asChild>
+                            <Button size="xs" variant="ghost" className="flex-shrink-0 -mr-1 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100">
+                              <Icon name="more-2" className="h-3.5 w-3.5" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-fit min-w-20">
+                            {renderMcpMenuItems(server, DropdownMenuItem)}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
                       </ContextMenuTrigger>
-                      <ContextMenuContent className="w-fit min-w-20">
-                        {renderMcpMenuItems(server, ContextMenuItem)}
-                      </ContextMenuContent>
+                      {!isBuiltIn && (
+                        <ContextMenuContent className="w-fit min-w-20">
+                          {renderMcpMenuItems(server, ContextMenuItem)}
+                        </ContextMenuContent>
+                      )}
                     </ContextMenu>
                   );
                 })}
@@ -295,10 +322,11 @@ export const McpSidebar: React.FC<McpSidebarProps> = ({ onItemSelect }) => {
                   const tone = statusToneFromMcp(runtimeStatus?.status);
                   const isSelected = selectedMcpName === server.name;
                   const isMobile = isMobileDeviceViaCSS();
+                  const isBuiltIn = server.isBuiltIn === true;
 
                   return (
-                    <ContextMenu key={server.name} open={rightClickMenuMcp === server.name} onOpenChange={(open) => setRightClickMenuMcp(open ? server.name : null)}>
-                      <ContextMenuTrigger render={<div className={cn('group relative flex items-center rounded-md px-1.5 py-1 transition-all duration-200 select-none', isSelected ? 'bg-interactive-selection' : 'hover:bg-interactive-hover')} onContextMenu={!isMobile ? (e) => { e.preventDefault(); setRightClickMenuMcp(server.name); } : undefined} />}>
+                    <ContextMenu key={server.name} open={!isBuiltIn && rightClickMenuMcp === server.name} onOpenChange={(open) => setRightClickMenuMcp(open ? server.name : null)}>
+                      <ContextMenuTrigger render={<div className={cn('group relative flex items-center rounded-md px-1.5 py-1 transition-all duration-200 select-none', isSelected ? 'bg-interactive-selection' : 'hover:bg-interactive-hover')} onContextMenu={!isMobile && !isBuiltIn ? (e) => { e.preventDefault(); setRightClickMenuMcp(server.name); } : undefined} />}>
                       <button
                         onClick={() => {
                           setSelectedMcp(server.name);
@@ -320,6 +348,12 @@ export const McpSidebar: React.FC<McpSidebarProps> = ({ onItemSelect }) => {
                               <Icon name="global" className="h-3 w-3 text-muted-foreground/60 flex-shrink-0" />
                             )}
                           </span>
+                          {isBuiltIn && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-[var(--status-info)]/10 px-2 py-0.5 typography-micro text-[var(--status-info)] font-medium">
+                              <Icon name="star" className="h-3 w-3" />
+                              Built-in
+                            </span>
+                          )}
                         </div>
                         <div className="typography-micro text-muted-foreground/60 truncate leading-tight pl-4">
                           {server.type === 'local'
@@ -328,20 +362,28 @@ export const McpSidebar: React.FC<McpSidebarProps> = ({ onItemSelect }) => {
                         </div>
                       </button>
 
-                      <DropdownMenu open={openMenuMcp === server.name} onOpenChange={(open) => { if (open) setRightClickMenuMcp(null); setOpenMenuMcp(open ? server.name : null); }}>
-                        <DropdownMenuTrigger asChild>
-                          <Button size="xs" variant="ghost" className="flex-shrink-0 -mr-1 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100">
-                            <Icon name="more-2" className="h-3.5 w-3.5" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-fit min-w-20">
-                          {renderMcpMenuItems(server, DropdownMenuItem)}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      {isBuiltIn ? (
+                        <Button size="xs" variant="ghost" disabled className="flex-shrink-0 -mr-1 text-muted-foreground/40" title="Built-in MCP (cannot be deleted)">
+                          <Icon name="lock" className="h-3.5 w-3.5" />
+                        </Button>
+                      ) : (
+                        <DropdownMenu open={openMenuMcp === server.name} onOpenChange={(open) => { if (open) setRightClickMenuMcp(null); setOpenMenuMcp(open ? server.name : null); }}>
+                          <DropdownMenuTrigger asChild>
+                            <Button size="xs" variant="ghost" className="flex-shrink-0 -mr-1 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100">
+                              <Icon name="more-2" className="h-3.5 w-3.5" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-fit min-w-20">
+                            {renderMcpMenuItems(server, DropdownMenuItem)}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
                       </ContextMenuTrigger>
-                      <ContextMenuContent className="w-fit min-w-20">
-                        {renderMcpMenuItems(server, ContextMenuItem)}
-                      </ContextMenuContent>
+                      {!isBuiltIn && (
+                        <ContextMenuContent className="w-fit min-w-20">
+                          {renderMcpMenuItems(server, ContextMenuItem)}
+                        </ContextMenuContent>
+                      )}
                     </ContextMenu>
                   );
                 })}

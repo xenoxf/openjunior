@@ -1785,4 +1785,8 @@ export const settingsDict = {
   'settings.promptTemplates.page.toast.created': '템플릿이 생성되었습니다',
   'settings.promptTemplates.page.toast.createFailed': '템플릿 생성 실패',
   'settings.promptTemplates.page.toast.saveUnexpectedError': '저장 중 예기치 않은 오류가 발생했습니다',
+  'settings.openjunior.visual.section.layoutPanels': '인터페이스 레이아웃',
+  'settings.openjunior.visual.field.showTerminalButton': '터미널 버튼 표시',
+  'settings.openjunior.visual.field.showMiniBrowser': '미니 브라우저 버튼 표시',
+  'settings.openjunior.visual.field.showRightSidebar': '오른쪽 사이드바 버튼 표시',
 } as const;

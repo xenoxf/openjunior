@@ -11,6 +11,7 @@ import { ContextPanel } from './ContextPanel';
 import { ErrorBoundary } from '../ui/ErrorBoundary';
 import { CommandPalette } from '../ui/CommandPalette';
 import { HelpDialog } from '../ui/HelpDialog';
+import { OnboardingView } from '@/components/onboarding/OnboardingView';
 import { OpenCodeStatusDialog } from '../ui/OpenCodeStatusDialog';
 import { SessionSidebar } from '@/components/session/SessionSidebar';
 import { SessionDialogs } from '@/components/session/SessionDialogs';
@@ -43,6 +44,7 @@ export const MainLayout: React.FC = () => {
     const RIGHT_SIDEBAR_AUTO_OPEN_WIDTH = 1220;
     const BOTTOM_TERMINAL_AUTO_CLOSE_HEIGHT = 640;
     const BOTTOM_TERMINAL_AUTO_OPEN_HEIGHT = 700;
+    const onboardingCompleted = useUIStore((state) => state.onboardingCompleted);
     const isSidebarOpen = useUIStore((state) => state.isSidebarOpen);
     const isRightSidebarOpen = useUIStore((state) => state.isRightSidebarOpen);
     const isBottomTerminalOpen = useUIStore((state) => state.isBottomTerminalOpen);
@@ -378,6 +380,10 @@ export const MainLayout: React.FC = () => {
     }, [activeMainTab, mobileRightSidebarOpen]);
 
     const isChatActive = activeMainTab === 'chat';
+
+    if (!onboardingCompleted) {
+        return <OnboardingView />;
+    }
 
     return (
         <DiffWorkerProvider>
