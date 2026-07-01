@@ -1,6 +1,6 @@
 {
   "name": "@openjunior/electron",
-  "version": "1.14.2",
+  "version": "1.14.4",
   "private": true,
   "description": "Electron desktop runtime for OpenJunior",
   "author": "OpenJunior <dev@openjunior.dev>",
@@ -95,15 +95,24 @@
       "target": [
         {
           "target": "AppImage",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         },
         {
           "target": "deb",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         },
         {
           "target": "rpm",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         }
       ],
       "artifactName": "${productName}-${version}-linux-${arch}.${ext}"
