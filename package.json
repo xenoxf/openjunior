@@ -1,6 +1,6 @@
 {
   "name": "openjunior-monorepo",
-  "version": "1.14.1",
+  "version": "1.14.2",
   "description": "OpenJunior monorepo workspace for web, ui, and desktop runtimes",
   "private": true,
   "type": "module",
