@@ -1,266 +1,61 @@
-# ============================================================
-# Release Workflow — OpenJunior
-# ============================================================
-#
-# Trigger: push a la rama `production`
-#
-# Jobs:
-#   1. calc-version: analiza conventional commits desde el
-#      último tag y determina la próxima versión
-#   2. build-macos: build Electron para macOS (ARM + x64)
-#   3. build-windows: build Electron para Windows (x64)
-#   4. build-linux: build Electron para Linux (AppImage, deb, rpm)
-#   5. create-release: bump version, tag, GitHub Release
-#
-# NOTA: macOS runner tiene minutos limitados en repos gratis.
-# Por eso build-macos corre SOLO en push a production (no en PRs).
-# Windows y Linux corren siempre porque son gratis ilimitados.
-#
-# ============================================================
-
-name: Release
+name: Release Build
 
 on:
   push:
-    branches:
-      - production
-      - experiment
+    tags:
+      - 'v*'
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing release tag to upload assets to'
+        required: true
+        type: string
 
-# ─── Environment ─────────────────────────────────────
-# Variables compartidas entre todos los jobs.
-env:
-  NODE_VERSION: '22'
-  BUN_VERSION: '1.3.14'
+permissions:
+  contents: write
 
-# ─── Jobs ───────────────────────────────────────────
 jobs:
-
-  # ─── 1. Calculate Next Version ────────────────────
-  calc-version:
-    name: Calculate Version
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.calc.outputs.version }}
-      current_version: ${{ steps.calc.outputs.current_version }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          # Necesitamos todos los commits y tags para calcular versión
-          fetch-depth: 0
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: ${{ env.BUN_VERSION }}
-
-      - name: Calculate version from conventional commits
-        id: calc
-        run: |
-          VERSION=$(bun run scripts/calc-version.mjs)
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "current_version=$(git describe --tags --abbrev=0 2>/dev/null || echo '0.0.0')" >> $GITHUB_OUTPUT
-          echo "Next version: $VERSION"
-
-  # ─── 2. Build macOS ───────────────────────────────
-  build-macos:
-    name: Build macOS
-    needs: calc-version
-    runs-on: macos-latest
+  build:
     strategy:
+      fail-fast: false
       matrix:
-        arch: [x64, arm64]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: ${{ env.BUN_VERSION }}
+          bun-version: 1.3.14
 
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
+      - run: bun install --frozen-lockfile
 
-      - name: Build web assets
-        run: bun run build:web
-
-      - name: Build Electron (macOS ${{ matrix.arch }})
-        run: |
-          cd packages/electron
-          bun run build:web-assets
-          bun run bundle:main
-          bun run rebuild:native
-          bun x electron-builder --mac --${{ matrix.arch }} --publish=never
+      - name: Build Electron package
+        working-directory: packages/electron
+        run: bun run package
         env:
-          CSC_LINK: ${{ secrets.CSC_LINK || '' }}
-          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD || '' }}
-          APPLE_ID: ${{ secrets.APPLE_ID || '' }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD || '' }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID || '' }}
-          CSC_IDENTITY_AUTO_DISCOVERY: ${{ secrets.CSC_LINK == '' && 'false' || 'true' }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: openjunior-mac-${{ matrix.arch }}-${{ needs.calc-version.outputs.version }}
-          path: packages/electron/dist/*.dmg
-          if-no-files-found: warn
-
-  # ─── 3. Build Windows ─────────────────────────────
-  build-windows:
-    name: Build Windows
-    needs: calc-version
-    runs-on: windows-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: ${{ env.BUN_VERSION }}
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Build web assets
-        run: bun run build:web
-
-      - name: Build Electron (Windows)
-        run: |
-          cd packages/electron
-          bun run build:web-assets
-          bun run bundle:main
-          bun run rebuild:native
-          CSC_IDENTITY_AUTO_DISCOVERY=false bun x electron-builder --win --x64 --publish=never
+      - name: Upload to release
+        shell: bash
         env:
-          CSC_LINK: ${{ secrets.WINDOWS_CSC_LINK || '' }}
-          CSC_KEY_PASSWORD: ${{ secrets.WINDOWS_CSC_KEY_PASSWORD || '' }}
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: openjunior-win-x64-${{ needs.calc-version.outputs.version }}
-          path: packages/electron/dist/*.exe
-          if-no-files-found: warn
-
-  # ─── 4. Build Linux ───────────────────────────────
-  build-linux:
-    name: Build Linux
-    needs: calc-version
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        arch: [x64, arm64]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: ${{ env.BUN_VERSION }}
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Build web assets
-        run: bun run build:web
-
-      - name: Build Electron (Linux ${{ matrix.arch }})
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cd packages/electron
-          bun run build:web-assets
-          bun run bundle:main
-          bun run rebuild:native
-          bun x electron-builder --linux --${{ matrix.arch }} --publish=never
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: openjunior-linux-${{ matrix.arch }}-${{ needs.calc-version.outputs.version }}
-          path: |
-            packages/electron/dist/*.AppImage
-            packages/electron/dist/*.deb
-            packages/electron/dist/*.rpm
-          if-no-files-found: warn
-
-  # ─── 5. Create GitHub Release ─────────────────────
-  create-release:
-    name: Create Release
-    needs: [calc-version, build-macos, build-windows, build-linux]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: ${{ env.BUN_VERSION }}
-
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          pattern: openjunior-*
-          merge-multiple: true
-          path: release-artifacts/
-
-      - name: Bump version in package.json files
-        run: |
-          VERSION="${{ needs.calc-version.outputs.version }}"
-          bun run scripts/bump-version.mjs "$VERSION"
-
-      - name: Generate changelog section
-        id: changelog
-        run: |
-          echo "changelog<<EOF" >> $GITHUB_OUTPUT
-          echo "## [${{ needs.calc-version.outputs.version }}] - $(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
-          echo "" >> $GITHUB_OUTPUT
-          echo "See [CHANGELOG.md](./CHANGELOG.md) for full details." >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-      - name: Finalize update metadata
-        run: |
-          # Run the finalize-latest-yml script if it exists
-          if [ -f packages/electron/scripts/finalize-latest-yml.mjs ]; then
-            bun run packages/electron/scripts/finalize-latest-yml.mjs
+          TAG="${{ github.ref_name }}"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            TAG="${{ inputs.tag }}"
           fi
 
-      - name: Commit version bump
-        run: |
-          VERSION="${{ needs.calc-version.outputs.version }}"
-          git config user.name "openjunior-bot"
-          git config user.email "bot@openjunior.dev"
-          git add package.json packages/*/package.json
-          git commit -m "chore: bump version to v${VERSION}"
-          git tag "v${VERSION}"
-          git push origin "v${VERSION}"
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ needs.calc-version.outputs.version }}
-          name: v${{ needs.calc-version.outputs.version }}
-          body: ${{ steps.changelog.outputs.changelog }}
-          files: |
-            release-artifacts/*.dmg
-            release-artifacts/*.exe
-            release-artifacts/*.AppImage
-            release-artifacts/*.deb
-            release-artifacts/*.rpm
-            release-artifacts/latest*.yml
-          draft: false
-          prerelease: false
+          echo "Tag: $TAG"
+          shopt -s nullglob
+          for f in packages/electron/dist/OpenJunior-*; do
+            name="$(basename "$f")"
+            # Skip unpacked dirs, blockmaps, and latest metadata
+            if [[ -d "$f" || "$name" == *.blockmap || "$name" == latest*.yml || "$name" == latest*.json ]]; then
+              continue
+            fi
+            echo "Uploading: $name"
+            gh release upload "$TAG" "$f" --clobber
+          done
