@@ -26,6 +26,11 @@ on:
       - production
       - experiment
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version override (e.g. 1.14.3). Skips calculation and commit/tag.'
+        required: false
+        type: string
 
 # ─── Environment ─────────────────────────────────────
 # Variables compartidas entre todos los jobs.
@@ -58,7 +63,11 @@ jobs:
       - name: Calculate version from conventional commits
         id: calc
         run: |
-          VERSION=$(bun run scripts/calc-version.mjs)
+          if [ -n "${{ inputs.version }}" ]; then
+            VERSION="${{ inputs.version }}"
+          else
+            VERSION=$(bun run scripts/calc-version.mjs)
+          fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "current_version=$(git describe --tags --abbrev=0 2>/dev/null || echo '0.0.0')" >> $GITHUB_OUTPUT
           echo "Next version: $VERSION"
@@ -240,6 +249,7 @@ jobs:
           fi
 
       - name: Commit version bump
+        if: ${{ !inputs.version }}
         run: |
           VERSION="${{ needs.calc-version.outputs.version }}"
           git config user.name "openjunior-bot"
@@ -255,6 +265,7 @@ jobs:
           tag_name: v${{ needs.calc-version.outputs.version }}
           name: v${{ needs.calc-version.outputs.version }}
           body: ${{ steps.changelog.outputs.changelog }}
+          fail_on_unmatched_files: false
           files: |
             release-artifacts/*.dmg
             release-artifacts/*.exe
