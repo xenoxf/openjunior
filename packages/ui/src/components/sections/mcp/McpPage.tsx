@@ -914,6 +914,16 @@ export const McpPage: React.FC = () => {
         resetTransientAuthState();
         if (isNewServer) { setMcpDraft(null); setSelectedMcp(name); }
         await refreshStatus({ directory: currentDirectory, silent: true });
+
+        if (isNewServer && enabled) {
+          try {
+            await connectMcp(name, currentDirectory);
+            await refreshStatus({ directory: currentDirectory, silent: true });
+          } catch {
+            // connect error is stored in diagnostics; visible in status badge
+          }
+        }
+
         if (result.reloadFailed) {
           toast.warning(result.message || (isNewServer
             ? t('settings.mcp.page.toast.serverCreatedReloadFailed')

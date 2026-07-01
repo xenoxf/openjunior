@@ -1346,6 +1346,9 @@ const computeBootOutcome = ({ envTargetUrl, probe, config, localAvailable }) => 
 
   const defaultId = config.defaultHostId || '';
   if (!defaultId) {
+    if (localAvailable) {
+      return { target: 'local', status: 'ok' };
+    }
     return { target: null, status: 'not-configured' };
   }
 
@@ -2466,6 +2469,14 @@ const resolveInitialUrl = async () => {
     config,
     localAvailable,
   });
+
+  if (bootOutcome.target === 'local' && bootOutcome.status === 'ok' && !config.defaultHostId) {
+    await writeDesktopHostsConfig({
+      ...config,
+      defaultHostId: LOCAL_HOST_ID,
+      initialHostChoiceCompleted: true,
+    });
+  }
 
   return { initialUrl, localOrigin, localUiUrl, bootOutcome, apiBaseUrl, clientToken };
 };

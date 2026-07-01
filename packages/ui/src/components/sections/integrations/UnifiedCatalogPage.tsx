@@ -12,6 +12,8 @@ import {
   type McpRemoteVariable,
 } from '@/stores/useMcpRegistryStore';
 import { runtimeFetch } from '@/lib/runtime-fetch';
+import { useMcpConfigStore } from '@/stores/useMcpConfigStore';
+import { useMcpStore } from '@/stores/useMcpStore';
 import {
   Dialog,
   DialogClose,
@@ -523,6 +525,8 @@ export const UnifiedCatalogPage: React.FC = () => {
           description: result?.message || `MCP server "${name}" configured successfully.`,
         });
         void loadInstalled();
+        useMcpConfigStore.getState().loadMcpConfigs({ force: true });
+        useMcpStore.getState().refresh({ silent: true });
         setDetailOpen(false);
       } else {
         const err = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
