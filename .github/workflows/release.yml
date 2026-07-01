@@ -259,9 +259,10 @@ jobs:
 
       - name: Finalize update metadata
         run: |
-          # Run the finalize-latest-yml script if it exists
-          if [ -f packages/electron/scripts/finalize-latest-yml.mjs ]; then
+          if [ -n "$LATEST_YML_DIR" ] && [ -n "$GH_REPO" ] && [ -n "$OPENJUNIOR_VERSION" ]; then
             bun run packages/electron/scripts/finalize-latest-yml.mjs
+          else
+            echo "Skipping finalize-latest-yml (env vars not set)"
           fi
 
       - name: Commit version bump
