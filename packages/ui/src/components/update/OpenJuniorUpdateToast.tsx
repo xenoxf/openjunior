@@ -1,0 +1,96 @@
+import * as React from 'react';
+import { Icon } from '@/components/icon/Icon';
+import { toast } from '@/components/ui/toast';
+import { useI18n } from '@/lib/i18n';
+import { getSafeStorage } from '@/stores/utils/safeStorage';
+import { useUpdateStore } from '@/stores/useUpdateStore';
+
+const UPDATE_TOAST_ID = 'openjunior-update-available';
+const UPDATE_DOWNLOAD_TOAST_ID = 'openjunior-update-download';
+const DISMISSED_VERSION_KEY = 'openjunior-update-toast-dismissed-version';
+
+export const OpenJuniorUpdateToast: React.FC = () => {
+  const { t } = useI18n();
+  const seenVersionsRef = React.useRef(new Set<string>());
+
+  React.useEffect(() => {
+    let cancelled = false;
+    let currentDownloadToastId: string | null = null;
+
+    const unsub = useUpdateStore.subscribe((state) => {
+      if (cancelled) return;
+
+      const version = state.info?.version;
+      const dismissedVersion = getSafeStorage().getItem(DISMISSED_VERSION_KEY);
+
+      if (state.available && version && !seenVersionsRef.current.has(version) && dismissedVersion !== version) {
+        seenVersionsRef.current.add(version);
+
+        toast.info(t('openjuniorUpdate.toast.available.title'), {
+          id: UPDATE_TOAST_ID,
+          description: t('openjuniorUpdate.toast.available.description', { version }),
+          duration: Infinity,
+          action: {
+            label: t('openjuniorUpdate.toast.actions.download'),
+            onClick: () => {
+              useUpdateStore.getState().downloadUpdate();
+            },
+          },
+          cancel: {
+            label: t('openjuniorUpdate.toast.actions.dismiss'),
+            onClick: () => {
+              getSafeStorage().setItem(DISMISSED_VERSION_KEY, version);
+              toast.dismiss(UPDATE_TOAST_ID);
+            },
+          },
+        });
+      }
+
+      if (state.downloading && state.progress) {
+        const total = state.progress.total ?? 0;
+        const percent = total > 0
+          ? Math.round((state.progress.downloaded / total) * 100)
+          : 0;
+        toast.message(t('openjuniorUpdate.toast.downloading.title'), {
+          id: UPDATE_DOWNLOAD_TOAST_ID,
+          description: t('openjuniorUpdate.toast.downloading.description', {
+            progress: percent,
+          }),
+          duration: Infinity,
+          icon: <Icon name="refresh" className="h-4 w-4 animate-spin text-muted-foreground" />,
+        });
+        currentDownloadToastId = UPDATE_DOWNLOAD_TOAST_ID;
+      }
+
+      if (state.downloaded) {
+        toast.success(t('openjuniorUpdate.toast.downloaded.title'), {
+          id: currentDownloadToastId || UPDATE_DOWNLOAD_TOAST_ID,
+          description: t('openjuniorUpdate.toast.downloaded.description', { version: state.info?.version || '' }),
+          duration: Infinity,
+          icon: <Icon name="check" className="h-4 w-4 text-[var(--status-success)]" />,
+          action: {
+            label: t('openjuniorUpdate.toast.actions.restart'),
+            onClick: () => {
+              useUpdateStore.getState().restartToUpdate();
+            },
+          },
+        });
+      }
+
+      if (state.error && !state.downloading) {
+        toast.error(t('openjuniorUpdate.toast.failed.title'), {
+          id: currentDownloadToastId || UPDATE_DOWNLOAD_TOAST_ID,
+          description: state.error,
+          duration: Infinity,
+        });
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      unsub();
+    };
+  }, [t]);
+
+  return null;
+};

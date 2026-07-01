@@ -103,8 +103,10 @@ function seedDefaultMcps(workingDirectory) {
   }
 
   writeMcpSeedFlag();
+  cleanupLegacyBuiltInMcpSeedKey();
+}
 
-  // Clean up legacy _builtInMcpSeeded key from opencode config if present
+function cleanupLegacyBuiltInMcpSeedKey() {
   try {
     const oldConfig = readConfigFile(CONFIG_FILE);
     if (oldConfig && oldConfig._builtInMcpSeeded !== undefined) {
@@ -385,4 +387,5 @@ export {
   deleteMcpConfig,
   getDefaultMcps,
   seedDefaultMcps,
+  cleanupLegacyBuiltInMcpSeedKey,
 };

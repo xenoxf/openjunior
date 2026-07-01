@@ -6,6 +6,7 @@ import { McpIcon } from '@/components/icons/McpIcon';
 import { McpDropdownContent } from '@/components/mcp/McpDropdown';
 import { AboutSettings } from '@/components/sections/openjunior/AboutSettings';
 import { OpenCodeUpdateToast } from '@/components/update/OpenCodeUpdateToast';
+import { OpenJuniorUpdateToast } from '@/components/update/OpenJuniorUpdateToast';
 import { ConfigUpdateOverlay } from '@/components/ui/ConfigUpdateOverlay';
 import { ProviderLogo } from '@/components/ui/ProviderLogo';
 import { ChatView } from '@/components/views/ChatView';
@@ -1201,6 +1202,7 @@ export function MobileApp({ apis }: MobileAppProps) {
             <div className="h-full bg-background text-foreground">
               <SyncAppEffects embeddedBackgroundWorkEnabled={isInitialized} />
               <OpenCodeUpdateToast />
+              <OpenJuniorUpdateToast />
               <MobileShell />
               <Toaster />
               {isInitialized ? <ConfigUpdateOverlay /> : null}
