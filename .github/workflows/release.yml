@@ -25,8 +25,6 @@ on:
     branches:
       - production
       - experiment
-    tags:
-      - 'v*'
   workflow_dispatch:
 
 # ─── Environment ─────────────────────────────────────
