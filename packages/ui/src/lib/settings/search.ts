@@ -128,6 +128,24 @@ export const SETTINGS_SEARCH_ITEMS: readonly SettingsSearchItem[] = [
     keywords: ['editor', 'vim', 'keymap'],
   },
   {
+    id: 'appearance.show-terminal-button',
+    page: 'appearance',
+    titleKey: 'settings.openjunior.visual.field.showTerminalButton',
+    keywords: ['terminal', 'button', 'panel', 'toggle'],
+  },
+  {
+    id: 'appearance.show-mini-browser',
+    page: 'appearance',
+    titleKey: 'settings.openjunior.visual.field.showMiniBrowser',
+    keywords: ['browser', 'mini browser', 'context panel', 'webview'],
+  },
+  {
+    id: 'appearance.show-right-sidebar',
+    page: 'appearance',
+    titleKey: 'settings.openjunior.visual.field.showRightSidebar',
+    keywords: ['sidebar', 'right sidebar', 'git', 'files', 'context'],
+  },
+  {
     id: 'appearance.terminal-quick-keys',
     page: 'appearance',
     titleKey: 'settings.openjunior.visual.field.terminalQuickKeys',
@@ -731,7 +749,7 @@ export const SETTINGS_SEARCH_ITEMS: readonly SettingsSearchItem[] = [
     id: 'integrations.browse',
     page: 'integrations',
     titleKey: 'settings.integrations.page.title',
-    keywords: ['mcp', 'plugins', 'skills', 'catalog', 'extensions', 'connect', 'services', 'tools', 'marketplace'],
+    keywords: ['mcp', 'registry', 'modelcontextprotocol', 'servers', 'connect', 'services', 'tools', 'marketplace'],
   },
 ] as const;
 

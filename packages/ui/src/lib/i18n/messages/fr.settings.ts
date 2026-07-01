@@ -1785,4 +1785,8 @@ export const settingsDict = {
   'settings.magicPrompts.page.toast.resetFailed': 'Échec de la réinitialisation du prompt',
   'settings.magicPrompts.page.toast.resetAllSuccess': 'Tous les prompts ont été réinitialisés',
   'settings.magicPrompts.page.toast.resetAllFailed': 'Échec de la réinitialisation de tous les prompts',
+  'settings.openjunior.visual.section.layoutPanels': 'Disposition de l\'interface',
+  'settings.openjunior.visual.field.showTerminalButton': 'Afficher le bouton du terminal',
+  'settings.openjunior.visual.field.showMiniBrowser': 'Afficher le bouton du mini navigateur',
+  'settings.openjunior.visual.field.showRightSidebar': 'Afficher le bouton de la barre latérale droite',
 } as const;

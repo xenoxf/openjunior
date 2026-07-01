@@ -724,6 +724,10 @@ export const Header: React.FC<HeaderProps> = ({
   const setActiveMainTab = useUIStore((state) => state.setActiveMainTab);
   const shortcutOverrides = useUIStore((state) => state.shortcutOverrides);
   const timeFormatPreference = useUIStore((state) => state.timeFormatPreference);
+  const showTerminalButton = useUIStore((state) => state.showTerminalButton);
+  const showMiniBrowserButton = useUIStore((state) => state.showMiniBrowserButton);
+  const showRightSidebarButton = useUIStore((state) => state.showRightSidebarButton);
+  const showAdvancedControls = useUIStore((state) => state.showAdvancedControls);
 
   const getCurrentModel = useConfigStore((state) => state.getCurrentModel);
   const runtimeApis = useRuntimeAPIs();
@@ -2083,13 +2087,15 @@ export const Header: React.FC<HeaderProps> = ({
         onOpenRemoteUpdate={openRemoteInstanceUpdate}
         timeFormatPreference={timeFormatPreference}
       />
-      <HeaderIconActionButton
-        title={t('header.actions.terminalPanelWithShortcut', { shortcut: shortcutLabel('toggle_terminal') })}
-        ariaLabel={t('header.actions.toggleTerminalPanelAria')}
-        onClick={toggleBottomTerminal}
-        Icon={'terminal-box'}
-      />
-      {!isMobile ? (
+      {showAdvancedControls && showTerminalButton && (
+        <HeaderIconActionButton
+          title={t('header.actions.terminalPanelWithShortcut', { shortcut: shortcutLabel('toggle_terminal') })}
+          ariaLabel={t('header.actions.toggleTerminalPanelAria')}
+          onClick={toggleBottomTerminal}
+          Icon={'terminal-box'}
+        />
+      )}
+      {showAdvancedControls && showMiniBrowserButton && !isMobile ? (
         <HeaderIconActionButton
           title={t('contextPanel.browser.open')}
           ariaLabel={t('contextPanel.browser.open')}
@@ -2098,12 +2104,14 @@ export const Header: React.FC<HeaderProps> = ({
           Icon={'global'}
         />
       ) : null}
-      <HeaderIconActionButton
-        title={t('header.actions.rightSidebarWithShortcut', { shortcut: shortcutLabel('toggle_right_sidebar') })}
-        ariaLabel={t('header.actions.toggleRightSidebarAria')}
-        onClick={toggleRightSidebar}
-        Icon={'layout-right'}
-      />
+      {showAdvancedControls && showRightSidebarButton && (
+        <HeaderIconActionButton
+          title={t('header.actions.rightSidebarWithShortcut', { shortcut: shortcutLabel('toggle_right_sidebar') })}
+          ariaLabel={t('header.actions.toggleRightSidebarAria')}
+          onClick={toggleRightSidebar}
+          Icon={'layout-right'}
+        />
+      )}
       <DesktopGitHubControl
         isMobile={isMobile}
         githubAuthStatus={githubAuthStatus}

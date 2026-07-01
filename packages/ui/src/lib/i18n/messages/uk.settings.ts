@@ -1785,4 +1785,8 @@ export const settingsDict = {
   "settings.promptTemplates.page.toast.created": "Шаблон створено",
   "settings.promptTemplates.page.toast.createFailed": "Не вдалося створити шаблон",
   "settings.promptTemplates.page.toast.saveUnexpectedError": "Сталася неочікувана помилка під час збереження",
+  "settings.openjunior.visual.section.layoutPanels": "Макет інтерфейсу",
+  "settings.openjunior.visual.field.showTerminalButton": "Показати кнопку терміналу",
+  "settings.openjunior.visual.field.showMiniBrowser": "Показати кнопку міні-браузера",
+  "settings.openjunior.visual.field.showRightSidebar": "Показати кнопку правої бічної панелі",
 } as const;

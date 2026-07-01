@@ -1843,7 +1843,18 @@ export const McpPage: React.FC = () => {
           >
             {isSaving ? t('settings.common.actions.saving') : isNewServer ? t('settings.common.actions.create') : t('settings.common.actions.saveChanges')}
           </Button>
-          {!isNewServer && (
+          {!isNewServer && (selectedServer?.isBuiltIn ? (
+            <Button
+              variant="ghost"
+              size="xs"
+              disabled
+              className="!font-normal gap-1 text-muted-foreground/40"
+              title="Built-in MCP (cannot be deleted)"
+            >
+              <Icon name="lock" className="h-4 w-4" />
+              {t('settings.common.actions.delete')}
+            </Button>
+          ) : (
             <Button
               variant="destructive"
               size="xs"
@@ -1852,7 +1863,7 @@ export const McpPage: React.FC = () => {
             >
               {t('settings.common.actions.delete')}
             </Button>
-          )}
+          ))}
         </div>
       </div>
 

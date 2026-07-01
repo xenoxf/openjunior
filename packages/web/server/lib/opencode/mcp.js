@@ -10,6 +10,82 @@ import {
   writeConfig,
 } from './shared.js';
 
+// ============== DEFAULT BUILT-IN MCPS ==============
+
+const DEFAULT_MCPS = [
+  {
+    name: 'web-search',
+    type: 'local',
+    command: ['npx', '-y', '@anthropic/mcp-web-search'],
+    enabled: true,
+    isBuiltIn: true,
+  },
+  {
+    name: 'time-date',
+    type: 'local',
+    command: ['npx', '-y', '@modelcontextprotocol/server-datetime'],
+    enabled: true,
+    isBuiltIn: true,
+  },
+  {
+    name: 'weather',
+    type: 'local',
+    command: ['npx', '-y', '@klimachan/mcp-weather'],
+    enabled: true,
+    isBuiltIn: true,
+  },
+  {
+    name: 'filesystem',
+    type: 'local',
+    command: ['npx', '-y', '@modelcontextprotocol/server-filesystem', '/tmp'],
+    enabled: false,
+    isBuiltIn: true,
+  },
+  {
+    name: 'calculator',
+    type: 'local',
+    command: ['npx', '-y', '@anthropic/mcp-calculator'],
+    enabled: true,
+    isBuiltIn: true,
+  },
+  {
+    name: 'github',
+    type: 'remote',
+    url: 'https://api.github.com/mcp',
+    enabled: false,
+    isBuiltIn: true,
+  },
+  {
+    name: 'office-docs',
+    type: 'local',
+    command: ['npx', '-y', '@modelcontextprotocol/server-google-drive'],
+    enabled: false,
+    isBuiltIn: true,
+  },
+];
+
+function getDefaultMcps() {
+  return DEFAULT_MCPS.map(m => ({ ...m }));
+}
+
+function seedDefaultMcps(workingDirectory) {
+  let config = readConfigFile(CONFIG_FILE);
+
+  if (config._builtInMcpSeeded === true) return;
+
+  for (const mcp of DEFAULT_MCPS) {
+    try {
+      createMcpConfig(mcp.name, mcp, workingDirectory, AGENT_SCOPE.USER);
+    } catch (err) {
+      // ignore already-exists errors
+    }
+  }
+
+  config = readConfigFile(CONFIG_FILE);
+  config._builtInMcpSeeded = true;
+  writeConfig(config, CONFIG_FILE);
+}
+
 // ============== MCP CONFIG HELPERS ==============
 
 /**
@@ -173,6 +249,8 @@ function buildMcpEntry(data) {
   delete entry.name;
   delete entry.scope;
 
+  if (data.isBuiltIn === true) entry.isBuiltIn = true;
+
   // type is required
   entry.type = data.type === 'remote' ? 'remote' : 'local';
 
@@ -275,4 +353,6 @@ export {
   createMcpConfig,
   updateMcpConfig,
   deleteMcpConfig,
+  getDefaultMcps,
+  seedDefaultMcps,
 };

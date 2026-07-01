@@ -8,6 +8,7 @@ import { useSnippetsStore } from '@/stores/useSnippetsStore';
 import { useConfigStore } from '@/stores/useConfigStore';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+
 import { AgentsSidebar } from '@/components/sections/agents/AgentsSidebar';
 import { AgentsPage } from '@/components/sections/agents/AgentsPage';
 import { BehaviorPage } from '@/components/sections/behavior/BehaviorPage';
@@ -1167,7 +1168,17 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
   };
 
   return (
-    <div ref={containerRef} data-settings-view="true" className={cn('relative flex h-full min-h-0 flex-col overflow-hidden bg-background')}>
+    <div
+      key={settingsSlug === 'integrations' ? 'integrations-fullscreen' : 'settings-normal'}
+      ref={containerRef}
+      data-settings-view="true"
+      className={cn(
+        'relative flex min-h-0 flex-col bg-background transition-all duration-200',
+        settingsSlug === 'integrations'
+          ? 'fixed inset-0 z-50 h-screen w-screen overflow-hidden opacity-100 scale-100'
+          : 'h-full overflow-hidden opacity-100'
+      )}
+    >
       {isMobile ? (
         <div
           className={cn(

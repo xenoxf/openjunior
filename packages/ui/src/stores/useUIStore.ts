@@ -511,6 +511,9 @@ interface UIStore {
   multiRunLauncherPrefillPrompt: string;
   isSidebarOpen: boolean;
   sidebarWidth: number;
+  onboardingCompleted: boolean;
+  settingsMenuOpen: boolean;
+  showAdvancedControls: boolean;
   hasManuallyResizedLeftSidebar: boolean;
   isRightSidebarOpen: boolean;
   rightSidebarWidth: number;
@@ -611,6 +614,9 @@ interface UIStore {
   summaryLength: number;      // chars — target length for summary
   maxLastMessageLength: number; // chars — truncate {last_message} when summarization is off
 
+  showTerminalButton: boolean;
+  showMiniBrowserButton: boolean;
+  showRightSidebarButton: boolean;
   showTerminalQuickKeysOnDesktop: boolean;
   persistChatDraft: boolean;
   showOpenCodeUpdateNotifications: boolean;
@@ -747,6 +753,9 @@ interface UIStore {
   setImagePreviewOpen: (open: boolean) => void;
   setNativeNotificationsEnabled: (value: boolean) => void;
   setNotificationMode: (mode: 'always' | 'hidden-only') => void;
+  setShowTerminalButton: (value: boolean) => void;
+  setShowMiniBrowserButton: (value: boolean) => void;
+  setShowRightSidebarButton: (value: boolean) => void;
   setShowTerminalQuickKeysOnDesktop: (value: boolean) => void;
   setNotifyOnSubtasks: (value: boolean) => void;
   setNotifyOnCompletion: (value: boolean) => void;
@@ -788,6 +797,9 @@ interface UIStore {
   clearShortcutOverride: (actionId: string) => void;
   resetAllShortcutOverrides: () => void;
   setFileEditorKeymap: (value: FileEditorKeymap) => void;
+  setOnboardingCompleted: (v: boolean) => void;
+  setSettingsMenuOpen: (v: boolean) => void;
+  setShowAdvancedControls: (v: boolean) => void;
 }
 
 
@@ -799,9 +811,12 @@ export const useUIStore = create<UIStore>()(
         theme: 'system',
         isMultiRunLauncherOpen: false,
         multiRunLauncherPrefillPrompt: '',
-        isSidebarOpen: true,
+        isSidebarOpen: false,
         sidebarWidth: LEFT_SIDEBAR_MIN_WIDTH,
         hasManuallyResizedLeftSidebar: false,
+        onboardingCompleted: false,
+        settingsMenuOpen: false,
+        showAdvancedControls: false,
         isRightSidebarOpen: false,
         rightSidebarWidth: RIGHT_SIDEBAR_MIN_WIDTH,
         hasManuallyResizedRightSidebar: false,
@@ -894,6 +909,9 @@ export const useUIStore = create<UIStore>()(
         summaryLength: 100,
         maxLastMessageLength: 250,
 
+        showTerminalButton: false,
+        showMiniBrowserButton: false,
+        showRightSidebarButton: false,
         showTerminalQuickKeysOnDesktop: false,
         persistChatDraft: true,
         showOpenCodeUpdateNotifications: true,
@@ -1956,6 +1974,16 @@ export const useUIStore = create<UIStore>()(
           set({ notificationMode: mode });
         },
 
+        setShowTerminalButton: (value) => {
+          set({ showTerminalButton: value });
+        },
+        setShowMiniBrowserButton: (value) => {
+          set({ showMiniBrowserButton: value });
+        },
+        setShowRightSidebarButton: (value) => {
+          set({ showRightSidebarButton: value });
+        },
+
         setShowTerminalQuickKeysOnDesktop: (value) => {
           set({ showTerminalQuickKeysOnDesktop: value });
         },
@@ -2072,6 +2100,18 @@ export const useUIStore = create<UIStore>()(
 
         setFileEditorKeymap: (value) => {
           set({ fileEditorKeymap: normalizeFileEditorKeymap(value) });
+        },
+
+        setOnboardingCompleted: (v) => {
+          set({ onboardingCompleted: v });
+        },
+
+        setSettingsMenuOpen: (v) => {
+          set({ settingsMenuOpen: v });
+        },
+
+        setShowAdvancedControls: (v) => {
+          set({ showAdvancedControls: v });
         },
 
         toggleExpandedInput: () => {
@@ -2232,6 +2272,9 @@ export const useUIStore = create<UIStore>()(
           gitChangesViewMode: state.gitChangesViewMode,
           nativeNotificationsEnabled: state.nativeNotificationsEnabled,
           notificationMode: state.notificationMode,
+          showTerminalButton: state.showTerminalButton,
+          showMiniBrowserButton: state.showMiniBrowserButton,
+          showRightSidebarButton: state.showRightSidebarButton,
           showTerminalQuickKeysOnDesktop: state.showTerminalQuickKeysOnDesktop,
           notifyOnSubtasks: state.notifyOnSubtasks,
           notifyOnCompletion: state.notifyOnCompletion,

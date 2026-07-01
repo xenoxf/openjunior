@@ -1,3 +1,5 @@
+import { getDefaultMcps } from './mcp.js';
+
 export const registerConfigEntityRoutes = (app, dependencies) => {
   const {
     resolveProjectDirectory,
@@ -182,6 +184,15 @@ export const registerConfigEntityRoutes = (app, dependencies) => {
         return res.status(400).json({ error });
       }
       const configs = listMcpConfigs(directory);
+
+      const defaults = getDefaultMcps();
+      const userNames = new Set(configs.map(c => c.name));
+      for (const def of defaults) {
+        if (!userNames.has(def.name)) {
+          configs.push({ ...def, isBuiltIn: true });
+        }
+      }
+
       res.json(configs);
     } catch (error) {
       console.error('[API:GET /api/config/mcp] Failed:', error);

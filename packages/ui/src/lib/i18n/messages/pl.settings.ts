@@ -1777,4 +1777,8 @@ export const settingsDict = {
   'settings.voice.page.field.ttsInputModeSanitized': 'Oczyszczony tekst',
   'settings.voice.page.field.ttsInputModeRaw': 'Surowy Markdown',
   'settings.window.description': 'Okno ustawień OpenJunior.',
+  'settings.openjunior.visual.section.layoutPanels': 'Układ interfejsu',
+  'settings.openjunior.visual.field.showTerminalButton': 'Pokaż przycisk terminala',
+  'settings.openjunior.visual.field.showMiniBrowser': 'Pokaż przycisk mini przeglądarki',
+  'settings.openjunior.visual.field.showRightSidebar': 'Pokaż przycisk prawego paska bocznego',
 };

@@ -1785,4 +1785,8 @@
   'settings.usage.sidebar.field.showPredictions': '顯示預測',
   'settings.view.home.cards.plugins.description': '管理 opencode 外掛',
   'settings.view.home.cards.plugins.title': '外掛',
+  'settings.openjunior.visual.section.layoutPanels': '界面佈局',
+  'settings.openjunior.visual.field.showTerminalButton': '顯示終端按鈕',
+  'settings.openjunior.visual.field.showMiniBrowser': '顯示迷你瀏覽器按鈕',
+  'settings.openjunior.visual.field.showRightSidebar': '顯示右側欄按鈕',
 } as const;

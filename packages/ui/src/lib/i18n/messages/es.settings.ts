@@ -1785,4 +1785,8 @@ export const settingsDict = {
   "settings.promptTemplates.page.toast.created": "Plantilla creada",
   "settings.promptTemplates.page.toast.createFailed": "Error al crear la plantilla",
   "settings.promptTemplates.page.toast.saveUnexpectedError": "Ocurrió un error inesperado al guardar",
+  "settings.openjunior.visual.section.layoutPanels": "Diseño de Interfaz",
+  "settings.openjunior.visual.field.showTerminalButton": "Mostrar botón de terminal",
+  "settings.openjunior.visual.field.showMiniBrowser": "Mostrar botón de mini navegador",
+  "settings.openjunior.visual.field.showRightSidebar": "Mostrar botón de barra lateral derecha",
 } as const;
