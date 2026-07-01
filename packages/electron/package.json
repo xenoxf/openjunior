@@ -3,7 +3,8 @@
   "version": "1.14.0",
   "private": true,
   "description": "Electron desktop runtime for OpenJunior",
-  "author": "OpenJunior",
+  "author": "OpenJunior <dev@openjunior.dev>",
+  "homepage": "https://openjunior.dev",
   "type": "module",
   "main": "./dist-bundle/main.mjs",
   "dependencies": {
