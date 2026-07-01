@@ -24,6 +24,8 @@ on:
   push:
     branches:
       - production
+      - experiment
+  workflow_dispatch:
 
 # ─── Environment ─────────────────────────────────────
 # Variables compartidas entre todos los jobs.
