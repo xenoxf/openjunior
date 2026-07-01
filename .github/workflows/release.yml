@@ -98,11 +98,6 @@ jobs:
       - name: Build web assets
         run: bun run build:web
 
-      - name: Generate macOS icon assets
-        run: |
-          cd packages/electron
-          bun run generate:macos-icon
-
       - name: Build Electron (macOS ${{ matrix.arch }})
         run: |
           # Only set signing credentials when secrets are actually available
@@ -154,9 +149,8 @@ jobs:
         run: bun run build:web
 
       - name: Configure Visual Studio for node-gyp
+        shell: pwsh
         run: |
-          # Pre-configure VS version to avoid maxBuffer overflow in PS detection
-          npm config set msvs_version 2022 --global
           echo "GYP_MSVS_VERSION=2022" >> $env:GITHUB_ENV
 
       - name: Build Electron (Windows)
