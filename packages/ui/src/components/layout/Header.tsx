@@ -712,7 +712,6 @@ export const Header: React.FC<HeaderProps> = ({
   const setSessionSwitcherOpen = useUIStore((state) => state.setSessionSwitcherOpen);
   const toggleSidebar = useUIStore((state) => state.toggleSidebar);
   const isSidebarOpen = useUIStore((state) => state.isSidebarOpen);
-  const toggleBottomTerminal = useUIStore((state) => state.toggleBottomTerminal);
   const toggleRightSidebar = useUIStore((state) => state.toggleRightSidebar);
   const openContextOverview = useUIStore((state) => state.openContextOverview);
   const openContextPlan = useUIStore((state) => state.openContextPlan);
@@ -724,7 +723,6 @@ export const Header: React.FC<HeaderProps> = ({
   const setActiveMainTab = useUIStore((state) => state.setActiveMainTab);
   const shortcutOverrides = useUIStore((state) => state.shortcutOverrides);
   const timeFormatPreference = useUIStore((state) => state.timeFormatPreference);
-  const showTerminalButton = useUIStore((state) => state.showTerminalButton);
   const showMiniBrowserButton = useUIStore((state) => state.showMiniBrowserButton);
   const showRightSidebarButton = useUIStore((state) => state.showRightSidebarButton);
   const showAdvancedControls = useUIStore((state) => state.showAdvancedControls);
@@ -2085,14 +2083,6 @@ export const Header: React.FC<HeaderProps> = ({
         onOpenRemoteUpdate={openRemoteInstanceUpdate}
         timeFormatPreference={timeFormatPreference}
       />
-      {showAdvancedControls && showTerminalButton && (
-        <HeaderIconActionButton
-          title={t('header.actions.terminalPanelWithShortcut', { shortcut: shortcutLabel('toggle_terminal') })}
-          ariaLabel={t('header.actions.toggleTerminalPanelAria')}
-          onClick={toggleBottomTerminal}
-          Icon={'terminal-box'}
-        />
-      )}
       {showAdvancedControls && showMiniBrowserButton && !isMobile ? (
         <HeaderIconActionButton
           title={t('contextPanel.browser.open')}

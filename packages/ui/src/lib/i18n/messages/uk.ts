@@ -2708,4 +2708,11 @@ export const dict: Record<I18nKey, string> = {
   "settings.integrations.detail.installing": "Встановлення...",
   "settings.integrations.toast.installed": "{name} успішно встановлено",
   "settings.integrations.toast.installFailed": "Помилка встановлення",
+  "settings.integrations.card.popular": "🔥 Популярне",
+  "settings.integrations.card.noDescription": "Опис недоступний",
+  "settings.integrations.detail.signInWithGoogle": "Увійти через Google",
+  "settings.integrations.detail.signInWithGoogleDescription": "Підключіть свій обліковий запис Google, щоб увімкнути цей MCP-сервер. Ваші облікові дані зберігаються локально.",
+  "settings.integrations.detail.googleOAuthNote": "Ця інтеграція Google використовує OAuth. Натисніть кнопку нижче, щоб авторизувати.",
+  "settings.integrations.detail.installType": "Тип встановлення",
+  "settings.integrations.detail.transport": "Транспорт",
 } as const;

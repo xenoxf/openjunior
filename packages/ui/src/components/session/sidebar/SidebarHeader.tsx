@@ -30,8 +30,6 @@ type Props = {
   setSessionSearchQuery: (value: string) => void;
   hasSessionSearchQuery: boolean;
   searchMatchCount: number;
-  collapseAllProjects: () => void;
-  expandAllProjects: () => void;
   openScheduledTasksDialog: () => void;
   selectionModeEnabled: boolean;
   onToggleSelectionMode: () => void;
@@ -55,8 +53,6 @@ export function SidebarHeader(props: Props): React.ReactNode {
     setSessionSearchQuery,
     hasSessionSearchQuery,
     searchMatchCount,
-    collapseAllProjects,
-    expandAllProjects,
     openScheduledTasksDialog,
     selectionModeEnabled,
     onToggleSelectionMode,
@@ -68,6 +64,7 @@ export function SidebarHeader(props: Props): React.ReactNode {
   const setDisplayMode = useSessionDisplayStore((state) => state.setDisplayMode);
   const toggleRecentSection = useSessionDisplayStore((state) => state.toggleRecentSection);
   const toggleArchivedSessions = useSessionDisplayStore((state) => state.toggleArchivedSessions);
+  const isMinimal = displayMode === 'minimal';
   // VS Code forces the expanded layout, so the mode toggle is meaningless there.
   const showDisplayModeToggle = !isVSCodeRuntime();
 
@@ -75,105 +72,135 @@ export function SidebarHeader(props: Props): React.ReactNode {
     return null;
   }
 
+  const simpleButtonClass = 'inline-flex items-center justify-center h-7 w-7 rounded-md hover:bg-interactive-hover transition-colors';
+
   return (
     <div className="select-none flex-shrink-0 px-2.5 py-1">
       <div className="flex h-auto min-h-8 flex-col gap-1">
         <div className="flex h-8 items-center justify-between gap-2">
           <div className="flex items-center gap-1.5">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  onClick={handleOpenDirectoryDialog}
-                  className={headerActionButtonClass}
-                  aria-label={t('sessions.sidebar.header.actions.addProject')}
-                >
-                  <Icon name="folder-add" className={headerActionIconClass} />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" sideOffset={4}><p>{t('sessions.sidebar.header.actions.addProject')}</p></TooltipContent>
-            </Tooltip>
+            {isMinimal ? (
+              <button
+                type="button"
+                onClick={openNewSessionDraft}
+                className="inline-flex items-center gap-1.5 rounded-md px-2.5 h-7 text-sm font-medium bg-[var(--primary-base)] text-[var(--primary-foreground)] hover:opacity-90 transition-all whitespace-nowrap"
+                aria-label={t('sessions.sidebar.header.actions.newSession')}
+              >
+                <Icon name="chat-new" className="h-4 w-4" />
+                <span>{t('sessions.sidebar.header.actions.newSession')}</span>
+              </button>
+            ) : (
+              <>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={handleOpenDirectoryDialog}
+                      className={headerActionButtonClass}
+                      aria-label={t('sessions.sidebar.header.actions.addProject')}
+                    >
+                      <Icon name="folder-add" className={headerActionIconClass} />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" sideOffset={4}><p>{t('sessions.sidebar.header.actions.addProject')}</p></TooltipContent>
+                </Tooltip>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  onClick={openNewSessionDraft}
-                  className={headerActionButtonClass}
-                  aria-label={t('sessions.sidebar.header.actions.newSession')}
-                >
-                  <Icon name="chat-new" className={headerActionIconClass} />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" sideOffset={4}><p>{t('sessions.sidebar.header.actions.newSession')}</p></TooltipContent>
-            </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={openNewSessionDraft}
+                      className={headerActionButtonClass}
+                      aria-label={t('sessions.sidebar.header.actions.newSession')}
+                    >
+                      <Icon name="chat-new" className={headerActionIconClass} />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" sideOffset={4}><p>{t('sessions.sidebar.header.actions.newSession')}</p></TooltipContent>
+                </Tooltip>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  onClick={openMultiRunLauncher}
-                  className={headerActionButtonClass}
-                  aria-label={t('sessions.sidebar.header.actions.newMultiRun')}
-                  disabled={!canOpenMultiRun}
-                >
-                  <ArrowsMerge className={headerActionIconClass} />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" sideOffset={4}><p>{t('sessions.sidebar.header.actions.newMultiRun')}</p></TooltipContent>
-            </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={openMultiRunLauncher}
+                      className={headerActionButtonClass}
+                      aria-label={t('sessions.sidebar.header.actions.newMultiRun')}
+                      disabled={!canOpenMultiRun}
+                    >
+                      <ArrowsMerge className={headerActionIconClass} />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" sideOffset={4}><p>{t('sessions.sidebar.header.actions.newMultiRun')}</p></TooltipContent>
+                </Tooltip>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  onClick={openScheduledTasksDialog}
-                  className={headerActionButtonClass}
-                  aria-label={t('sessions.sidebar.header.actions.scheduledTasks')}
-                >
-                  <Icon name="calendar-schedule" className={headerActionIconClass} />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" sideOffset={4}><p>{t('sessions.sidebar.header.actions.scheduledTasks')}</p></TooltipContent>
-            </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={openScheduledTasksDialog}
+                      className={headerActionButtonClass}
+                      aria-label={t('sessions.sidebar.header.actions.scheduledTasks')}
+                    >
+                      <Icon name="calendar-schedule" className={headerActionIconClass} />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" sideOffset={4}><p>{t('sessions.sidebar.header.actions.scheduledTasks')}</p></TooltipContent>
+                </Tooltip>
+              </>
+            )}
           </div>
 
           <div className="flex items-center gap-1.5">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  onClick={() => setIsSessionSearchOpen((prev) => !prev)}
-                  className={headerActionButtonClass}
-                  aria-label={t('sessions.sidebar.header.actions.searchSessions')}
-                  aria-expanded={isSessionSearchOpen}
-                >
-                  <Icon name="search" className={headerActionIconClass} />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" sideOffset={4}><p>{t('sessions.sidebar.header.actions.searchSessions')}</p></TooltipContent>
-            </Tooltip>
+            {isMinimal ? (
+              <button
+                type="button"
+                onClick={() => setIsSessionSearchOpen((prev) => !prev)}
+                className={simpleButtonClass}
+                aria-label={t('sessions.sidebar.header.actions.searchSessions')}
+                aria-expanded={isSessionSearchOpen}
+              >
+                <Icon name="search" className="h-4 w-4" />
+              </button>
+            ) : (
+              <>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={() => setIsSessionSearchOpen((prev) => !prev)}
+                      className={headerActionButtonClass}
+                      aria-label={t('sessions.sidebar.header.actions.searchSessions')}
+                      aria-expanded={isSessionSearchOpen}
+                    >
+                      <Icon name="search" className={headerActionIconClass} />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" sideOffset={4}><p>{t('sessions.sidebar.header.actions.searchSessions')}</p></TooltipContent>
+                </Tooltip>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  onClick={onToggleSelectionMode}
-                  className={cn(headerActionButtonClass, selectionModeEnabled && 'bg-interactive-hover text-primary')}
-                  aria-label={selectionModeEnabled
-                    ? t('sessions.sidebar.header.actions.exitSelection')
-                    : t('sessions.sidebar.header.actions.selectSessions')}
-                  aria-pressed={selectionModeEnabled}
-                >
-                  <Icon name="checkbox-multiple" className={headerActionIconClass} />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" sideOffset={4}>
-                <p>{selectionModeEnabled
-                  ? t('sessions.sidebar.header.actions.exitSelection')
-                  : t('sessions.sidebar.header.actions.selectSessions')}</p>
-              </TooltipContent>
-            </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={onToggleSelectionMode}
+                      className={cn(headerActionButtonClass, selectionModeEnabled && 'bg-interactive-hover text-primary')}
+                      aria-label={selectionModeEnabled
+                        ? t('sessions.sidebar.header.actions.exitSelection')
+                        : t('sessions.sidebar.header.actions.selectSessions')}
+                      aria-pressed={selectionModeEnabled}
+                    >
+                      <Icon name="checkbox-multiple" className={headerActionIconClass} />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" sideOffset={4}>
+                    <p>{selectionModeEnabled
+                      ? t('sessions.sidebar.header.actions.exitSelection')
+                      : t('sessions.sidebar.header.actions.selectSessions')}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </>
+            )}
 
             <DropdownMenu>
               <Tooltip>
@@ -181,7 +208,7 @@ export function SidebarHeader(props: Props): React.ReactNode {
                   <DropdownMenuTrigger asChild>
                     <button
                       type="button"
-                      className={headerActionButtonClass}
+                      className={isMinimal ? simpleButtonClass : headerActionButtonClass}
                       aria-label={t('sessions.sidebar.header.actions.sessionDisplayMode')}
                     >
                       <Icon name="equalizer-2" className={headerActionIconClass} />
@@ -228,15 +255,6 @@ export function SidebarHeader(props: Props): React.ReactNode {
                     </DropdownMenuItem>
                   </>
                 ) : null}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={collapseAllProjects} className="flex items-center gap-2">
-                  <Icon name="contract-up-down" className="h-4 w-4" />
-                  <span>{t('sessions.sidebar.header.displayMode.collapseAll')}</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={expandAllProjects} className="flex items-center gap-2">
-                  <Icon name="expand-up-down" className="h-4 w-4" />
-                  <span>{t('sessions.sidebar.header.displayMode.expandAll')}</span>
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

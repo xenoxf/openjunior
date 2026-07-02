@@ -2633,6 +2633,14 @@ export const dict = {
   'openjuniorUpdate.toast.failed.title': 'Update failed',
   'vscodeLayout.actions.archiveAllError': 'Impossible d’archiver {count} session(s)',
   'vscodeLayout.actions.cancel': 'Annuler',
+  'settings.integrations.toast.installFailed': 'Échec de l\'installation',
+  'settings.integrations.card.popular': '🔥 Populaire',
+  'settings.integrations.card.noDescription': 'Aucune description disponible',
+  'settings.integrations.detail.signInWithGoogle': 'Se connecter avec Google',
+  'settings.integrations.detail.signInWithGoogleDescription': 'Connectez votre compte Google pour activer ce serveur MCP. Vos identifiants sont stockés localement.',
+  'settings.integrations.detail.googleOAuthNote': 'Cette intégration Google utilise OAuth. Cliquez sur le bouton ci-dessous pour autoriser.',
+  'settings.integrations.detail.installType': "Type d'installation",
+  'settings.integrations.detail.transport': 'Transport',
 } as const;
 
 export type I18nKey = keyof typeof dict;

@@ -29,27 +29,29 @@ import {
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu';
+import { getPopularityRank } from './appIcons';
+import { ServerIcon } from './ServerIcon';
 
 function SkeletonCard() {
   return (
-    <div className="flex flex-col rounded-xl border border-[var(--interactive-border)] bg-[var(--surface-elevated)] p-4 animate-pulse">
-      <div className="flex items-start justify-between gap-3">
+    <div className="flex flex-col rounded-xl border border-[var(--interactive-border)] bg-[var(--surface-elevated)] p-5 animate-pulse">
+      <div className="flex items-start gap-4">
+        <div className="h-14 w-14 shrink-0 rounded-xl bg-[var(--surface-muted)]" />
         <div className="min-w-0 flex-1 space-y-2">
           <div className="h-4 w-3/4 rounded bg-[var(--surface-muted)]" />
           <div className="h-3 w-1/2 rounded bg-[var(--surface-muted)]" />
         </div>
-        <div className="h-5 w-16 rounded-full bg-[var(--surface-muted)]" />
       </div>
-      <div className="mt-3 space-y-1.5">
+      <div className="mt-4 space-y-1.5">
         <div className="h-3 w-full rounded bg-[var(--surface-muted)]" />
         <div className="h-3 w-2/3 rounded bg-[var(--surface-muted)]" />
       </div>
-      <div className="mt-3 flex items-center gap-2">
-        <div className="h-3 w-12 rounded bg-[var(--surface-muted)]" />
-        <div className="ml-auto h-3 w-10 rounded bg-[var(--surface-muted)]" />
+      <div className="mt-4 flex items-center gap-2">
+        <div className="h-3 w-16 rounded bg-[var(--surface-muted)]" />
+        <div className="ml-auto h-3 w-14 rounded bg-[var(--surface-muted)]" />
       </div>
-      <div className="mt-3 flex items-center">
-        <div className="ml-auto h-7 w-16 rounded-lg bg-[var(--surface-muted)]" />
+      <div className="mt-4 flex items-center">
+        <div className="ml-auto h-8 w-20 rounded-lg bg-[var(--surface-muted)]" />
       </div>
     </div>
   );
@@ -90,7 +92,7 @@ function AuthBadge({ hasAuth, hasOAuth }: { hasAuth: boolean; hasOAuth: boolean 
 
 function EnvVarRow({ env }: { env: McpEnvVar }) {
   return (
-    <div className="flex items-center gap-2 py-1">
+    <div className="flex items-center gap-2 py-1.5">
       <code className="typography-small rounded bg-[var(--surface-muted)] px-1.5 py-0.5 font-mono text-[var(--surface-foreground)]">
         {env.name}
       </code>
@@ -114,7 +116,7 @@ function EnvVarRow({ env }: { env: McpEnvVar }) {
 
 function HeaderRow({ header }: { header: McpRemoteHeader }) {
   return (
-    <div className="flex items-center gap-2 py-1">
+    <div className="flex items-center gap-2 py-1.5">
       <code className="typography-small rounded bg-[var(--surface-muted)] px-1.5 py-0.5 font-mono text-[var(--surface-foreground)]">
         {header.name}
       </code>
@@ -138,7 +140,7 @@ function HeaderRow({ header }: { header: McpRemoteHeader }) {
 
 function VariableRow({ variable }: { variable: McpRemoteVariable }) {
   return (
-    <div className="flex items-center gap-2 py-1">
+    <div className="flex items-center gap-2 py-1.5">
       <code className="typography-small rounded bg-[var(--surface-muted)] px-1.5 py-0.5 font-mono text-[var(--surface-foreground)]">
         {variable.name}
       </code>
@@ -162,7 +164,9 @@ function DetailDialog({
   open,
   onOpenChange,
   onInstall,
+  onUninstall,
   isInstalling,
+  isUninstalling,
   isInstalled,
   envValues,
   onEnvValueChange,
@@ -171,36 +175,88 @@ function DetailDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onInstall: (server: McpRegistryServer) => void;
+  onUninstall: (server: McpRegistryServer) => void;
   isInstalling: boolean;
+  isUninstalling: boolean;
   isInstalled: boolean;
   envValues: Record<string, string>;
   onEnvValueChange: (name: string, value: string) => void;
 }) {
+  const { t } = useI18n();
   if (!server) return null;
 
   const hasRequirements = server.envVars.length > 0 || server.remoteHeaders.length > 0 || server.remoteVariables.length > 0;
+  const isGoogleMcp = server.name.toLowerCase().includes('google') || server.title.toLowerCase().includes('google');
+  const popularRank = getPopularityRank(server.name, server.title);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{server.title}</DialogTitle>
-          <DialogDescription>
-            <code className="text-xs font-mono">{server.name}</code>
-            {' · '}v{server.version}
-            {' · '}
-            {server.transportType === 'stdio' ? 'Local (stdio)' : server.transportType === 'streamable-http' ? 'Remote (HTTP)' : server.transportType === 'sse' ? 'Remote (SSE)' : 'Unknown'}
-          </DialogDescription>
+          <DialogTitle className="flex items-start gap-3">
+            <ServerIcon server={server} />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-lg font-semibold truncate">{server.title}</span>
+                {popularRank && popularRank <= 10 && (
+                  <span className="shrink-0 rounded-full bg-[var(--status-warning)]/15 px-2 py-0.5 typography-micro font-semibold text-[var(--status-warning)]">
+                    🔥 Popular
+                  </span>
+                )}
+              </div>
+              <DialogDescription className="mt-1">
+                <code className="text-xs font-mono">{server.name}</code>
+                {' · '}v{server.version}
+                {' · '}
+                {server.transportType === 'stdio' ? 'Local (stdio)' : server.transportType === 'streamable-http' ? 'Remote (HTTP)' : server.transportType === 'sse' ? 'Remote (SSE)' : 'Unknown'}
+              </DialogDescription>
+            </div>
+          </DialogTitle>
         </DialogHeader>
         <div className="flex-1 overflow-auto px-6 py-4">
           <p className="typography-ui text-[var(--surface-foreground)] mb-4">
-            {server.description || 'No description available.'}
+            {server.description || t('settings.integrations.card.noDescription')}
           </p>
 
-          {hasRequirements && server.hasAuth && (
+          {/* Google OAuth sign-in */}
+          {isGoogleMcp && server.hasOAuth && (
+            <div className="mb-4 rounded-lg border border-[var(--status-info)]/30 bg-[var(--status-info)]/5 p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-muted)]">
+                  <Icon name="global" className="h-5 w-5 text-[var(--surface-foreground)]" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="typography-ui-label font-medium text-[var(--surface-foreground)]">
+                    {t('settings.integrations.detail.signInWithGoogle')}
+                  </p>
+                  <p className="typography-small text-[var(--surface-mutedForeground)] mt-1">
+                    {t('settings.integrations.detail.googleOAuthNote')}
+                  </p>
+                  <p className="typography-micro text-[var(--surface-mutedForeground)]/60 mt-1">
+                    {t('settings.integrations.detail.signInWithGoogleDescription')}
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-3"
+                    onClick={() => {
+                      toast.info('Google Sign-In', {
+                        description: 'OAuth flow will open in your browser. Your credentials stay local.',
+                      });
+                    }}
+                  >
+                    <Icon name="global" className="h-4 w-4" />
+                    Sign in with Google
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {hasRequirements && !(isGoogleMcp && server.hasOAuth) && server.hasAuth && (
             <div className="mb-4">
               <h4 className="typography-ui-label font-medium text-[var(--surface-foreground)] mb-2">
-                Configure Credentials
+                {t('settings.integrations.detail.requiredCredentials')}
               </h4>
               {server.envVars.filter(v => v.isSecret || v.isRequired).map(env => (
                 <div key={env.name} className="mb-3">
@@ -242,8 +298,8 @@ function DetailDialog({
             </div>
           )}
 
-          {/* Auth / API Key warning */}
-          {server.hasAuth && (
+          {/* Auth warning for non-Google MCPs */}
+          {server.hasAuth && !(isGoogleMcp && server.hasOAuth) && (
             <div className="mb-4 rounded-lg border border-[var(--status-warning)]/30 bg-[var(--status-warning)]/5 p-3">
               <div className="flex items-start gap-2">
                 <Icon name="error-warning" className="h-5 w-5 shrink-0 text-[var(--status-warning)] mt-0.5" />
@@ -264,7 +320,7 @@ function DetailDialog({
           {/* Install command */}
           {server.installCommand && (
             <div className="mb-4">
-              <h4 className="typography-ui-label font-medium text-[var(--surface-foreground)] mb-1">Install Command</h4>
+              <h4 className="typography-ui-label font-medium text-[var(--surface-foreground)] mb-1">{t('settings.integrations.detail.install')}</h4>
               <div className="rounded-lg bg-[var(--syntax-base-background)] p-3">
                 <code className="text-sm font-mono text-[var(--syntax-base-foreground)]">
                   {server.installCommand.join(' ')}
@@ -275,7 +331,7 @@ function DetailDialog({
 
           {server.installUrl && (
             <div className="mb-4">
-              <h4 className="typography-ui-label font-medium text-[var(--surface-foreground)] mb-1">Server URL</h4>
+              <h4 className="typography-ui-label font-medium text-[var(--surface-foreground)] mb-1">{t('settings.integrations.detail.details')}</h4>
               <div className="rounded-lg bg-[var(--syntax-base-background)] p-3">
                 <code className="text-sm font-mono text-[var(--syntax-base-foreground)] break-all">
                   {server.installUrl}
@@ -375,10 +431,23 @@ function DetailDialog({
               )}
             </Button>
           )}
-          {isInstalled && (
-            <Button variant="secondary" disabled>
-              <Icon name="check" className="h-4 w-4" />
-              Installed
+          {isInstalled && server.installType && (
+            <Button
+              variant="destructive"
+              onClick={() => onUninstall(server)}
+              disabled={isUninstalling}
+            >
+              {isUninstalling ? (
+                <>
+                  <Icon name="loader-4" className="h-4 w-4 animate-spin" />
+                  Uninstalling...
+                </>
+              ) : (
+                <>
+                  <Icon name="delete-bin" className="h-4 w-4" />
+                  Uninstall
+                </>
+              )}
             </Button>
           )}
         </DialogFooter>
@@ -387,10 +456,21 @@ function DetailDialog({
   );
 }
 
+function computeServerRank(server: McpRegistryServer): number {
+  const popularRank = getPopularityRank(server.name, server.title);
+  if (popularRank !== null) return popularRank;
+
+  let score = 20;
+  if (server.hasOAuth) score -= 3;
+  if (server.status === 'active') score -= 2;
+  if (server.categories.some(c => ['database', 'search', 'communication'].includes(c))) score -= 1;
+  return score;
+}
+
 export const UnifiedCatalogPage: React.FC = () => {
   const { t } = useI18n();
+  const rawServers = useMcpRegistryStore((state) => state.servers);
   const {
-    servers,
     isLoading,
     isLoadingMore,
     error,
@@ -409,9 +489,15 @@ export const UnifiedCatalogPage: React.FC = () => {
   const [selectedServer, setSelectedServer] = React.useState<McpRegistryServer | null>(null);
   const [detailOpen, setDetailOpen] = React.useState(false);
   const [installingName, setInstallingName] = React.useState<string | null>(null);
+  const [deletingName, setDeletingName] = React.useState<string | null>(null);
   const [localSearch, setLocalSearch] = React.useState('');
   const [pendingEnvValues, setPendingEnvValues] = React.useState<Record<string, string>>({});
   const sentinelRef = React.useRef<HTMLDivElement>(null);
+
+  // Smart ranking: sort servers by popularity
+  const servers = React.useMemo(() => {
+    return [...rawServers].sort((a, b) => computeServerRank(a) - computeServerRank(b));
+  }, [rawServers]);
 
   // Reset env values when selected server changes
   React.useEffect(() => {
@@ -433,29 +519,39 @@ export const UnifiedCatalogPage: React.FC = () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
       debounceRef.current = setTimeout(() => {
         setSearch(value);
-        void fetchServers(value);
+        void fetchServers(value, activeCategory);
       }, 300);
     },
-    [fetchServers, setSearch]
+    [fetchServers, setSearch, activeCategory]
   );
 
-  // Infinite scroll via IntersectionObserver
+  // Infinite scroll via IntersectionObserver — ref-based guard to prevent cascade
+  const loadingRef = React.useRef(false);
+  loadingRef.current = isLoadingMore || isLoading;
+
   React.useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
 
+    let active = true;
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoadingMore && !isLoading) {
-          void fetchMore();
+        if (entries[0].isIntersecting && hasMore && !loadingRef.current) {
+          loadingRef.current = true;
+          void fetchMore().finally(() => {
+            if (active) loadingRef.current = false;
+          });
         }
       },
       { rootMargin: '400px' }
     );
 
     observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [hasMore, isLoadingMore, isLoading, fetchMore]);
+    return () => {
+      active = false;
+      observer.disconnect();
+    };
+  }, [hasMore, fetchMore]);
 
   const loadInstalled = async () => {
     try {
@@ -493,7 +589,6 @@ export const UnifiedCatalogPage: React.FC = () => {
         return;
       }
 
-      // Pass environment variables
       const envVars: Record<string, string> = {};
       const headers: Record<string, string> = {};
       for (const [key, value] of Object.entries(pendingEnvValues)) {
@@ -543,6 +638,35 @@ export const UnifiedCatalogPage: React.FC = () => {
     }
   };
 
+  const handleUninstall = async (server: McpRegistryServer) => {
+    setDeletingName(server.name);
+    try {
+      const name = server.name.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+      const response = await runtimeFetch(`/api/config/mcp/${encodeURIComponent(name)}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setInstalledNames((prev) => prev.filter((n) => n !== name));
+        toast.success(`${server.title} uninstalled`);
+        useMcpConfigStore.getState().loadMcpConfigs({ force: true });
+        useMcpStore.getState().refresh({ silent: true });
+        setDetailOpen(false);
+      } else {
+        const err = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
+        toast.error('Uninstall failed', {
+          description: err?.message || err?.error || `Server responded with ${response.status}.`,
+        });
+      }
+    } catch (err) {
+      toast.error('Uninstall failed', {
+        description: err instanceof Error ? err.message : 'Network error.',
+      });
+    } finally {
+      setDeletingName(null);
+    }
+  };
+
   const handleCardClick = (server: McpRegistryServer) => {
     setSelectedServer(server);
     setDetailOpen(true);
@@ -553,16 +677,21 @@ export const UnifiedCatalogPage: React.FC = () => {
       (n) => server.name.toLowerCase().replace(/[^a-z0-9-]/g, '-') === n || server.name === n
     );
 
+  const isPopular = (server: McpRegistryServer) => {
+    const rank = getPopularityRank(server.name, server.title);
+    return rank !== null && rank <= 10;
+  };
+
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="flex-shrink-0 border-b border-[var(--interactive-border)] px-4 py-3">
+      <div className="flex-shrink-0 border-b border-[var(--interactive-border)] px-6 py-4">
         <div className="flex items-center justify-between gap-2">
           <div className="min-w-0 flex-1">
             <h1 className="typography-ui-header font-semibold text-[var(--surface-foreground)] truncate">
               {t('settings.integrations.page.title')}
             </h1>
-            <p className="typography-micro text-[var(--surface-mutedForeground)] truncate">
+            <p className="typography-small text-[var(--surface-mutedForeground)] truncate">
               {servers.length > 0
                 ? `${servers.length} servers`
                 : 'Official MCP Registry'}
@@ -571,27 +700,27 @@ export const UnifiedCatalogPage: React.FC = () => {
 
           {/* Search + filters + refresh inline */}
           <div className="flex items-center gap-2 shrink-0 flex-wrap sm:flex-nowrap">
-            <div className="relative min-w-0 w-full sm:w-auto sm:min-w-[220px]">
+            <div className="relative min-w-0 w-full sm:w-auto sm:min-w-[240px]">
               <Icon
                 name="search"
-                className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--surface-mutedForeground)]"
+                className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--surface-mutedForeground)]"
               />
               <input
                 type="text"
                 value={localSearch}
                 onChange={(e) => handleSearchChange(e.target.value)}
-                placeholder="Search servers..."
-                className="w-full rounded-lg border bg-[var(--surface-elevated)] py-1.5 pl-8 pr-7 typography-small text-[var(--surface-foreground)] border-[var(--interactive-border)] placeholder:text-[var(--surface-mutedForeground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-base)]/50"
+                placeholder={t('settings.integrations.page.searchPlaceholder')}
+                className="w-full rounded-lg border bg-[var(--surface-elevated)] py-2 pl-9 pr-8 typography-small text-[var(--surface-foreground)] border-[var(--interactive-border)] placeholder:text-[var(--surface-mutedForeground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-base)]/50"
                 aria-label="Search MCP servers"
               />
               {localSearch && (
                 <button
                   type="button"
                   onClick={() => handleSearchChange('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--surface-mutedForeground)] hover:text-[var(--surface-foreground)]"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--surface-mutedForeground)] hover:text-[var(--surface-foreground)]"
                   aria-label="Clear search"
                 >
-                  <Icon name="close" className="h-3.5 w-3.5" />
+                  <Icon name="close" className="h-4 w-4" />
                 </button>
               )}
             </div>
@@ -602,20 +731,31 @@ export const UnifiedCatalogPage: React.FC = () => {
                   <button
                     type="button"
                     className={cn(
-                      'inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 typography-small font-medium transition-colors border shrink-0',
+                      'inline-flex items-center gap-1.5 rounded-lg px-3 py-2 typography-small font-medium transition-colors border shrink-0',
                       activeCategory
                         ? 'bg-[var(--primary-base)]/10 text-[var(--primary-base)] border-[var(--primary-base)]/30'
                         : 'bg-[var(--surface-elevated)] text-[var(--surface-mutedForeground)] border-[var(--interactive-border)] hover:border-[var(--interactive-hover)]'
                     )}
                     aria-label="Filter by category"
                   >
-                    <Icon name="equalizer-2" className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">{activeCategory
-                      ? categories.find(c => c.id === activeCategory)?.label || 'Filter'
-                      : 'All Categories'}</span>
+                    <Icon name="equalizer-2" className="h-4 w-4" />
+                    <span className="hidden sm:inline">
+                      {activeCategory
+                        ? categories.find(c => c.id === activeCategory)?.label || 'Filtros'
+                        : 'Filtros'}
+                    </span>
+                    {activeCategory && (
+                      <span className="inline-flex items-center justify-center h-5 min-w-5 rounded-full bg-[var(--primary-base)] text-[10px] font-bold text-[var(--primary-foreground)] px-1">
+                        1
+                      </span>
+                    )}
+                    <Icon name="arrow-down-s" className="h-3.5 w-3.5 text-[var(--surface-mutedForeground)]" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="max-h-64 overflow-y-auto">
+                <DropdownMenuContent align="start" className="w-56 p-1.5">
+                  <div className="px-2 pb-1.5 pt-1 typography-micro font-semibold text-[var(--surface-mutedForeground)] uppercase tracking-wider">
+                    Categoría
+                  </div>
                   {categories.map(cat => (
                     <DropdownMenuCheckboxItem
                       key={cat.id}
@@ -627,10 +767,26 @@ export const UnifiedCatalogPage: React.FC = () => {
                           setActiveCategory(cat.id);
                         }
                       }}
+                      className="rounded-md"
                     >
-                      {cat.label}
+                      <div className="flex items-center gap-2">
+                        {cat.label}
+                      </div>
                     </DropdownMenuCheckboxItem>
                   ))}
+                  {activeCategory && (
+                    <>
+                      <div className="my-1 border-t border-[var(--interactive-border)]" />
+                      <button
+                        type="button"
+                        onClick={() => setActiveCategory(null)}
+                        className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-[var(--surface-mutedForeground)] hover:bg-[var(--interactive-hover)] hover:text-[var(--surface-foreground)] transition-colors"
+                      >
+                        <Icon name="close" className="h-3.5 w-3.5" />
+                        Limpiar filtro
+                      </button>
+                    </>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
@@ -638,11 +794,11 @@ export const UnifiedCatalogPage: React.FC = () => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => fetchServers(searchQuery)}
+              onClick={() => fetchServers(searchQuery, activeCategory)}
               disabled={isLoading}
               className="shrink-0"
             >
-              <Icon name={isLoading ? 'loader-4' : 'refresh'} className={cn('h-3.5 w-3.5', isLoading && 'animate-spin')} />
+              <Icon name={isLoading ? 'loader-4' : 'refresh'} className={cn('h-4 w-4', isLoading && 'animate-spin')} />
             </Button>
           </div>
         </div>
@@ -652,7 +808,7 @@ export const UnifiedCatalogPage: React.FC = () => {
       <div className="flex-1 overflow-auto px-6 py-4" role="list" aria-label="MCP servers">
         {/* Initial loading skeletons */}
         {isLoading && servers.length === 0 && (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-busy="true">
+          <div className="grid gap-5 sm:grid-cols-2" aria-busy="true">
             {Array.from({ length: 6 }).map((_, i) => (
               <SkeletonCard key={i} />
             ))}
@@ -709,17 +865,18 @@ export const UnifiedCatalogPage: React.FC = () => {
           </div>
         )}
 
-        {/* Server grid */}
+        {/* Server grid - 2 columns for larger cards */}
         {servers.length > 0 && (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2">
             {servers.map((server) => {
               const installed = isInstalled(server);
+              const popular = isPopular(server);
 
               return (
                 <div
                   key={server.name}
                   role="listitem"
-                  className="group relative flex flex-col rounded-xl border border-[var(--interactive-border)] bg-[var(--surface-elevated)] p-4 transition-all duration-200 hover:shadow-sm hover:-translate-y-0.5 hover:border-[var(--interactive-hover)] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary-base)]/50"
+                  className="group relative flex cursor-pointer flex-col overflow-hidden rounded-xl border border-[var(--interactive-border)] bg-[var(--surface-elevated)] p-5 transition-all duration-200 hover:shadow-lg hover:-translate-y-1 hover:border-[var(--primary-base)]/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary-base)]/50"
                   tabIndex={0}
                   onClick={() => handleCardClick(server)}
                   onKeyDown={(e) => {
@@ -730,45 +887,68 @@ export const UnifiedCatalogPage: React.FC = () => {
                   }}
                   aria-label={`${server.title} — ${server.description ? server.description.slice(0, 80) : 'No description'}`}
                 >
-                  {/* Top row: title + badges */}
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <h3 className="typography-ui-label font-medium text-[var(--surface-foreground)] truncate">
-                        {server.title}
-                      </h3>
-                      <p className="typography-micro text-[var(--surface-mutedForeground)] mt-0.5 truncate font-mono">
+                  {/* Popular badge */}
+                  {popular && (
+                    <div className="absolute right-3 top-3 z-10">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-[var(--status-warning)]/15 px-2.5 py-0.5 typography-micro font-semibold text-[var(--status-warning)]">
+                        🔥 Popular
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Top row: app icon + title + description */}
+                  <div className="flex items-start gap-4">
+                    <ServerIcon server={server} />
+                    <div className="min-w-0 flex-1 space-y-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="truncate text-sm font-semibold text-[var(--surface-foreground)]">
+                          {server.title}
+                        </h3>
+                        {server.status === 'active' && (
+                          <span className="shrink-0 rounded-md bg-[var(--primary-base)]/10 px-1.5 py-0.5 text-[10px] font-medium text-[var(--primary-base)]">
+                            ⭐ Official
+                          </span>
+                        )}
+                        {installed && (
+                          <>
+                            <span className="shrink-0 rounded-md bg-[var(--status-success)]/10 px-1.5 py-0.5 text-[10px] font-medium text-[var(--status-success)]">
+                              ✓ Installed
+                            </span>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleUninstall(server);
+                              }}
+                              disabled={deletingName === server.name}
+                              className="shrink-0 rounded-md bg-[var(--status-error)]/10 px-1.5 py-0.5 text-[10px] font-medium text-[var(--status-error)] hover:bg-[var(--status-error)]/20 transition-colors"
+                            >
+                              {deletingName === server.name ? '...' : '✕'}
+                            </button>
+                          </>
+                        )}
+                      </div>
+                      <p className="typography-micro text-[var(--surface-mutedForeground)] truncate font-mono">
                         {server.name}
                       </p>
-                    </div>
-                    <div className="flex shrink-0 flex-wrap items-center gap-1.5">
-                      {installed && (
-                        <span className="rounded-full bg-[var(--status-success)]/10 px-2 py-0.5 typography-micro text-[var(--status-success)] font-medium">
-                          Installed
-                        </span>
-                      )}
-                      {server.status === 'active' && (
-                        <span className="rounded-full bg-[var(--status-info)]/10 px-2 py-0.5 typography-micro text-[var(--status-info)] font-medium">
-                          Official
-                        </span>
-                      )}
                     </div>
                   </div>
 
                   {/* Description */}
-                  <p className="typography-small text-[var(--surface-mutedForeground)] mt-2 line-clamp-2">
-                    {server.description || 'No description available'}
+                  <p className="typography-small text-[var(--surface-mutedForeground)] mt-3 line-clamp-2">
+                    {server.description || t('settings.integrations.card.noDescription')}
                   </p>
 
-                  {/* Transport + Auth badges */}
-                  <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                  {/* Transport + Auth badges + categories */}
+                  <div className="mt-4 flex flex-wrap items-center gap-1.5">
                     <TransportBadge type={server.transportType} />
                     <AuthBadge hasAuth={server.hasAuth} hasOAuth={server.hasOAuth} />
                     {server.categories && server.categories.length > 0 && (
-                      <span className="typography-micro text-[var(--surface-mutedForeground)]/60">
-                        {server.categories[0]}
+                      <span className="rounded-md border border-[var(--interactive-border)] bg-[var(--surface-muted)] px-1.5 py-0.5 text-[10px] text-[var(--surface-mutedForeground)]">
+                        {server.categories[0].replace(/-/g, ' ')}
                       </span>
                     )}
-                    <span className="ml-auto typography-micro text-[var(--surface-mutedForeground)]/60">
+                    <span className="ml-auto typography-micro text-[var(--surface-mutedForeground)]/60 rounded bg-[var(--surface-muted)] px-1.5 py-0.5 font-mono">
                       v{server.version}
                     </span>
                   </div>
@@ -784,7 +964,7 @@ export const UnifiedCatalogPage: React.FC = () => {
         {/* Loading more indicator */}
         {isLoadingMore && (
           <div className="flex justify-center py-6">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 w-full">
+            <div className="grid gap-5 sm:grid-cols-2 w-full">
               {Array.from({ length: 3 }).map((_, i) => (
                 <SkeletonCard key={i} />
               ))}
@@ -806,7 +986,9 @@ export const UnifiedCatalogPage: React.FC = () => {
         open={detailOpen}
         onOpenChange={setDetailOpen}
         onInstall={handleInstall}
+        onUninstall={handleUninstall}
         isInstalling={installingName === selectedServer?.name}
+        isUninstalling={deletingName === selectedServer?.name}
         isInstalled={selectedServer ? isInstalled(selectedServer) : false}
         envValues={pendingEnvValues}
         onEnvValueChange={(name, value) => setPendingEnvValues(prev => ({...prev, [name]: value}))}

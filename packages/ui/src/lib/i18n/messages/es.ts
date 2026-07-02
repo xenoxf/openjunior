@@ -2708,4 +2708,11 @@ export const dict: Record<I18nKey, string> = {
   "settings.integrations.detail.installing": "Instalando...",
   "settings.integrations.toast.installed": "{name} instalado correctamente",
   "settings.integrations.toast.installFailed": "Error en la instalación",
+  "settings.integrations.card.popular": "🔥 Popular",
+  "settings.integrations.card.noDescription": "No hay descripción disponible",
+  "settings.integrations.detail.signInWithGoogle": "Iniciar sesión con Google",
+  "settings.integrations.detail.signInWithGoogleDescription": "Conecta tu cuenta de Google para habilitar este servidor MCP. Tus credenciales se almacenan localmente.",
+  "settings.integrations.detail.googleOAuthNote": "Esta integración de Google utiliza OAuth. Haz clic en el botón de abajo para autorizar.",
+  "settings.integrations.detail.installType": "Tipo de instalación",
+  "settings.integrations.detail.transport": "Transporte",
 };

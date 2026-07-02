@@ -4,6 +4,14 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/components/ui';
 import { Icon } from '@/components/icon/Icon';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { useI18n } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { SettingsPageLayout } from '@/components/sections/shared/SettingsPageLayout';
@@ -92,6 +100,9 @@ export const PluginsPage: React.FC = () => {
   const updateEntry = usePluginsStore((s) => s.updateEntry);
   const updateFile = usePluginsStore((s) => s.updateFile);
   const readFile = usePluginsStore((s) => s.readFile);
+  const deleteEntry = usePluginsStore((s) => s.deleteEntry);
+  const deleteFile = usePluginsStore((s) => s.deleteFile);
+  const setSelected = usePluginsStore((s) => s.setSelected);
 
   const selectedEntry = React.useMemo(
     () => (selectedId ? entries.find((e) => e.id === selectedId) ?? null : null),
@@ -104,6 +115,8 @@ export const PluginsPage: React.FC = () => {
 
   const [isSaving, setIsSaving] = React.useState(false);
   const [isLoadingFile, setIsLoadingFile] = React.useState(false);
+  const [deleteTarget, setDeleteTarget] = React.useState<{ id: string; label: string } | null>(null);
+  const [isDeleting, setIsDeleting] = React.useState(false);
   const originalFileContentById = React.useRef(new Map<string, string>());
 
   React.useEffect(() => {
@@ -136,6 +149,25 @@ export const PluginsPage: React.FC = () => {
       cancelled = true;
     };
   }, [selectedEntry, selectedFile, readFile, setDraft]);
+
+  const handleDeleteCurrent = React.useCallback(async () => {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    const currentEntry = entries.find((e) => e.id === deleteTarget.id);
+    const result = currentEntry ? await deleteEntry(deleteTarget.id) : await deleteFile(deleteTarget.id);
+    if (result.ok) {
+      toast.success(
+        result.message ||
+          t('settings.plugins.sidebar.toast.deleted', { name: deleteTarget.label }),
+      );
+      setDeleteTarget(null);
+      setSelected(null);
+    } else {
+      toast.error(t('settings.plugins.sidebar.toast.deleteFailed'));
+      setDeleteTarget(null);
+    }
+    setIsDeleting(false);
+  }, [deleteTarget, entries, deleteEntry, deleteFile, setSelected, t]);
 
   if (!selectedId) {
     return (
@@ -269,6 +301,15 @@ export const PluginsPage: React.FC = () => {
           >
             {t('settings.plugins.page.action.discard')}
           </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="ml-auto !font-normal text-destructive"
+            onClick={() => setDeleteTarget({ id: selectedEntry.id, label: selectedEntry.spec })}
+            disabled={isDeleting}
+          >
+            {t('settings.common.actions.delete')}
+          </Button>
         </div>
       </SettingsPageLayout>
     );
@@ -371,7 +412,48 @@ export const PluginsPage: React.FC = () => {
           >
             {t('settings.plugins.page.action.discard')}
           </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="ml-auto !font-normal text-destructive"
+            onClick={() => setDeleteTarget({ id: selectedFile.id, label: selectedFile.fileName })}
+            disabled={isDeleting}
+          >
+            {t('settings.common.actions.delete')}
+          </Button>
         </div>
+
+        {/* Delete confirmation dialog */}
+        <Dialog
+          open={deleteTarget !== null}
+          onOpenChange={(open) => {
+            if (!open && !isDeleting) {
+              setDeleteTarget(null);
+            }
+          }}
+        >
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>{t('settings.plugins.page.deleteDialog.title')}</DialogTitle>
+              <DialogDescription>
+                {t('settings.plugins.page.deleteDialog.description', { name: deleteTarget?.label ?? '' })}
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setDeleteTarget(null)}
+                disabled={isDeleting}
+              >
+                {t('settings.common.actions.cancel')}
+              </Button>
+              <Button size="sm" variant="destructive" onClick={handleDeleteCurrent} disabled={isDeleting}>
+                {t('settings.common.actions.delete')}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </SettingsPageLayout>
     );
   }

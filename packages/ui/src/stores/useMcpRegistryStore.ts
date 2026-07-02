@@ -49,6 +49,7 @@ export interface McpRegistryServer {
   hasAuth: boolean;
   hasOAuth: boolean;
   icons: Record<string, unknown> | null;
+  faviconUrl: string | null;
   categories: string[];
 }
 
@@ -108,10 +109,12 @@ export const useMcpRegistryStore = create<McpRegistryState>()(
       fetchServers: async (searchQuery, category) => {
         set({ isLoading: true, error: null, servers: [], nextCursor: null, hasMore: true });
 
+        const resolvedCategory = category !== undefined ? category : get().activeCategory;
+
         try {
           const params = new URLSearchParams({ limit: String(PAGE_SIZE) });
           if (searchQuery) params.set('search', searchQuery);
-          if (category) params.set('category', category);
+          if (resolvedCategory) params.set('category', resolvedCategory);
 
           const response = await runtimeFetch(`/api/mcp-registry?${params.toString()}`, {
             method: 'GET',
@@ -156,12 +159,13 @@ export const useMcpRegistryStore = create<McpRegistryState>()(
         set({ isLoadingMore: true });
 
         try {
+          const state = get();
           const params = new URLSearchParams({
             limit: String(PAGE_SIZE),
             cursor: nextCursor,
           });
-          const searchQuery = get().searchQuery;
-          if (searchQuery) params.set('search', searchQuery);
+          if (state.searchQuery) params.set('search', state.searchQuery);
+          if (state.activeCategory) params.set('category', state.activeCategory);
 
           const response = await runtimeFetch(`/api/mcp-registry?${params.toString()}`, {
             method: 'GET',

@@ -2707,4 +2707,11 @@ export const dict: Record<I18nKey, string> = {
   'settings.integrations.detail.installing': '설치 중...',
   'settings.integrations.toast.installed': '{name} 설치 완료',
   'settings.integrations.toast.installFailed': '설치 실패',
+  'settings.integrations.card.popular': '🔥 인기',
+  'settings.integrations.card.noDescription': '설명이 없습니다',
+  'settings.integrations.detail.signInWithGoogle': 'Google로 로그인',
+  'settings.integrations.detail.signInWithGoogleDescription': 'MCP 서버를 활성화하려면 Google 계정을 연결하세요. 자격 증명은 로컬에 저장됩니다.',
+  'settings.integrations.detail.googleOAuthNote': '이 Google 통합은 OAuth를 사용합니다. 아래 버튼을 클릭하여 인증하세요.',
+  'settings.integrations.detail.installType': '설치 유형',
+  'settings.integrations.detail.transport': '전송 방식',
 };
