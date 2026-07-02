@@ -2707,4 +2707,11 @@ export const dict: Record<I18nKey, string> = {
   'settings.integrations.detail.installing': '安裝中...',
   'settings.integrations.toast.installed': '{name} 安裝成功',
   'settings.integrations.toast.installFailed': '安裝失敗',
+  'settings.integrations.card.popular': '🔥 熱門',
+  'settings.integrations.card.noDescription': '無可用描述',
+  'settings.integrations.detail.signInWithGoogle': '使用 Google 登入',
+  'settings.integrations.detail.signInWithGoogleDescription': '連接您的 Google 帳戶以啟用此 MCP 伺服器。您的憑證會儲存在本地。',
+  'settings.integrations.detail.googleOAuthNote': '此 Google 整合使用 OAuth。點擊下方按鈕進行授權。',
+  'settings.integrations.detail.installType': '安裝類型',
+  'settings.integrations.detail.transport': '傳輸方式',
 } as const;

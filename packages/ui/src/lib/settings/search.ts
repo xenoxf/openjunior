@@ -751,6 +751,24 @@ export const SETTINGS_SEARCH_ITEMS: readonly SettingsSearchItem[] = [
     titleKey: 'settings.integrations.page.title',
     keywords: ['mcp', 'registry', 'modelcontextprotocol', 'servers', 'connect', 'services', 'tools', 'marketplace'],
   },
+  {
+    id: 'mcp.manage',
+    page: 'mcp',
+    titleKey: 'settings.page.mcp.title',
+    keywords: ['mcp', 'servers', 'installed', 'manage', 'configure', 'delete'],
+  },
+  {
+    id: 'skills.manage',
+    page: 'skills.installed',
+    titleKey: 'settings.page.skills.title',
+    keywords: ['skills', 'installed', 'manage', 'edit', 'configure', 'delete'],
+  },
+  {
+    id: 'plugins.manage',
+    page: 'plugins',
+    titleKey: 'settings.page.plugins.title',
+    keywords: ['plugins', 'installed', 'manage', 'configure', 'delete'],
+  },
 ] as const;
 
 interface BuildSettingsSearchResultsOptions {

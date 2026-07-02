@@ -12,7 +12,7 @@ import { runtimeFetch } from '@/lib/runtime-fetch';
 
 const GITHUB_URL = 'https://github.com/openjunior/openjunior';
 const DISCORD_URL = 'https://discord.gg/ZYRSdnwwKA';
-const X_URL = 'https://x.com/openjunior_dev';
+const X_URL = 'https://x.com/openchamber_dev';
 
 const MIN_CHECKING_DURATION = 800; // ms
 
@@ -197,7 +197,7 @@ export const AboutSettings: React.FC<AboutSettingsProps> = ({ initialUpdateDialo
             className="flex items-center gap-1.5 typography-ui-label text-muted-foreground transition-colors hover:text-foreground"
           >
             <Icon name="twitter-xfill" className="size-5" />
-            <span>@openjunior_dev</span>
+            <span>@openchamber_dev</span>
           </a>
         </div>
 
@@ -297,7 +297,7 @@ export const AboutSettings: React.FC<AboutSettingsProps> = ({ initialUpdateDialo
             className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground typography-meta transition-colors"
           >
             <Icon name="twitter-xfill" className="h-4 w-4" />
-              <span>@openjunior_dev</span>
+              <span>@openchamber_dev</span>
             </a>
         </div>
       </div>

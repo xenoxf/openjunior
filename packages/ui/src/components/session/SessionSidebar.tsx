@@ -809,36 +809,6 @@ export const SessionSidebar: React.FC<SessionSidebarProps> = ({
     });
   }, []);
 
-  const collapseAllProjects = React.useCallback(() => {
-    ignoreIntersectionUntil.current = Date.now() + 150;
-    setVisibleSessionCountByGroup(new Map());
-    setCollapsedProjects(() => {
-      const allIds = new Set(projects.map((p) => p.id));
-      try {
-        safeStorage.setItem(PROJECT_COLLAPSE_STORAGE_KEY, JSON.stringify(Array.from(allIds)));
-      } catch { /* ignored */ }
-      if (!isVSCode) {
-        scheduleCollapsedProjectsPersist(allIds);
-      }
-      return allIds;
-    });
-  }, [projects, isVSCode, safeStorage, scheduleCollapsedProjectsPersist]);
-
-  const expandAllProjects = React.useCallback(() => {
-    ignoreIntersectionUntil.current = Date.now() + 150;
-    setVisibleSessionCountByGroup(new Map());
-    setCollapsedProjects(() => {
-      const empty = new Set<string>();
-      try {
-        safeStorage.setItem(PROJECT_COLLAPSE_STORAGE_KEY, JSON.stringify([]));
-      } catch { /* ignored */ }
-      if (!isVSCode) {
-        scheduleCollapsedProjectsPersist(empty);
-      }
-      return empty;
-    });
-  }, [isVSCode, safeStorage, scheduleCollapsedProjectsPersist]);
-
   const toggleProject = React.useCallback((projectId: string) => {
     // Ignore intersection events for a short period after toggling
     ignoreIntersectionUntil.current = Date.now() + 150;
@@ -1089,6 +1059,8 @@ export const SessionSidebar: React.FC<SessionSidebarProps> = ({
 
   const showRecentSection = useSessionDisplayStore((state) => state.showRecentSection);
   const showArchivedSessions = useSessionDisplayStore((state) => state.showArchivedSessions);
+  const displayMode = useSessionDisplayStore((state) => state.displayMode);
+  const isMinimalMode = displayMode === 'minimal' && !isVSCode;
 
   const activeNowSessions = React.useMemo(() => {
     if (!showRecentSection || isVSCode) {
@@ -1556,63 +1528,76 @@ export const SessionSidebar: React.FC<SessionSidebarProps> = ({
         setSessionSearchQuery={setSessionSearchQuery}
         hasSessionSearchQuery={hasSessionSearchQuery}
         searchMatchCount={searchMatchCount}
-        collapseAllProjects={collapseAllProjects}
-        expandAllProjects={expandAllProjects}
         openScheduledTasksDialog={() => setScheduledTasksDialogOpen(true)}
         selectionModeEnabled={selectionModeEnabled}
         onToggleSelectionMode={handleToggleSelectionMode}
       />
 
-      <SidebarProjectsList
-        topContent={topContent}
-        hasSharedSessions={hasActivitySectionItems}
-        sectionsForRender={sectionsForSidebarRender}
-        projectSections={projectSections}
-        activeProjectId={activeProjectId}
-        showOnlyMainWorkspace={showOnlyMainWorkspace}
-        hasSessionSearchQuery={hasSessionSearchQuery}
-        emptyState={emptyState}
-        searchEmptyState={searchEmptyState}
-        renderGroupSessions={renderGroupSessions}
-        homeDirectory={homeDirectory}
-        collapsedProjects={collapsedProjects}
-        hideDirectoryControls={hideDirectoryControls}
-        projectRepoStatus={projectRepoStatus}
-        isDesktopShellRuntime={isDesktopShellRuntime}
-        stuckProjectHeaders={stuckProjectHeaders}
-        mobileVariant={mobileVariant}
-        alwaysShowActions={alwaysShowSidebarActions}
-        toggleProject={toggleProject}
-        setActiveProjectIdOnly={setActiveProjectIdOnly}
-        setActiveMainTab={setActiveMainTab}
-        setSessionSwitcherOpen={setSessionSwitcherOpen}
-        openNewSessionDraft={openNewSessionDraftFromTree}
-        openNewWorktreeDialog={openNewWorktreeDialog}
-        openProjectEditDialog={setEditingProjectDialogId}
-        removeProject={removeProject}
-        projectHeaderSentinelRefs={projectHeaderSentinelRefs}
-        reorderProjects={reorderProjects}
-        getOrderedGroups={getOrderedGroups}
-        setGroupOrderByProject={setGroupOrderByProject}
-        openSidebarMenuKey={openSidebarMenuKey}
-        setOpenSidebarMenuKey={setOpenSidebarMenuKey}
-        isInlineEditing={isInlineEditing}
-      />
+      {isMinimalMode ? (
+        <div className="flex-1 overflow-auto">
+          {topContent}
+          {!topContent && !hasSessionSearchQuery && (
+            <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+              <p className="typography-small text-[var(--surface-mutedForeground)]">
+                {t('sessions.sidebar.empty.noSessions.title')}
+              </p>
+            </div>
+          )}
+        </div>
+      ) : (
+        <>
+          <SidebarProjectsList
+            topContent={topContent}
+            hasSharedSessions={hasActivitySectionItems}
+            sectionsForRender={sectionsForSidebarRender}
+            projectSections={projectSections}
+            activeProjectId={activeProjectId}
+            showOnlyMainWorkspace={showOnlyMainWorkspace}
+            hasSessionSearchQuery={hasSessionSearchQuery}
+            emptyState={emptyState}
+            searchEmptyState={searchEmptyState}
+            renderGroupSessions={renderGroupSessions}
+            homeDirectory={homeDirectory}
+            collapsedProjects={collapsedProjects}
+            hideDirectoryControls={hideDirectoryControls}
+            projectRepoStatus={projectRepoStatus}
+            isDesktopShellRuntime={isDesktopShellRuntime}
+            stuckProjectHeaders={stuckProjectHeaders}
+            mobileVariant={mobileVariant}
+            alwaysShowActions={alwaysShowSidebarActions}
+            toggleProject={toggleProject}
+            setActiveProjectIdOnly={setActiveProjectIdOnly}
+            setActiveMainTab={setActiveMainTab}
+            setSessionSwitcherOpen={setSessionSwitcherOpen}
+            openNewSessionDraft={openNewSessionDraftFromTree}
+            openNewWorktreeDialog={openNewWorktreeDialog}
+            openProjectEditDialog={setEditingProjectDialogId}
+            removeProject={removeProject}
+            projectHeaderSentinelRefs={projectHeaderSentinelRefs}
+            reorderProjects={reorderProjects}
+            getOrderedGroups={getOrderedGroups}
+            setGroupOrderByProject={setGroupOrderByProject}
+            openSidebarMenuKey={openSidebarMenuKey}
+            setOpenSidebarMenuKey={setOpenSidebarMenuKey}
+            isInlineEditing={isInlineEditing}
+          />
 
-      {selectionModeEnabled && hasSelection ? (
-        <BulkActionBar
-          selectedCount={selectedIdsSize}
-          scopeKey={derivedSelectionScope}
-          scopeFolders={bulkScopeFolders}
-          archivedBucket={bulkScopeIsArchived}
-          onMoveToFolder={handleBulkMoveToFolder}
-          onCreateFolderAndMove={handleBulkCreateFolderAndMove}
-          onRemoveFromFolder={handleBulkRemoveFromFolder}
-          canRemoveFromFolder={bulkCanRemoveFromFolder}
-          onDelete={handleBulkDelete}
-          onDone={handleExitSelectionMode}
-        />
-      ) : null}
+          {selectionModeEnabled && hasSelection ? (
+            <BulkActionBar
+              selectedCount={selectedIdsSize}
+              scopeKey={derivedSelectionScope}
+              scopeFolders={bulkScopeFolders}
+              archivedBucket={bulkScopeIsArchived}
+              onMoveToFolder={handleBulkMoveToFolder}
+              onCreateFolderAndMove={handleBulkCreateFolderAndMove}
+              onRemoveFromFolder={handleBulkRemoveFromFolder}
+              canRemoveFromFolder={bulkCanRemoveFromFolder}
+              onDelete={handleBulkDelete}
+              onDone={handleExitSelectionMode}
+            />
+          ) : null}
+        </>
+      )}
 
       <SidebarFooter
         onOpenSettings={handleOpenSettings}

@@ -108,6 +108,7 @@ const SkillsInstalledPage: React.FC = () => {
     getSkillDetail,
     createSkill,
     updateSkill,
+    deleteSkill,
     skills,
     skillDraft,
     setSkillDraft,
@@ -118,6 +119,7 @@ const SkillsInstalledPage: React.FC = () => {
     getSkillDetail: s.getSkillDetail,
     createSkill: s.createSkill,
     updateSkill: s.updateSkill,
+    deleteSkill: s.deleteSkill,
     skills: s.skills,
     skillDraft: s.skillDraft,
     setSkillDraft: s.setSkillDraft,
@@ -160,7 +162,10 @@ const SkillsInstalledPage: React.FC = () => {
   const [originalFileContent, setOriginalFileContent] = React.useState('');
   const [deleteFilePath, setDeleteFilePath] = React.useState<string | null>(null);
   const [isDeletingFile, setIsDeletingFile] = React.useState(false);
-  
+
+  const [skillNameToDelete, setSkillNameToDelete] = React.useState<string | null>(null);
+  const [isDeletingSkill, setIsDeletingSkill] = React.useState(false);
+
   const hasSkillChanges = isNewSkill 
     ? (draftName.trim() !== '' || description.trim() !== '' || instructions.trim() !== '' || pendingFiles.length > 0)
     : (description !== originalDescription || instructions !== originalInstructions);
@@ -478,6 +483,23 @@ const SkillsInstalledPage: React.FC = () => {
     setIsDeletingFile(false);
   };
 
+  const handleDeleteSkill = async () => {
+    if (!skillNameToDelete) return;
+
+    setIsDeletingSkill(true);
+    const success = await deleteSkill(skillNameToDelete);
+
+    if (success) {
+      toast.success(t('settings.skills.sidebar.toast.skillDeleted', { name: skillNameToDelete }));
+      setSkillNameToDelete(null);
+      setSelectedSkill(null);
+    } else {
+      toast.error(t('settings.skills.sidebar.toast.deleteSkillFailed'));
+    }
+
+    setIsDeletingSkill(false);
+  };
+
   if ((!selectedSkillName && !skillDraft) || hasStaleSelection) {
     return (
       <div className="flex h-full items-center justify-center px-4">
@@ -698,7 +720,7 @@ const SkillsInstalledPage: React.FC = () => {
         </div>
 
         {/* Save action */}
-        <div className="px-2 py-1">
+        <div className="px-2 py-1 flex items-center gap-2">
           <Button
             onClick={handleSave}
             disabled={isReadOnlySkill || isSaving || !hasSkillChanges}
@@ -707,6 +729,16 @@ const SkillsInstalledPage: React.FC = () => {
           >
             {isSaving ? t('settings.common.actions.saving') : isNewSkill ? t('settings.skills.page.actions.createSkill') : t('settings.common.actions.saveChanges')}
           </Button>
+          {!isNewSkill && !isReadOnlySkill && (
+            <Button
+              onClick={() => setSkillNameToDelete(selectedSkillName)}
+              size="xs"
+              variant="outline"
+              className="!font-normal text-destructive"
+            >
+              {t('settings.common.actions.delete')}
+            </Button>
+          )}
         </div>
 
       </div>
@@ -737,6 +769,38 @@ const SkillsInstalledPage: React.FC = () => {
               {t('settings.common.actions.cancel')}
             </Button>
             <Button size="sm" variant="destructive" onClick={handleConfirmDeleteFile} disabled={isDeletingFile}>
+              {t('settings.common.actions.delete')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete skill dialog */}
+      <Dialog
+        open={skillNameToDelete !== null}
+        onOpenChange={(open) => {
+          if (!open && !isDeletingSkill) {
+            setSkillNameToDelete(null);
+          }
+        }}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t('settings.skills.page.deleteSkillDialog.title', { name: skillNameToDelete ?? '' })}</DialogTitle>
+            <DialogDescription>
+              {t('settings.skills.page.deleteSkillDialog.description', { name: skillNameToDelete ?? '' })}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setSkillNameToDelete(null)}
+              disabled={isDeletingSkill}
+            >
+              {t('settings.common.actions.cancel')}
+            </Button>
+            <Button size="sm" variant="destructive" onClick={handleDeleteSkill} disabled={isDeletingSkill}>
               {t('settings.common.actions.delete')}
             </Button>
           </DialogFooter>

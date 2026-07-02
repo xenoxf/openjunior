@@ -27,6 +27,10 @@ import { SnippetsSidebar } from '@/components/sections/snippets/SnippetsSidebar'
 import { SnippetsPage } from '@/components/sections/snippets/SnippetsPage';
 import { GitPage } from '@/components/sections/git-identities/GitPage';
 import { UnifiedCatalogPage } from '@/components/sections/integrations/UnifiedCatalogPage';
+import { McpPage } from '@/components/sections/mcp/McpPage';
+import { McpSidebar } from '@/components/sections/mcp/McpSidebar';
+import { SkillsPage, SkillsSidebar } from '@/components/sections/skills';
+import { PluginsPage, PluginsSidebar } from '@/components/sections/plugins';
 import type { OpenJuniorSection } from '@/components/sections/openjunior/types';
 import { OpenJuniorPage } from '@/components/sections/openjunior/OpenJuniorPage';
 import { AboutSettings } from '@/components/sections/openjunior/AboutSettings';
@@ -80,8 +84,11 @@ const pageOrder: SettingsPageSlug[] = [
   'sessions',
   'shortcuts',
   'git',
-  'magic-prompts',
   'integrations',
+  'mcp',
+  'skills.installed',
+  'plugins',
+  'magic-prompts',
   'snippets',
   'projects',
   'remote-instances',
@@ -102,11 +109,14 @@ const BASIC_PAGES: SettingsPageSlug[] = [
   'sessions',
   'shortcuts',
   'git',
-  'magic-prompts',
   'integrations',
 ];
 
 const ADVANCED_PAGES: SettingsPageSlug[] = [
+  'mcp',
+  'skills.installed',
+  'plugins',
+  'magic-prompts',
   'snippets',
   'projects',
   'remote-instances',
@@ -209,7 +219,7 @@ export function getSettingsNavIcon(slug: SettingsPageSlug): IconName | null {
     case 'commands':
       return 'slash-commands-2';
     case 'mcp':
-      return null;
+      return 'server';
     case 'plugins':
       return 'code-box';
 
@@ -334,7 +344,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
   const [activeSearchResultIndex, setActiveSearchResultIndex] = React.useState(0);
   const [hasManuallyResized, setHasManuallyResized] = React.useState(false);
   const [isResizing, setIsResizing] = React.useState(false);
-  const [advancedExpanded, setAdvancedExpanded] = React.useState(false);
+  const [advancedExpanded, setAdvancedExpanded] = React.useState(true);
   const startXRef = React.useRef(0);
   const startWidthRef = React.useRef(navWidth);
   const containerRef = React.useRef<HTMLDivElement>(null);
@@ -735,6 +745,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
         return <MagicPromptsSidebar onItemSelect={opts.onItemSelect} />;
       case 'snippets':
         return <SnippetsSidebar onItemSelect={opts.onItemSelect} />;
+      case 'mcp':
+        return <McpSidebar onItemSelect={opts.onItemSelect} />;
+      case 'skills.installed':
+        return <SkillsSidebar onItemSelect={opts.onItemSelect} />;
+      case 'plugins':
+        return <PluginsSidebar onItemSelect={opts.onItemSelect} />;
       default:
         return null;
     }
@@ -761,6 +777,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
         return <CommandsPage />;
       case 'integrations':
         return <UnifiedCatalogPage />;
+      case 'mcp':
+        return <McpPage />;
+      case 'skills.installed':
+        return <SkillsPage view="installed" />;
+      case 'plugins':
+        return <PluginsPage />;
       case 'providers':
         return <ProvidersPage />;
       case 'usage':

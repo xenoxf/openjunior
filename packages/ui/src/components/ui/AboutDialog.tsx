@@ -203,13 +203,13 @@ export const AboutDialog: React.FC<AboutDialogProps> = ({
               </a>
             </div>
             <a
-              href="https://x.com/openjunior_dev"
+              href="https://x.com/openchamber_dev"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 typography-meta text-muted-foreground hover:text-foreground transition-colors"
             >
               <Icon name="twitter-xfill" className="h-4 w-4" />
-              <span>@openjunior_dev</span>
+              <span>@openchamber_dev</span>
             </a>
           </div>
 

@@ -51,9 +51,10 @@ function deriveCategoryFromServer(server) {
 
 const router = express.Router();
 
-async function fetchPage(cursor, limit) {
+async function fetchPage(cursor, limit, search) {
   const params = new URLSearchParams({ limit: String(limit), version: 'latest' });
   if (cursor) params.set('cursor', cursor);
+  if (search) params.set('search', search);
 
   const url = `${REGISTRY_BASE}/v0.1/servers?${params.toString()}`;
   const response = await fetch(url, {
@@ -120,6 +121,29 @@ function normalizeServer(entry) {
     (h) => h.name.toLowerCase() === 'authorization' && h.description?.toLowerCase().includes('oauth')
   );
 
+  const GENERIC_CODE_HOSTS = new Set(['github.com', 'gitlab.com', 'bitbucket.org']);
+
+  function deriveFaviconUrl(s) {
+    if (s.icons && Array.isArray(s.icons) && s.icons.length > 0) {
+      const icon = s.icons[0];
+      if (icon && icon.src && (icon.src.startsWith('http') || icon.src.startsWith('data:'))) {
+        return icon.src;
+      }
+    }
+
+    const url = s.websiteUrl || s.repository?.url;
+    if (url) {
+      try {
+        const domain = new URL(url).hostname;
+        if (!GENERIC_CODE_HOSTS.has(domain)) {
+          return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+        }
+      } catch {}
+    }
+
+    return null;
+  }
+
   const normalized = {
     name: s.name,
     title: s.title || s.name,
@@ -144,6 +168,7 @@ function normalizeServer(entry) {
     hasAuth,
     hasOAuth,
     icons: s.icons || null,
+    faviconUrl: deriveFaviconUrl(s),
   };
 
   normalized.categories = deriveCategoryFromServer(normalized);
@@ -157,21 +182,40 @@ router.get('/', async (req, res) => {
     const search = req.query.search || null;
     const category = req.query.category || null;
 
-    // For search, we need to scan (registry does not support server-side search beyond name)
-    if (search && !cursor) {
+    if (!cursor) {
       cache = { data: null, timestamp: 0, cursor: null, totalCount: 0 };
     }
 
-    const body = await fetchPage(cursor, limit);
+    const body = await fetchPage(cursor, limit, search);
 
     let servers = (body.servers || [])
       .map(normalizeServer)
       .filter(Boolean);
 
+    // Deduplicate by name: keep latest version only
+    const seen = new Map();
+    for (const s of servers) {
+      const key = s.name.toLowerCase();
+      const existing = seen.get(key);
+      if (!existing) {
+        seen.set(key, s);
+      } else if (s.isLatest && !existing.isLatest) {
+        seen.set(key, s);
+      } else if (!existing.isLatest) {
+        // Compare semver versions, keep the higher one
+        const existingVer = existing.version || '0.0.0';
+        const currentVer = s.version || '0.0.0';
+        if (currentVer.localeCompare(existingVer, undefined, { numeric: true }) > 0) {
+          seen.set(key, s);
+        }
+      }
+    }
+    servers = Array.from(seen.values());
+
+    // Supplemental local filter: registry search is name-only, we also match title/description
     if (search) {
       const q = search.toLowerCase();
       servers = servers.filter((s) =>
-        s.name.toLowerCase().includes(q) ||
         s.title.toLowerCase().includes(q) ||
         s.description.toLowerCase().includes(q)
       );
