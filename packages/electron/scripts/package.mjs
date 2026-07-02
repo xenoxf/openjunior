@@ -22,7 +22,13 @@ const bunBinary = bunBinaryCandidates.find((candidate) => {
   return false;
 }) || (process.platform === 'win32' ? 'bun.exe' : 'bun');
 
-const child = spawn(bunBinary, ['x', 'electron-builder', ...process.argv.slice(2)], {
+const args = process.argv.slice(2);
+if (process.env.CI && !args.includes('--publish')) {
+  args.push('--publish', 'never');
+  console.log('[electron] CI detected; disabling publish (manual gh release upload handles it).');
+}
+
+const child = spawn(bunBinary, ['x', 'electron-builder', ...args], {
   env,
   stdio: 'inherit',
 });
