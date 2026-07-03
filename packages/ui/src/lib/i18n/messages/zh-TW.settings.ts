@@ -1793,4 +1793,21 @@
   'settings.openjunior.visual.field.showTerminalButton': '顯示終端按鈕',
   'settings.openjunior.visual.field.showMiniBrowser': '顯示迷你瀏覽器按鈕',
   'settings.openjunior.visual.field.showRightSidebar': '顯示右側欄按鈕',
+
+  // Connectors
+  'settings.connectors.page.title': '連接器',
+  'settings.connectors.sidebar.integrations': '整合',
+  'settings.connectors.sidebar.mcp': 'MCP',
+  'settings.connectors.sidebar.skills': '技能',
+  'settings.connectors.sidebar.collapse': '折疊側邊欄',
+  'settings.connectors.sidebar.expand': '展開側邊欄',
+  'settings.connectors.integrations.empty': '暫無可用整合',
+  'settings.connectors.integrations.google.title': 'Google',
+  'settings.connectors.integrations.google.description': '連接您的Google帳號以使用Gmail、雲端硬碟、日曆等。',
+  'settings.connectors.integrations.google.connect': '連接Google帳號',
+  'settings.connectors.integrations.google.connected': 'Google帳號已連接',
+  'settings.connectors.integrations.google.disconnect': '斷開連接',
+  'settings.connectors.integrations.google.disconnecting': '正在斷開...',
+  'settings.connectors.integrations.google.connecting': '正在連接...',
+  'settings.connectors.integrations.google.disconnected': 'Google已斷開',
 } as const;

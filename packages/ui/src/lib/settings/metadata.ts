@@ -14,6 +14,7 @@ export type SettingsPageSlug =
   | 'skills.installed'
   | 'skills.catalog'
   | 'integrations'
+  | 'connectors'
   | 'git'
   | 'appearance'
   | 'chat'
@@ -124,6 +125,13 @@ export const SETTINGS_PAGE_METADATA: readonly SettingsPageMeta[] = [
     group: 'opencode',
     kind: 'split',
     keywords: ['command', 'commands', 'slash', 'macros', 'automation'],
+  },
+  {
+    slug: 'connectors',
+    title: 'Connectors',
+    group: 'integrations',
+    kind: 'single',
+    keywords: ['connectors', 'mcp', 'skills', 'integrations', 'services', 'oauth', 'catalog', 'marketplace', 'connect'],
   },
   {
     slug: 'integrations',

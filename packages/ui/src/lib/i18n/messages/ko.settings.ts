@@ -1793,4 +1793,21 @@ export const settingsDict = {
   'settings.openjunior.visual.field.showTerminalButton': '터미널 버튼 표시',
   'settings.openjunior.visual.field.showMiniBrowser': '미니 브라우저 버튼 표시',
   'settings.openjunior.visual.field.showRightSidebar': '오른쪽 사이드바 버튼 표시',
+
+  // Connectors
+  'settings.connectors.page.title': '커넥터',
+  'settings.connectors.sidebar.integrations': '통합',
+  'settings.connectors.sidebar.mcp': 'MCP',
+  'settings.connectors.sidebar.skills': '스킬',
+  'settings.connectors.sidebar.collapse': '사이드바 접기',
+  'settings.connectors.sidebar.expand': '사이드바 펼치기',
+  'settings.connectors.integrations.empty': '사용 가능한 통합이 없습니다',
+  'settings.connectors.integrations.google.title': '구글',
+  'settings.connectors.integrations.google.description': 'Google 계정을 연결하여 Gmail, 드라이브, 캘린더 등을 사용하세요.',
+  'settings.connectors.integrations.google.connect': 'Google 계정 연결',
+  'settings.connectors.integrations.google.connected': 'Google 계정이 연결되었습니다',
+  'settings.connectors.integrations.google.disconnect': '연결 해제',
+  'settings.connectors.integrations.google.disconnecting': '연결 해제 중...',
+  'settings.connectors.integrations.google.connecting': '연결 중...',
+  'settings.connectors.integrations.google.disconnected': 'Google 연결 해제됨',
 } as const;

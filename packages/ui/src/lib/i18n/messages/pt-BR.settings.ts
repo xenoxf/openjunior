@@ -1793,4 +1793,21 @@ export const settingsDict = {
   "settings.openjunior.visual.field.showTerminalButton": "Mostrar botão do terminal",
   "settings.openjunior.visual.field.showMiniBrowser": "Mostrar botão do mini navegador",
   "settings.openjunior.visual.field.showRightSidebar": "Mostrar botão da barra lateral direita",
+
+  // Connectors
+  "settings.connectors.page.title": "Conectores",
+  "settings.connectors.sidebar.integrations": "Integrações",
+  "settings.connectors.sidebar.mcp": "MCP",
+  "settings.connectors.sidebar.skills": "Habilidades",
+  "settings.connectors.sidebar.collapse": "Recolher barra lateral",
+  "settings.connectors.sidebar.expand": "Expandir barra lateral",
+  "settings.connectors.integrations.empty": "Nenhuma integração disponível",
+  "settings.connectors.integrations.google.title": "Google",
+  "settings.connectors.integrations.google.description": "Conecte sua conta do Google para usar Gmail, Drive, Agenda e mais.",
+  "settings.connectors.integrations.google.connect": "Conectar conta Google",
+  "settings.connectors.integrations.google.connected": "Conta Google conectada",
+  "settings.connectors.integrations.google.disconnect": "Desconectar",
+  "settings.connectors.integrations.google.disconnecting": "Desconectando...",
+  "settings.connectors.integrations.google.connecting": "Conectando...",
+  "settings.connectors.integrations.google.disconnected": "Google desconectado",
 } as const;

@@ -1790,6 +1790,23 @@ export const settingsDict = {
   'settings.magicPrompts.page.toast.resetAllSuccess': 'All prompt overrides reset',
   'settings.magicPrompts.page.toast.resetAllFailed': 'Failed to reset all prompts',
 
+  // Connectors (unified page)
+  'settings.connectors.page.title': 'Connectors',
+  'settings.connectors.sidebar.integrations': 'Integraciones',
+  'settings.connectors.sidebar.mcp': 'MCP',
+  'settings.connectors.sidebar.skills': 'Skills',
+  'settings.connectors.sidebar.collapse': 'Collapse sidebar',
+  'settings.connectors.sidebar.expand': 'Expand sidebar',
+  'settings.connectors.integrations.empty': 'No integrations available',
+  'settings.connectors.integrations.google.title': 'Google',
+  'settings.connectors.integrations.google.description': 'Connect your Google account to enable Gmail, Drive, Calendar and more.',
+  'settings.connectors.integrations.google.connect': 'Connect Google Account',
+  'settings.connectors.integrations.google.connected': 'Google account connected',
+  'settings.connectors.integrations.google.disconnect': 'Disconnect',
+  'settings.connectors.integrations.google.disconnecting': 'Disconnecting...',
+  'settings.connectors.integrations.google.connecting': 'Connecting...',
+  'settings.connectors.integrations.google.disconnected': 'Google disconnected',
+
   // Integrations (Unified Catalog)
   'settings.integrations.page.title': 'Integrations',
   'settings.integrations.page.subtitle.available': '{count} available',

@@ -1793,4 +1793,21 @@ export const settingsDict = {
   "settings.openjunior.visual.field.showTerminalButton": "Показати кнопку терміналу",
   "settings.openjunior.visual.field.showMiniBrowser": "Показати кнопку міні-браузера",
   "settings.openjunior.visual.field.showRightSidebar": "Показати кнопку правої бічної панелі",
+
+  // Connectors
+  "settings.connectors.page.title": "З'єднувачі",
+  "settings.connectors.sidebar.integrations": "Інтеграції",
+  "settings.connectors.sidebar.mcp": "MCP",
+  "settings.connectors.sidebar.skills": "Навички",
+  "settings.connectors.sidebar.collapse": "Згорнути бічну панель",
+  "settings.connectors.sidebar.expand": "Розгорнути бічну панель",
+  "settings.connectors.integrations.empty": "Немає доступних інтеграцій",
+  "settings.connectors.integrations.google.title": "Google",
+  "settings.connectors.integrations.google.description": "Підключіть свій обліковий запис Google, щоб використовувати Gmail, Drive, Календар та інше.",
+  "settings.connectors.integrations.google.connect": "Підключити обліковий запис Google",
+  "settings.connectors.integrations.google.connected": "Обліковий запис Google підключено",
+  "settings.connectors.integrations.google.disconnect": "Відключити",
+  "settings.connectors.integrations.google.disconnecting": "Відключення...",
+  "settings.connectors.integrations.google.connecting": "Підключення...",
+  "settings.connectors.integrations.google.disconnected": "Google відключено",
 } as const;
