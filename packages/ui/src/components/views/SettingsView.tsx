@@ -26,7 +26,7 @@ import { MagicPromptsPage } from '@/components/sections/magic-prompts/MagicPromp
 import { SnippetsSidebar } from '@/components/sections/snippets/SnippetsSidebar';
 import { SnippetsPage } from '@/components/sections/snippets/SnippetsPage';
 import { GitPage } from '@/components/sections/git-identities/GitPage';
-import { UnifiedCatalogPage } from '@/components/sections/integrations/UnifiedCatalogPage';
+import { ConnectorsPage } from '@/components/sections/connectors/ConnectorsPage';
 import { McpPage } from '@/components/sections/mcp/McpPage';
 import { McpSidebar } from '@/components/sections/mcp/McpSidebar';
 import { SkillsPage, SkillsSidebar } from '@/components/sections/skills';
@@ -84,7 +84,7 @@ const pageOrder: SettingsPageSlug[] = [
   'sessions',
   'shortcuts',
   'git',
-  'integrations',
+  'connectors',
   'mcp',
   'skills.installed',
   'plugins',
@@ -103,14 +103,14 @@ const pageOrder: SettingsPageSlug[] = [
 ];
 
 const BASIC_PAGES: SettingsPageSlug[] = [
-  'appearance',
-  'chat',
-  'notifications',
-  'sessions',
-  'shortcuts',
-  'git',
-  'integrations',
-];
+    'appearance',
+    'chat',
+    'notifications',
+    'sessions',
+    'shortcuts',
+    'connectors',
+    'git',
+  ];
 
 const ADVANCED_PAGES: SettingsPageSlug[] = [
   'mcp',
@@ -228,6 +228,8 @@ export function getSettingsNavIcon(slug: SettingsPageSlug): IconName | null {
     case 'skills.catalog':
       return 'book';
 
+    case 'connectors':
+      return 'plug-2';
     case 'integrations':
       return 'plug-2';
 
@@ -525,6 +527,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
         return t('settings.page.skills.title');
       case 'skills.catalog':
         return t('settings.page.skillsCatalog.title');
+      case 'connectors':
+        return t('settings.connectors.page.title');
       case 'integrations':
         return 'Integrations';
       case 'git':
@@ -775,8 +779,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
         return <BehaviorPage />;
       case 'commands':
         return <CommandsPage />;
+      case 'connectors':
       case 'integrations':
-        return <UnifiedCatalogPage />;
+        return <ConnectorsPage />;
       case 'mcp':
         return <McpPage />;
       case 'skills.installed':
@@ -1014,9 +1019,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
                               : 'text-foreground hover:bg-interactive-hover'
                           )}
                         >
-                          {page.slug === 'integrations'
-                            ? <Icon name="plug" className="h-4 w-4 shrink-0" />
-                            : <Icon name={iconName!} className="h-4 w-4 shrink-0" />}
+                          <Icon name={iconName!} className="h-4 w-4 shrink-0" />
                           <span className="flex items-center gap-1.5 whitespace-nowrap overflow-hidden transition-opacity duration-150 opacity-100">
                             <span className="typography-ui-label font-normal truncate">{getPageTitle(page.slug)}</span>
                             {(page.slug === 'voice' || page.slug === 'tunnel') && (
@@ -1191,12 +1194,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
 
   return (
     <div
-      key={settingsSlug === 'integrations' ? 'integrations-fullscreen' : 'settings-normal'}
+      key={settingsSlug === 'connectors' ? 'connectors-fullscreen' : 'settings-normal'}
       ref={containerRef}
       data-settings-view="true"
       className={cn(
         'relative flex min-h-0 flex-col bg-background transition-all duration-200',
-        settingsSlug === 'integrations'
+        settingsSlug === 'connectors'
           ? 'fixed inset-0 z-50 h-screen w-screen overflow-hidden opacity-100 scale-100'
           : 'h-full overflow-hidden opacity-100'
       )}

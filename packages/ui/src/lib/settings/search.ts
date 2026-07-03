@@ -746,6 +746,12 @@ export const SETTINGS_SEARCH_ITEMS: readonly SettingsSearchItem[] = [
     isAvailable: (ctx) => ctx.isWeb && !ctx.isDesktop && !ctx.isVSCode,
   },
   {
+    id: 'connectors.overview',
+    page: 'connectors',
+    titleKey: 'settings.connectors.page.title',
+    keywords: ['connectors', 'integrations', 'mcp', 'skills', 'oauth', 'catalog', 'marketplace', 'connect', 'google', 'services', 'tools'],
+  },
+  {
     id: 'integrations.browse',
     page: 'integrations',
     titleKey: 'settings.integrations.page.title',

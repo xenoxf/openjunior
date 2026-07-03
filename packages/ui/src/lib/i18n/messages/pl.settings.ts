@@ -1785,4 +1785,21 @@ export const settingsDict = {
   'settings.openjunior.visual.field.showTerminalButton': 'Pokaż przycisk terminala',
   'settings.openjunior.visual.field.showMiniBrowser': 'Pokaż przycisk mini przeglądarki',
   'settings.openjunior.visual.field.showRightSidebar': 'Pokaż przycisk prawego paska bocznego',
+
+  // Connectors
+  'settings.connectors.page.title': 'Łączniki',
+  'settings.connectors.sidebar.integrations': 'Integracje',
+  'settings.connectors.sidebar.mcp': 'MCP',
+  'settings.connectors.sidebar.skills': 'Umiejętności',
+  'settings.connectors.sidebar.collapse': 'Zwiń pasek boczny',
+  'settings.connectors.sidebar.expand': 'Rozwiń pasek boczny',
+  'settings.connectors.integrations.empty': 'Brak dostępnych integracji',
+  'settings.connectors.integrations.google.title': 'Google',
+  'settings.connectors.integrations.google.description': 'Połącz swoje konto Google, aby korzystać z Gmaila, Drive, Kalendarza i nie tylko.',
+  'settings.connectors.integrations.google.connect': 'Połącz konto Google',
+  'settings.connectors.integrations.google.connected': 'Konto Google połączone',
+  'settings.connectors.integrations.google.disconnect': 'Rozłącz',
+  'settings.connectors.integrations.google.disconnecting': 'Rozłączanie...',
+  'settings.connectors.integrations.google.connecting': 'Łączenie...',
+  'settings.connectors.integrations.google.disconnected': 'Google rozłączone',
 };

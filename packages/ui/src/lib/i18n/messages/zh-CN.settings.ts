@@ -1793,4 +1793,21 @@ export const settingsDict = {
   'settings.openjunior.visual.field.showTerminalButton': '显示终端按钮',
   'settings.openjunior.visual.field.showMiniBrowser': '显示迷你浏览器按钮',
   'settings.openjunior.visual.field.showRightSidebar': '显示右侧栏按钮',
+
+  // Connectors
+  'settings.connectors.page.title': '连接器',
+  'settings.connectors.sidebar.integrations': '集成',
+  'settings.connectors.sidebar.mcp': 'MCP',
+  'settings.connectors.sidebar.skills': '技能',
+  'settings.connectors.sidebar.collapse': '折叠侧边栏',
+  'settings.connectors.sidebar.expand': '展开侧边栏',
+  'settings.connectors.integrations.empty': '暂无可用集成',
+  'settings.connectors.integrations.google.title': 'Google',
+  'settings.connectors.integrations.google.description': '连接您的Google账号以使用Gmail、云端硬盘、日历等。',
+  'settings.connectors.integrations.google.connect': '连接Google账号',
+  'settings.connectors.integrations.google.connected': 'Google账号已连接',
+  'settings.connectors.integrations.google.disconnect': '断开连接',
+  'settings.connectors.integrations.google.disconnecting': '正在断开...',
+  'settings.connectors.integrations.google.connecting': '正在连接...',
+  'settings.connectors.integrations.google.disconnected': 'Google已断开',
 } as const;

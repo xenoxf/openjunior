@@ -6,8 +6,6 @@
 [![Discord](https://img.shields.io/badge/Discord-join.svg?style=flat&labelColor=100F0F&color=8B7EC8&logo=discord&logoColor=FFFCF0)](https://discord.gg/ZYRSdnwwKA)
 [![Support the project](https://img.shields.io/badge/Support-Project-black?style=flat&labelColor=100F0F&color=EC8B49&logo=ko-fi&logoColor=FFFCF0)](https://ko-fi.com/G2G41SAWNS)
 
-> [!IMPORTANT]
-> 🏖️ I'm on vacation from 18 Jun to 28 Jun. All issues and PRs will continue being reviewed after that. Thanks for the patience.
 
 ## **OpenCode, everywhere.** Desktop. Browser. Phone.
 
@@ -34,7 +32,7 @@
 
 - **Cross-device continuity**: Start in TUI, continue on tablet/phone, return to terminal - same session
 - **Remote access**: Use OpenCode from anywhere via browser
-- **Familiarity**: A visual alternative for developers who prefer GUI workflows
+- **Familiarity**: A visual alternative for developers or common user who prefer GUI workflows
 
 ## Features
 

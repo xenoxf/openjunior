@@ -183,11 +183,25 @@ function DetailDialog({
   onEnvValueChange: (name: string, value: string) => void;
 }) {
   const { t } = useI18n();
+
+  const requiredFields = React.useMemo(() => {
+    if (!server) return [];
+    const envRequired = server.envVars.filter(v => v.isRequired).map(v => v.name);
+    const headerRequired = server.remoteHeaders.filter(h => h.isRequired).map(h => `__header_${h.name}`);
+    return [...envRequired, ...headerRequired];
+  }, [server]);
+
+  const missingRequired = React.useMemo(() => {
+    return requiredFields.filter(key => !envValues[key]?.trim());
+  }, [requiredFields, envValues]);
+
   if (!server) return null;
 
   const hasRequirements = server.envVars.length > 0 || server.remoteHeaders.length > 0 || server.remoteVariables.length > 0;
   const isGoogleMcp = server.name.toLowerCase().includes('google') || server.title.toLowerCase().includes('google');
   const popularRank = getPopularityRank(server.name, server.title);
+
+  const canInstall = !isInstalled && server.installType && missingRequired.length === 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -408,48 +422,56 @@ function DetailDialog({
             )}
           </div>
         </div>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline">Close</Button>
-          </DialogClose>
-          {!isInstalled && server.installType && (
-            <Button
-              variant="default"
-              onClick={() => onInstall(server)}
-              disabled={isInstalling}
-            >
-              {isInstalling ? (
-                <>
-                  <Icon name="loader-4" className="h-4 w-4 animate-spin" />
-                  Installing...
-                </>
-              ) : (
-                <>
-                  <Icon name="download" className="h-4 w-4" />
-                  Install
-                </>
-              )}
-            </Button>
+        <DialogFooter className="flex-col sm:flex-col items-stretch gap-2">
+          {missingRequired.length > 0 && (
+            <p className="typography-micro text-[var(--status-warning)] text-center">
+              Fill in required fields ({missingRequired.length} missing) to enable installation.
+            </p>
           )}
-          {isInstalled && server.installType && (
-            <Button
-              variant="destructive"
-              onClick={() => onUninstall(server)}
-              disabled={isUninstalling}
-            >
-              {isUninstalling ? (
-                <>
-                  <Icon name="loader-4" className="h-4 w-4 animate-spin" />
-                  Uninstalling...
-                </>
-              ) : (
-                <>
-                  <Icon name="delete-bin" className="h-4 w-4" />
-                  Uninstall
-                </>
-              )}
-            </Button>
-          )}
+          <div className="flex gap-2 justify-end">
+            <DialogClose asChild>
+              <Button variant="outline">Close</Button>
+            </DialogClose>
+            {!isInstalled && server.installType && (
+              <Button
+                variant="default"
+                onClick={() => onInstall(server)}
+                disabled={isInstalling || !canInstall}
+                title={missingRequired.length > 0 ? `Required: ${missingRequired.join(', ')}` : undefined}
+              >
+                {isInstalling ? (
+                  <>
+                    <Icon name="loader-4" className="h-4 w-4 animate-spin" />
+                    Installing...
+                  </>
+                ) : (
+                  <>
+                    <Icon name="download" className="h-4 w-4" />
+                    Install
+                  </>
+                )}
+              </Button>
+            )}
+            {isInstalled && server.installType && (
+              <Button
+                variant="destructive"
+                onClick={() => onUninstall(server)}
+                disabled={isUninstalling}
+              >
+                {isUninstalling ? (
+                  <>
+                    <Icon name="loader-4" className="h-4 w-4 animate-spin" />
+                    Uninstalling...
+                  </>
+                ) : (
+                  <>
+                    <Icon name="delete-bin" className="h-4 w-4" />
+                    Uninstall
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

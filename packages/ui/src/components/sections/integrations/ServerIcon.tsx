@@ -2,6 +2,7 @@ import React from 'react';
 import { Icon } from '@/components/icon/Icon';
 import { cn } from '@/lib/utils';
 import { resolveAppIcon } from './appIcons';
+import { FallbackIcon } from '@/components/sections/connectors/FallbackIcon';
 import type { McpRegistryServer } from '@/stores/useMcpRegistryStore';
 
 function getGitHubAvatarUrl(server: McpRegistryServer): string | null {
@@ -15,7 +16,7 @@ function getGitHubAvatarUrl(server: McpRegistryServer): string | null {
         return `https://github.com/${parts[0]}.png`;
       }
     }
-  } catch {}
+  } catch { /* ignore invalid URL */ }
   return null;
 }
 
@@ -29,7 +30,7 @@ function getGoogleFaviconUrl(server: McpRegistryServer): string | null {
       if (!GENERIC_CODE_HOSTS.has(domain)) {
         return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
       }
-    } catch {}
+    } catch { /* ignore invalid URL */ }
   }
   return null;
 }
@@ -90,21 +91,27 @@ export function ServerIcon({ server, className }: { server: McpRegistryServer; c
     );
   }
 
-  const fromDescription = resolved?.matchSource === 'description';
+  if (resolved) {
+    const fromDescription = resolved.matchSource === 'description';
+    return (
+      <div
+        className={cn(
+          'flex h-14 w-14 shrink-0 items-center justify-center rounded-xl',
+          'bg-[var(--surface-muted)] text-[var(--surface-foreground)]',
+          fromDescription && 'opacity-60',
+          className
+        )}
+        title={fromDescription ? `Matched by description: ${resolved.label}` : undefined}
+      >
+        <Icon name={resolved.icon} className="h-6 w-6" />
+      </div>
+    );
+  }
 
   return (
-    <div
-      className={cn(
-        'flex h-14 w-14 shrink-0 items-center justify-center rounded-xl',
-        resolved
-          ? 'bg-[var(--surface-muted)] text-[var(--surface-foreground)]'
-          : 'bg-[var(--status-success)]/8 text-[var(--status-success)]',
-        fromDescription && 'opacity-60',
-        className
-      )}
-      title={fromDescription ? `Matched by description: ${resolved?.label}` : undefined}
-    >
-      <Icon name={resolved?.icon || 'plug'} className="h-6 w-6" />
-    </div>
+    <FallbackIcon
+      name={server.title || server.name}
+      className={cn('h-14 w-14', className)}
+    />
   );
 }
