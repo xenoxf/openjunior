@@ -324,9 +324,13 @@ export const createSettingsHelpers = (dependencies) => {
     }
     if (candidate.managedRemoteTunnelToken === null) {
       result.managedRemoteTunnelToken = null;
-    } else if (typeof candidate.managedRemoteTunnelToken === 'string') {
+    } else     if (typeof candidate.managedRemoteTunnelToken === 'string') {
       result.managedRemoteTunnelToken = candidate.managedRemoteTunnelToken.trim();
     }
+    if (typeof candidate.composioApiKey === 'string' && candidate.composioApiKey.trim().length > 0) {
+      result.composioApiKey = candidate.composioApiKey.trim();
+    }
+    console.log('[SettingsHelpers] sanitizeSettingsUpdate composioApiKey present in payload:', !!candidate.composioApiKey);
     const managedRemoteTunnelPresets = normalizeManagedRemoteTunnelPresets(candidate.managedRemoteTunnelPresets);
     if (managedRemoteTunnelPresets) {
       result.managedRemoteTunnelPresets = managedRemoteTunnelPresets;
@@ -776,8 +780,10 @@ export const createSettingsHelpers = (dependencies) => {
   const formatSettingsResponse = (settings) => {
     const sanitized = sanitizeSettingsUpdate(settings);
     delete sanitized.managedRemoteTunnelToken;
+    delete sanitized.composioApiKey;
     const bookmarks = normalizeStringArray(settings.securityScopedBookmarks);
     const hasManagedRemoteTunnelToken = typeof settings?.managedRemoteTunnelToken === 'string' && settings.managedRemoteTunnelToken.trim().length > 0;
+    const hasComposioApiKey = typeof settings?.composioApiKey === 'string' && settings.composioApiKey.trim().length > 0;
     const pwaAppName = normalizePwaAppName(settings?.pwaAppName, '');
     const pwaOrientation = normalizePwaOrientation(settings?.pwaOrientation, 'system');
     const mobileKeyboardMode = normalizeMobileKeyboardMode(settings?.mobileKeyboardMode, 'native');
@@ -785,6 +791,7 @@ export const createSettingsHelpers = (dependencies) => {
     return {
       ...sanitized,
       hasManagedRemoteTunnelToken,
+      hasComposioApiKey,
       ...(pwaAppName ? { pwaAppName } : {}),
       pwaOrientation,
       mobileKeyboardMode,

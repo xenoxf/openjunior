@@ -266,7 +266,13 @@ export const createFeatureRoutesRuntime = (dependencies) => {
     registerQuotaRoutes(app, { getQuotaProviders });
     registerGitHubRoutes(app);
     registerGitRoutes(app);
-    registerComposioRoutes(app);
+    const settings = await readSettingsFromDiskMigrated().catch((err) => {
+      console.warn('[FeatureRoutes] Could not read settings for Composio:', err?.message);
+      return {};
+    });
+    const composioApiKey = settings?.composioApiKey || '';
+    console.log('[FeatureRoutes] Composio API key from settings present:', !!composioApiKey);
+    registerComposioRoutes(app, composioApiKey);
     registerMagicPromptRoutes(app, {
       fsPromises,
       path,
