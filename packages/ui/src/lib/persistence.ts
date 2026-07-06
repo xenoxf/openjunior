@@ -546,6 +546,18 @@ const applyDesktopUiPreferences = (settings: DesktopSettings) => {
   if (typeof settings.terminalFontSize === 'number' && Number.isFinite(settings.terminalFontSize) && settings.terminalFontSize !== store.terminalFontSize) {
     store.setTerminalFontSize(settings.terminalFontSize);
   }
+  if (typeof settings.showTerminalButton === 'boolean' && settings.showTerminalButton !== store.showTerminalButton) {
+    store.setShowTerminalButton(settings.showTerminalButton);
+  }
+  if (typeof settings.showMiniBrowserButton === 'boolean' && settings.showMiniBrowserButton !== store.showMiniBrowserButton) {
+    store.setShowMiniBrowserButton(settings.showMiniBrowserButton);
+  }
+  if (typeof settings.showRightSidebarButton === 'boolean' && settings.showRightSidebarButton !== store.showRightSidebarButton) {
+    store.setShowRightSidebarButton(settings.showRightSidebarButton);
+  }
+  if (typeof settings.showTerminalQuickKeysOnDesktop === 'boolean' && settings.showTerminalQuickKeysOnDesktop !== store.showTerminalQuickKeysOnDesktop) {
+    store.setShowTerminalQuickKeysOnDesktop(settings.showTerminalQuickKeysOnDesktop);
+  }
   if (isUiFontOption(settings.uiFont) && settings.uiFont !== store.uiFont) {
     store.setUiFont(settings.uiFont);
   }

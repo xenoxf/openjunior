@@ -10,53 +10,43 @@ import {
 } from './cli-output.js';
 import fs from 'fs';
 import path from 'path';
-import os from 'os';
+import { fileURLToPath } from 'url';
 
 console.log('[Composio:CLI] ===== MODULE LOADED =====');
 
-const SETTINGS_FILE_PATH = path.join(
-  process.env.OPENJUNIOR_DATA_DIR
-    ? path.resolve(process.env.OPENJUNIOR_DATA_DIR)
-    : path.join(os.homedir(), '.config', 'openjunior'),
-  'settings.json'
-);
-
-function readSetting(key) {
-  try {
-    console.log('[Composio:CLI] Reading settings from:', SETTINGS_FILE_PATH);
-    if (!fs.existsSync(SETTINGS_FILE_PATH)) {
-      console.log('[Composio:CLI] settings.json does not exist at:', SETTINGS_FILE_PATH);
-      return null;
+// Load .env from project root
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const envPathCli = path.resolve(__dirname, '..', '..', '..', '.env');
+try {
+  const envContent = fs.readFileSync(envPathCli, 'utf8');
+  for (const line of envContent.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#') || !trimmed.includes('=')) continue;
+    const eqIdx = trimmed.indexOf('=');
+    const key = trimmed.slice(0, eqIdx).trim();
+    const value = trimmed.slice(eqIdx + 1).trim();
+    if (key && process.env[key] === undefined) {
+      process.env[key] = value;
     }
-    const raw = fs.readFileSync(SETTINGS_FILE_PATH, 'utf8');
-    const settings = JSON.parse(raw);
-    const value = settings && typeof settings === 'object' ? settings[key] : undefined;
-    console.log('[Composio:CLI] Setting', key, 'present:', !!value);
-    return value || null;
-  } catch (err) {
-    console.log('[Composio:CLI] Error reading settings.json:', err.message);
-    return null;
   }
+  console.log('[Composio:CLI] .env loaded from:', envPathCli);
+  console.log('[Composio:CLI] COMPOSIO_API_KEY from .env:', !!process.env.COMPOSIO_API_KEY);
+  console.log('[Composio:CLI] COMPOSIO_USER_ID from .env:', process.env.COMPOSIO_USER_ID || '(not set)');
+} catch (err) {
+  console.log('[Composio:CLI] No .env file found at project root, skipping:', err.message);
 }
 
 function resolveApiKey() {
-  console.log('[Composio:CLI] resolveApiKey() called');
-  console.log('[Composio:CLI] Will read from settings.json (NOT process.env, NOT hardcoded)');
-
-  const fromSettings = readSetting('composioApiKey');
-  if (fromSettings && typeof fromSettings === 'string' && fromSettings.trim().length > 0) {
-    console.log('[Composio:CLI] API key resolved from settings.json');
-    return fromSettings.trim();
+  const fromEnv = process.env.COMPOSIO_API_KEY;
+  if (fromEnv && typeof fromEnv === 'string' && fromEnv.trim().length > 0) {
+    console.log('[Composio:CLI] API key resolved from COMPOSIO_API_KEY, length:', fromEnv.trim().length);
+    return fromEnv.trim();
   }
 
-  console.error('[Composio:CLI] ERROR: Composio API key not found in settings.json!');
-  console.error('[Composio:CLI] Configure it via Settings > Connectors > Composio in the UI');
-  console.error('[Composio:CLI] Or run OpenJunior web server and set it in settings');
-  throw new Error(
-    'Composio API key is not configured. '
-    + 'Go to Settings > Connectors > Composio and enter your API key.'
-    + '\nSettings file location: ' + SETTINGS_FILE_PATH
-  );
+  console.error('[Composio:CLI] ERROR: COMPOSIO_API_KEY not set!');
+  console.error('[Composio:CLI] Set COMPOSIO_API_KEY in .env at the project root.');
+  throw new Error('COMPOSIO_API_KEY is required. Set it in .env.');
 }
 
 function maskToolkitName(name) {
@@ -83,8 +73,10 @@ export function showComposioHelp() {
    -h, --help    Show help
 
  SETTINGS:
-   API key is read from ~/.config/openjunior/settings.json (composioApiKey).
-   Configure it via Settings > Connectors > Composio in the OpenJunior UI.
+    API key is read from:
+      1. COMPOSIO_API_KEY env var (or .env file in project root)
+      2. ~/.config/openjunior/settings.json (composioApiKey)
+    User ID is read from COMPOSIO_USER_ID env var (default: "default").
 
  EXAMPLES:
    openjunior composio list
@@ -221,10 +213,15 @@ async function handleConnect(options) {
     }
 
     const apiKey = resolveApiKey();
+    const cliUserId = process.env.COMPOSIO_USER_ID;
+    if (!cliUserId) {
+      throw new Error('COMPOSIO_USER_ID is required. Set it in .env.');
+    }
     console.log('[Composio:CLI] Creating client for connect...');
+    console.log('[Composio:CLI] COMPOSIO_USER_ID:', cliUserId);
     const client = new composio({ apiKey });
-    console.log('[Composio:CLI] Calling client.toolkits.authorize("default", slug)...');
-    const connectionRequest = await client.toolkits.authorize('default', slug);
+    console.log('[Composio:CLI] Calling client.toolkits.authorize("' + cliUserId + '", slug)...');
+    const connectionRequest = await client.toolkits.authorize(cliUserId, slug);
     console.log('[Composio:CLI] Connection request redirectUrl:', !!connectionRequest?.redirectUrl);
     console.log('[Composio:CLI] Connection request id:', connectionRequest?.id);
 

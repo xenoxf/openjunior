@@ -37,6 +37,10 @@ type AppearanceSlice = {
   mobileKeyboardMode: MobileKeyboardMode;
   diffLayoutPreference: 'dynamic' | 'inline' | 'side-by-side';
   gitChangesViewMode: 'flat' | 'tree';
+  showTerminalButton: boolean;
+  showMiniBrowserButton: boolean;
+  showRightSidebarButton: boolean;
+  showTerminalQuickKeysOnDesktop: boolean;
 };
 
 let initialized = false;
@@ -76,6 +80,10 @@ export const startAppearanceAutoSave = (): void => {
     mobileKeyboardMode: useUIStore.getState().mobileKeyboardMode,
     diffLayoutPreference: useUIStore.getState().diffLayoutPreference,
     gitChangesViewMode: useUIStore.getState().gitChangesViewMode,
+    showTerminalButton: useUIStore.getState().showTerminalButton,
+    showMiniBrowserButton: useUIStore.getState().showMiniBrowserButton,
+    showRightSidebarButton: useUIStore.getState().showRightSidebarButton,
+    showTerminalQuickKeysOnDesktop: useUIStore.getState().showTerminalQuickKeysOnDesktop,
   };
 
   let pending: Partial<DesktopSettings> | null = null;
@@ -127,6 +135,10 @@ export const startAppearanceAutoSave = (): void => {
       mobileKeyboardMode: state.mobileKeyboardMode,
       diffLayoutPreference: state.diffLayoutPreference,
       gitChangesViewMode: state.gitChangesViewMode,
+      showTerminalButton: state.showTerminalButton,
+      showMiniBrowserButton: state.showMiniBrowserButton,
+      showRightSidebarButton: state.showRightSidebarButton,
+      showTerminalQuickKeysOnDesktop: state.showTerminalQuickKeysOnDesktop,
     };
 
     const diff: Partial<DesktopSettings> = {};
@@ -211,6 +223,19 @@ export const startAppearanceAutoSave = (): void => {
     }
     if (current.gitChangesViewMode !== previous.gitChangesViewMode) {
       diff.gitChangesViewMode = current.gitChangesViewMode;
+    }
+
+    if (current.showTerminalButton !== previous.showTerminalButton) {
+      diff.showTerminalButton = current.showTerminalButton;
+    }
+    if (current.showMiniBrowserButton !== previous.showMiniBrowserButton) {
+      diff.showMiniBrowserButton = current.showMiniBrowserButton;
+    }
+    if (current.showRightSidebarButton !== previous.showRightSidebarButton) {
+      diff.showRightSidebarButton = current.showRightSidebarButton;
+    }
+    if (current.showTerminalQuickKeysOnDesktop !== previous.showTerminalQuickKeysOnDesktop) {
+      diff.showTerminalQuickKeysOnDesktop = current.showTerminalQuickKeysOnDesktop;
     }
 
     previous = current;

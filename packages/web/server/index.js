@@ -1042,6 +1042,28 @@ const gracefulShutdownRuntime = createGracefulShutdownRuntime({
 const gracefulShutdown = (...args) => gracefulShutdownRuntime.gracefulShutdown(...args);
 
 async function main(options = {}) {
+  // Load .env from project root
+  const envPath = path.resolve(__dirname, '..', '..', '..', '.env');
+  console.log('[Server] Loading .env from:', envPath);
+  try {
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    for (const line of envContent.split('\n')) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#') || !trimmed.includes('=')) continue;
+      const eqIdx = trimmed.indexOf('=');
+      const key = trimmed.slice(0, eqIdx).trim();
+      const value = trimmed.slice(eqIdx + 1).trim();
+      if (key && process.env[key] === undefined) {
+        process.env[key] = value;
+      }
+    }
+    console.log('[Server] .env loaded successfully');
+    console.log('[Server] COMPOSIO_API_KEY present:', !!process.env.COMPOSIO_API_KEY);
+    console.log('[Server] COMPOSIO_USER_ID:', process.env.COMPOSIO_USER_ID || '(not set, will use default)');
+  } catch (err) {
+    console.log('[Server] No .env file found at project root, skipping:', err.message);
+  }
+
   const port = Number.isFinite(options.port) && options.port >= 0 ? Math.trunc(options.port) : DEFAULT_PORT;
   const host = typeof options.host === 'string' && options.host.length > 0 ? options.host : undefined;
   const effectiveBindHost = host

@@ -6,6 +6,7 @@ export interface ComposioApp {
   id: string;
   name: string;
   description: string;
+  logoUrl: string | null;
   category: string;
   tags: string[];
   authScheme: string | null;
@@ -25,7 +26,14 @@ interface ComposioStore {
   connectedAccounts: ComposioConnectedAccount[];
   isLoadingApps: boolean;
   isLoadingConnections: boolean;
+  isLoadingMore: boolean;
+  hasMore: boolean;
+  nextCursor: string | null;
+  searchQuery: string;
+  _searchSeq: number;
   loadApps: () => Promise<void>;
+  loadMoreApps: () => Promise<void>;
+  searchApps: (query: string) => Promise<void>;
   loadConnectedAccounts: () => Promise<void>;
   connectApp: (slug: string) => Promise<{ ok: boolean; redirectUrl?: string; error?: string }>;
   disconnectAccount: (accountId: string) => Promise<boolean>;
@@ -38,17 +46,67 @@ export const useComposioStore = create<ComposioStore>()(
       connectedAccounts: [],
       isLoadingApps: false,
       isLoadingConnections: false,
+      isLoadingMore: false,
+      hasMore: false,
+      nextCursor: null,
+      searchQuery: '',
+      _searchSeq: 0,
 
       loadApps: async () => {
-        set({ isLoadingApps: true });
+        set({ isLoadingApps: true, searchQuery: '' });
         try {
           const response = await runtimeFetch('/api/composio/apps', {
             headers: { Accept: 'application/json' },
           });
           const data = await response.json();
-          set({ apps: data?.items || [], isLoadingApps: false });
+          set({
+            apps: data?.items || [],
+            nextCursor: data?.nextCursor || null,
+            hasMore: !!data?.nextCursor,
+            isLoadingApps: false,
+          });
         } catch {
           set({ isLoadingApps: false });
+        }
+      },
+
+      loadMoreApps: async () => {
+        const { nextCursor, isLoadingMore, hasMore } = get();
+        if (!nextCursor || isLoadingMore || !hasMore) return;
+        set({ isLoadingMore: true });
+        try {
+          const response = await runtimeFetch(`/api/composio/apps?cursor=${encodeURIComponent(nextCursor)}`, {
+            headers: { Accept: 'application/json' },
+          });
+          const data = await response.json();
+          set((state) => ({
+            apps: [...state.apps, ...(data?.items || [])],
+            nextCursor: data?.nextCursor || null,
+            hasMore: !!data?.nextCursor,
+            isLoadingMore: false,
+          }));
+        } catch {
+          set({ isLoadingMore: false });
+        }
+      },
+
+      searchApps: async (query: string) => {
+        const seq = get()._searchSeq + 1;
+        set({ isLoadingApps: true, searchQuery: query, _searchSeq: seq });
+        try {
+          const response = await runtimeFetch(`/api/composio/apps?search=${encodeURIComponent(query)}`, {
+            headers: { Accept: 'application/json' },
+          });
+          if (get()._searchSeq !== seq) return;
+          const data = await response.json();
+          set({
+            apps: data?.items || [],
+            nextCursor: data?.nextCursor || null,
+            hasMore: !!data?.nextCursor,
+            isLoadingApps: false,
+          });
+        } catch {
+          set((s) => s._searchSeq === seq ? { isLoadingApps: false } : {});
         }
       },
 

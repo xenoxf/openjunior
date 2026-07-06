@@ -12,6 +12,15 @@ interface ComposioIntegrationCardProps {
   connectedAccountId?: string;
 }
 
+function getInitials(name: string): string {
+  return name
+    .split(/[\s_-]+/)
+    .map((w) => w[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+}
+
 export const ComposioIntegrationCard: React.FC<ComposioIntegrationCardProps> = ({
   app,
   isConnected,
@@ -56,24 +65,47 @@ export const ComposioIntegrationCard: React.FC<ComposioIntegrationCardProps> = (
     }
   };
 
+  const initials = getInitials(app.name);
+
   return (
     <div
       className={cn(
-        'flex flex-col rounded-xl border p-4 transition-all duration-200',
+        'group relative flex flex-col rounded-xl border p-4 transition-all duration-200 overflow-hidden',
         isConnected
           ? 'border-[var(--status-success)]/30 bg-[var(--surface-elevated)]'
-          : 'border-[var(--interactive-border)] bg-[var(--surface-elevated)] hover:border-[var(--primary-base)]/35',
+          : 'border-[var(--interactive-border)] bg-[var(--surface-elevated)] hover:border-[var(--primary-base)]/35 hover:shadow-sm',
       )}
     >
       <div className="flex items-start gap-3 mb-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-muted)]">
-          <Icon name="plug" className="h-5 w-5 text-[var(--muted-foreground)]" />
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-muted)] overflow-hidden">
+          {app.logoUrl ? (
+            <img
+              src={app.logoUrl}
+              alt={app.name}
+              className="h-full w-full object-contain"
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none';
+                (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+              }}
+            />
+          ) : null}
+          <span className={cn(
+            'text-xs font-semibold text-[var(--muted-foreground)]',
+            app.logoUrl ? 'hidden' : ''
+          )}>
+            {initials}
+          </span>
         </div>
         <div className="min-w-0 flex-1">
-          <h4 className="text-sm font-semibold text-[var(--foreground)] truncate">
+          <h4 className="text-sm font-semibold text-[var(--foreground)] truncate flex items-center gap-1.5">
             {app.name}
+            {isConnected && (
+              <span className="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-[var(--status-success)]/10 px-1.5 py-0.5 text-[10px] text-[var(--status-success)] font-medium">
+                <Icon name="check" className="h-2.5 w-2.5" />
+              </span>
+            )}
           </h4>
-          <p className="text-xs text-[var(--muted-foreground)] mt-0.5 line-clamp-2">
+          <p className="text-xs text-[var(--muted-foreground)] mt-0.5 line-clamp-2 leading-relaxed">
             {app.description}
           </p>
         </div>
@@ -89,13 +121,6 @@ export const ComposioIntegrationCard: React.FC<ComposioIntegrationCardProps> = (
               {tag}
             </span>
           ))}
-        </div>
-      )}
-
-      {isConnected && (
-        <div className="mb-2 rounded-lg bg-[var(--status-success)]/5 px-2 py-1 text-xs text-[var(--status-success)]">
-          <Icon name="check" className="inline h-3 w-3 mr-1" />
-          {t('settings.connectors.integrations.composio.connected')}
         </div>
       )}
 

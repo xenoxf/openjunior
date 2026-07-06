@@ -43,28 +43,22 @@ export async function listToolkits(apiKey, options = {}) {
   console.log('[Composio:service] listToolkits() called');
   console.log('[Composio:service]   -> options:', JSON.stringify(options));
   const client = createComposioClient(apiKey);
-  console.log('[Composio:service]   -> calling client.toolkits.get()...');
   const result = await client.toolkits.get({
     category: options.category || undefined,
-    limit: options.limit || 50,
-    cursor: options.cursor || undefined,
+    limit: 100,
+    search: options.search || undefined,
   });
-  console.log('[Composio:service]   -> client.toolkits.get() RESULT keys:', Object.keys(result || {}));
-  const items = result?.items || [];
-  console.log('[Composio:service]   -> items count:', items.length);
-  if (items.length > 0) {
-    console.log('[Composio:service]   -> first item name:', items[0]?.name);
-    console.log('[Composio:service]   -> first item slug:', items[0]?.slug);
-  }
+  const items = Array.isArray(result) ? result : (result?.items || []);
+  console.log('[Composio:service]   -> items count from SDK:', items.length);
   const mapped = items.map((tk) => ({
     id: tk.slug || tk.name,
     name: tk.name || tk.slug,
-    description: tk.description || '',
-    category: tk.category || 'tools',
-    tags: tk.tags || [],
-    authScheme: tk.authScheme || null,
-    isManaged: tk.isManaged || false,
-    meta: tk.meta || null,
+    description: tk.meta?.description || '',
+    logoUrl: tk.logoUrl || tk.logo || tk.meta?.logoUrl || tk.meta?.logo || null,
+    category: tk.meta?.categories?.[0]?.name || tk.meta?.categories?.[0]?.slug || 'tools',
+    tags: Array.isArray(tk.tags) ? tk.tags : (tk.meta?.tags || []),
+    authScheme: Array.isArray(tk.authSchemes) ? tk.authSchemes[0] : (tk.authScheme || null),
+    isManaged: tk.isLocalToolkit === true,
   }));
   console.log('[Composio:service] listToolkits() returning', mapped.length, 'items');
   return mapped;
@@ -82,11 +76,47 @@ export async function getToolkitBySlug(apiKey, slug) {
 export async function authorizeToolkit(apiKey, userId, toolkitSlug) {
   console.log('[Composio:service] authorizeToolkit() called');
   console.log('[Composio:service]   -> userId:', userId, 'toolkitSlug:', toolkitSlug);
-  const client = createComposioClient(apiKey);
-  const result = await client.toolkits.authorize(userId, toolkitSlug);
-  console.log('[Composio:service]   -> authorize result has redirectUrl:', !!result?.redirectUrl);
-  console.log('[Composio:service]   -> authorize result id:', result?.id);
-  return result;
+
+  // 1) get auth config for the toolkit via SDK
+  console.log('[Composio:service]   -> fetching auth configs for toolkit...');
+  const configs = await listAuthConfigs(apiKey, { toolkit: toolkitSlug });
+  const authConfigId = configs?.[0]?.id;
+  console.log('[Composio:service]   -> authConfigId:', authConfigId);
+
+  if (!authConfigId) {
+    throw new Error(`No auth config found for toolkit "${toolkitSlug}"`);
+  }
+
+  // 2) call v3 link endpoint directly (SDK uses /api/v3.1/connected_accounts which is deprecated for OAuth)
+  const COMPOSIO_BASE = 'https://backend.composio.dev';
+  const headers = {
+    'x-api-key': apiKey,
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  };
+
+  console.log('[Composio:service]   -> calling /api/v3/connected_accounts/link...');
+  const linkRes = await fetch(`${COMPOSIO_BASE}/api/v3/connected_accounts/link`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ auth_config_id: authConfigId, user_id: userId }),
+  });
+
+  if (!linkRes.ok) {
+    const errBody = await linkRes.json().catch(() => ({}));
+    console.error('[Composio:service]   -> link request failed:', linkRes.status, errBody);
+    throw new Error(errBody?.error?.message || errBody?.message || `Link request failed with status ${linkRes.status}`);
+  }
+
+  const linkData = await linkRes.json();
+  console.log('[Composio:service]   -> link result keys:', Object.keys(linkData || {}));
+  console.log('[Composio:service]   -> redirectUrl present:', !!linkData?.redirectUrl);
+
+  return {
+    redirectUrl: linkData.redirectUrl,
+    id: linkData.id || linkData.connectedAccountId,
+    status: linkData.status,
+  };
 }
 
 export async function listConnectedAccounts(apiKey, options = {}) {
@@ -133,7 +163,7 @@ export async function listAuthConfigs(apiKey, options = {}) {
   try {
     const client = createComposioClient(apiKey);
     const result = await client.authConfigs.list({
-      toolkit: options.toolkit || undefined,
+      toolkit_slug: options.toolkit || undefined,
     });
     const configs = Array.isArray(result) ? result : (result?.items || []);
     console.log('[Composio:service]   -> auth configs count:', configs.length);

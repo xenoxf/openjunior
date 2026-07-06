@@ -155,6 +155,10 @@ export type DesktopSettings = {
   padding?: number;
   cornerRadius?: number;
   inputBarOffset?: number;
+  showTerminalButton?: boolean;
+  showMiniBrowserButton?: boolean;
+  showRightSidebarButton?: boolean;
+  showTerminalQuickKeysOnDesktop?: boolean;
   shortcutOverrides?: Record<string, string>;
 
   favoriteModels?: Array<{ providerID: string; modelID: string }>;

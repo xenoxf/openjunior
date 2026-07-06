@@ -4,8 +4,6 @@ import type { PermissionRequest } from '@/types/permission';
 import type { QuestionRequest } from '@/types/question';
 
 import { ChatInput } from './ChatInput';
-import { DraftPresetChips } from './DraftPresetChips';
-import { useInputStore } from '@/sync/input-store';
 import { useUIStore } from '@/stores/useUIStore';
 import { Skeleton } from '@/components/ui/skeleton';
 import ChatEmptyState from './ChatEmptyState';
@@ -776,10 +774,7 @@ export const ChatContainer: React.FC<ChatContainerProps> = ({ autoOpenDraft = tr
 								draftProjectLabel,
 							)}
 						</h1>
-						<DraftPresetChips
-							onSubmit={(text) => useInputStore.getState().requestPresetSubmit(text)}
-							className="mt-8 max-w-md"
-						/>
+
 					</div>
 				) : null}
 				<div

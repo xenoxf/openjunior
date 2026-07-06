@@ -1,5 +1,6 @@
 console.log('[Composio:routes] ===== MODULE LOADED =====');
 
+import express from 'express';
 import {
   listToolkits,
   getToolkitBySlug,
@@ -10,9 +11,10 @@ import {
   executeTool,
 } from './service.js';
 
-export function registerComposioRoutes(app, composioApiKey) {
+export function registerComposioRoutes(app, composioApiKey, composioUserId) {
   console.log('[Composio:routes] registerComposioRoutes() called');
   console.log('[Composio:routes] composioApiKey present:', !!composioApiKey);
+  console.log('[Composio:routes] composioUserId:', composioUserId || '(not set, will use body/fallback)');
   if (composioApiKey && typeof composioApiKey === 'string') {
     console.log('[Composio:routes] composioApiKey first 8 chars:', composioApiKey.slice(0, 8) + '...');
     console.log('[Composio:routes] composioApiKey length:', composioApiKey.length);
@@ -20,29 +22,71 @@ export function registerComposioRoutes(app, composioApiKey) {
     console.warn('[Composio:routes] WARNING: No composioApiKey provided! Routes will fail with 500.');
   }
 
-  function getApiKey() {
-    if (!composioApiKey || typeof composioApiKey !== 'string' || composioApiKey.trim().length === 0) {
-      console.error('[Composio:routes] ERROR: composioApiKey is empty/missing! Cannot proceed.');
+  const getApiKey = () => composioApiKey;
+
+  const PAGE_SIZE = 20;
+  const paginationCache = new Map();
+
+  function getCachedOrFetch(search) {
+    const cacheKey = btoa(search || '');
+    return paginationCache.get(cacheKey) || null;
+  }
+
+  function setCache(search, items) {
+    const cacheKey = btoa(search || '');
+    paginationCache.set(cacheKey, items);
+  }
+
+  function buildCursor(offset, total, search) {
+    return btoa(`${offset}:${total}:${search || ''}`);
+  }
+
+  function parseCursor(cursor) {
+    try {
+      const decoded = atob(cursor);
+      const parts = decoded.split(':');
+      return { offset: parseInt(parts[0], 10), total: parseInt(parts[1], 10), search: parts[2] || '' };
+    } catch {
       return null;
     }
-    return composioApiKey.trim();
   }
 
   app.get('/api/composio/apps', async (req, res) => {
-    console.log('[Composio:routes] GET /api/composio/apps');
     try {
       const apiKey = getApiKey();
       if (!apiKey) {
         return res.status(500).json({ ok: false, error: 'Composio API key not configured' });
       }
-      const { category, limit, cursor } = req.query;
-      console.log('[Composio:routes]   -> query params:', { category, limit, cursor });
-      const toolkits = await listToolkits(apiKey, { category, limit, cursor });
-      console.log('[Composio:routes]   -> returning', toolkits.length, 'toolkits');
-      res.json({ ok: true, items: toolkits });
+      const { cursor, search } = req.query;
+
+      let allItems;
+      let offset = 0;
+
+      if (cursor) {
+        const parsed = parseCursor(cursor);
+        if (!parsed) {
+          return res.status(400).json({ ok: false, error: 'Invalid cursor' });
+        }
+        offset = parsed.offset;
+        allItems = getCachedOrFetch(parsed.search);
+        if (!allItems) {
+          return res.status(400).json({ ok: false, error: 'Cursor expired, please refresh' });
+        }
+        console.log('[Composio:routes]   -> cursor page:', { offset, total: parsed.total, search: parsed.search });
+      } else {
+        allItems = await listToolkits(apiKey, { search });
+        setCache(search, allItems);
+        console.log('[Composio:routes]   -> fetched', allItems.length, 'items from SDK');
+      }
+
+      const page = allItems.slice(offset, offset + PAGE_SIZE);
+      const nextOffset = offset + PAGE_SIZE;
+      const nextCursor = nextOffset < allItems.length ? buildCursor(nextOffset, allItems.length, search) : null;
+
+      console.log('[Composio:routes]   -> returning', page.length, 'items, nextCursor:', !!nextCursor);
+      res.json({ ok: true, items: page, nextCursor });
     } catch (err) {
       console.error('[Composio:routes] GET /api/composio/apps ERROR:', err.message);
-      console.error('[Composio:routes] Full error:', err);
       res.status(500).json({ ok: false, error: err.message });
     }
   });
@@ -116,19 +160,21 @@ export function registerComposioRoutes(app, composioApiKey) {
     }
   });
 
-  app.post('/api/composio/apps/:slug/connect', async (req, res) => {
+  app.post('/api/composio/apps/:slug/connect', express.json(), async (req, res) => {
     console.log('[Composio:routes] POST /api/composio/apps/:slug/connect', req.params.slug);
     try {
       const apiKey = getApiKey();
       if (!apiKey) {
         return res.status(500).json({ ok: false, error: 'Composio API key not configured' });
       }
-      const { userId } = req.body;
-      console.log('[Composio:routes]   -> userId:', userId);
-      if (!userId) {
-        return res.status(400).json({ ok: false, error: 'userId is required' });
+      const effectiveUserId = req.body.userId || composioUserId;
+      console.log('[Composio:routes]   -> userId from body:', req.body.userId);
+      console.log('[Composio:routes]   -> composioUserId from env:', composioUserId);
+      console.log('[Composio:routes]   -> effectiveUserId:', effectiveUserId);
+      if (!effectiveUserId) {
+        return res.status(400).json({ ok: false, error: 'userId is required. Set COMPOSIO_USER_ID in .env or send userId in body.' });
       }
-      const connectionRequest = await authorizeToolkit(apiKey, userId, req.params.slug);
+      const connectionRequest = await authorizeToolkit(apiKey, effectiveUserId, req.params.slug);
       console.log('[Composio:routes]   -> redirectUrl present:', !!connectionRequest?.redirectUrl);
       console.log('[Composio:routes]   -> connectionId:', connectionRequest?.id);
       res.json({
@@ -143,7 +189,7 @@ export function registerComposioRoutes(app, composioApiKey) {
     }
   });
 
-  app.post('/api/composio/execute', async (req, res) => {
+  app.post('/api/composio/execute', express.json(), async (req, res) => {
     console.log('[Composio:routes] POST /api/composio/execute');
     try {
       const apiKey = getApiKey();

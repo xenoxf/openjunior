@@ -266,13 +266,17 @@ export const createFeatureRoutesRuntime = (dependencies) => {
     registerQuotaRoutes(app, { getQuotaProviders });
     registerGitHubRoutes(app);
     registerGitRoutes(app);
-    const settings = await readSettingsFromDiskMigrated().catch((err) => {
-      console.warn('[FeatureRoutes] Could not read settings for Composio:', err?.message);
-      return {};
-    });
-    const composioApiKey = settings?.composioApiKey || '';
-    console.log('[FeatureRoutes] Composio API key from settings present:', !!composioApiKey);
-    registerComposioRoutes(app, composioApiKey);
+    const composioApiKey = process.env.COMPOSIO_API_KEY;
+    const composioUserId = process.env.COMPOSIO_USER_ID;
+    console.log('[FeatureRoutes] COMPOSIO_API_KEY:', composioApiKey ? `present (${composioApiKey.length} chars)` : 'NOT SET');
+    console.log('[FeatureRoutes] COMPOSIO_USER_ID:', composioUserId || 'NOT SET');
+    if (!composioApiKey) {
+      console.warn('[FeatureRoutes] COMPOSIO_API_KEY not set — Composio routes will return 500');
+    }
+    if (!composioUserId) {
+      console.warn('[FeatureRoutes] COMPOSIO_USER_ID not set — Composio calls will use req.body.userId or fail');
+    }
+    registerComposioRoutes(app, composioApiKey, composioUserId);
     registerMagicPromptRoutes(app, {
       fsPromises,
       path,

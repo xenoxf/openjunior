@@ -81,6 +81,19 @@ export const SkillsTab: React.FC = () => {
 
   const isClawdHubSource = selectedSource?.source === 'clawdhub:registry' || selectedSource?.sourceType === 'clawdhub';
   const hasMoreClawdHub = Boolean(selectedSourceId && (clawdhubHasMoreBySource[selectedSourceId] ?? true));
+  const sentinelRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (!isClawdHubSource || !hasMoreClawdHub || isLoadingMore || isLoadingSource) return;
+    const el = sentinelRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => { if (entries[0]?.isIntersecting) loadMoreClawdHub(); },
+      { rootMargin: '300px' },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [isClawdHubSource, hasMoreClawdHub, isLoadingMore, isLoadingSource, loadMoreClawdHub]);
 
   return (
     <div className="flex-1 overflow-auto px-6 py-4">
@@ -174,6 +187,12 @@ export const SkillsTab: React.FC = () => {
                     ...(item.clawdhub?.owner ? [item.clawdhub.owner] : []),
                     ...(item.clawdhub?.version ? [`v${item.clawdhub.version}`] : []),
                   ]}
+                  onClick={() => {
+                    if (item.installable) {
+                      setInstallItem(item);
+                      setInstallDialogOpen(true);
+                    }
+                  }}
                   action={
                     item.installable ? (
                       <Button
@@ -195,18 +214,11 @@ export const SkillsTab: React.FC = () => {
             </div>
 
             {isClawdHubSource && hasMoreClawdHub && (
-              <div className="flex justify-center mt-6">
-                <Button
-                  variant="outline"
-                  size="xs"
-                  className="!font-normal"
-                  onClick={() => void loadMoreClawdHub()}
-                  disabled={isLoadingMore}
-                >
-                  {isLoadingMore
-                    ? t('settings.skills.catalog.page.loading.more')
-                    : t('settings.skills.catalog.page.actions.loadMoreSkills')}
-                </Button>
+              <div ref={sentinelRef} className="h-4 mt-4" />
+            )}
+            {isLoadingMore && (
+              <div className="flex justify-center py-4 opacity-50">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
               </div>
             )}
           </>

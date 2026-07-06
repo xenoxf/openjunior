@@ -1013,7 +1013,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
                           onClick={() => openPage(page.slug)}
                           aria-current={selected ? 'page' : undefined}
                           className={cn(
-                            'flex h-8 items-center gap-2 rounded-md px-2 overflow-hidden',
+                            'flex h-8 w-full items-center gap-2 rounded-md px-2 overflow-hidden',
                             selected
                               ? 'bg-interactive-selection text-foreground'
                               : 'text-foreground hover:bg-interactive-hover'
@@ -1061,7 +1061,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
                                   onClick={() => openPage(page.slug)}
                                   aria-current={selected ? 'page' : undefined}
                                   className={cn(
-                                    'flex h-8 items-center gap-2 rounded-md px-2 overflow-hidden',
+                                    'flex h-8 w-full items-center gap-2 rounded-md px-2 overflow-hidden',
                                     selected
                                       ? 'bg-interactive-selection text-foreground'
                                       : 'text-foreground hover:bg-interactive-hover'
