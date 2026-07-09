@@ -101,12 +101,9 @@ export const IntegracionesSidebar: React.FC<IntegracionesSidebarProps> = ({ onIt
                 const app = getAppForAccount(acct.toolkit);
                 const appName = app?.name ?? acct.toolkit;
                 const isSelected = selectedAccountId === acct.id;
-                const initials = appName
-                  .split(/[\s_-]+/)
-                  .map((w: string) => w[0])
-                  .join('')
-                  .slice(0, 2)
-                  .toUpperCase();
+                const initials = typeof appName === 'string'
+                  ? appName.split(/[\s_-]+/).map((w: string) => w[0]).join('').slice(0, 2).toUpperCase()
+                  : '??';
 
                 return (
                   <button

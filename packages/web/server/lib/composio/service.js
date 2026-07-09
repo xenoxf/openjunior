@@ -113,8 +113,8 @@ export async function authorizeToolkit(apiKey, userId, toolkitSlug) {
   console.log('[Composio:service]   -> redirectUrl present:', !!linkData?.redirectUrl);
 
   return {
-    redirectUrl: linkData.redirectUrl,
-    id: linkData.id || linkData.connectedAccountId,
+    redirectUrl: linkData.redirect_url || linkData.redirectUrl,
+    id: linkData.connected_account_id || linkData.id,
     status: linkData.status,
   };
 }
@@ -131,7 +131,15 @@ export async function listConnectedAccounts(apiKey, options = {}) {
     });
     const accounts = Array.isArray(result) ? result : (result?.items || []);
     console.log('[Composio:service]   -> connected accounts count:', accounts.length);
-    return accounts;
+    const mapped = accounts.map((acct) => ({
+      id: acct.id,
+      status: acct.status || 'connected',
+      userId: acct.userId || acct.user_id || '',
+      toolkit: typeof acct.toolkit === 'object' && acct.toolkit !== null ? (acct.toolkit.slug || acct.toolkit.name || acct.toolkit.toolkit || '') : (acct.toolkit || ''),
+      createdAt: acct.createdAt || acct.created_at,
+    }));
+    console.log('[Composio:service]   -> returning', mapped.length, 'mapped accounts');
+    return mapped;
   } catch (err) {
     console.error('[Composio:service] Failed to fetch connected accounts:', err.message);
     console.error('[Composio:service] Full error:', err);

@@ -144,12 +144,9 @@ export const IntegracionesPage: React.FC = () => {
           {(selectedAccount ? [selectedAccount] : connectedAccounts).map((acct) => {
             const app = getAppForToolkit(acct.toolkit);
             const appName = app?.name ?? acct.toolkit;
-            const initials = appName
-              .split(/[\s_-]+/)
-              .map((w) => w[0])
-              .join('')
-              .slice(0, 2)
-              .toUpperCase();
+            const initials = typeof appName === 'string'
+              ? appName.split(/[\s_-]+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase()
+              : '??';
             const isConnecting = connectingSlug === (app?.id ?? acct.toolkit);
             const isDisconnecting = disconnectingId === acct.id;
 
