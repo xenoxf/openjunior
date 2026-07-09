@@ -99,9 +99,9 @@ export const IntegracionesSidebar: React.FC<IntegracionesSidebarProps> = ({ onIt
             <div className="px-2">
               {filteredAccounts.map((acct) => {
                 const app = getAppForAccount(acct.toolkit);
-                const name = app?.name ?? acct.toolkit;
+                const appName = app?.name ?? acct.toolkit;
                 const isSelected = selectedAccountId === acct.id;
-                const initials = name
+                const initials = appName
                   .split(/[\s_-]+/)
                   .map((w: string) => w[0])
                   .join('')
@@ -125,13 +125,13 @@ export const IntegracionesSidebar: React.FC<IntegracionesSidebarProps> = ({ onIt
                   >
                     <span className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[var(--surface-muted)] overflow-hidden">
                       {app?.logoUrl ? (
-                        <img src={app.logoUrl} alt={name} className="h-full w-full object-contain" />
+                        <img src={app.logoUrl} alt={appName} className="h-full w-full object-contain" />
                       ) : (
                         <span className="text-[10px] font-semibold">{initials}</span>
                       )}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <div className="truncate font-medium text-sm">{name}</div>
+                      <div className="truncate font-medium text-sm">{appName}</div>
                     </div>
                     <span
                       className={cn(

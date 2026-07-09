@@ -143,8 +143,8 @@ export const IntegracionesPage: React.FC = () => {
         <div className="mx-auto max-w-2xl space-y-4">
           {(selectedAccount ? [selectedAccount] : connectedAccounts).map((acct) => {
             const app = getAppForToolkit(acct.toolkit);
-            const name = app?.name ?? acct.toolkit;
-            const initials = name
+            const appName = app?.name ?? acct.toolkit;
+            const initials = appName
               .split(/[\s_-]+/)
               .map((w) => w[0])
               .join('')
@@ -161,14 +161,14 @@ export const IntegracionesPage: React.FC = () => {
                 <div className="flex items-start gap-4 p-5">
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--surface-muted)] overflow-hidden">
                     {app?.logoUrl ? (
-                      <img src={app.logoUrl} alt={name} className="h-full w-full object-contain" />
+                      <img src={app.logoUrl} alt={appName} className="h-full w-full object-contain" />
                     ) : (
                       <span className="text-sm font-semibold text-muted-foreground">{initials}</span>
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="text-base font-semibold text-foreground">{name}</h3>
+                      <h3 className="text-base font-semibold text-foreground">{appName}</h3>
                       <span className="inline-flex items-center gap-1 rounded-full bg-[var(--status-success)]/10 px-2 py-0.5 text-[11px] text-[var(--status-success)] font-medium">
                         <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--status-success)]" />
                         {t('settings.page.integrations.connected')}
