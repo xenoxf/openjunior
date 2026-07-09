@@ -74,6 +74,8 @@ export const createFeatureRoutesRuntime = (dependencies) => {
       clientReloadDelayMs,
     });
 
+    const composioMcpServerPath = new URL('../composio/composio-mcp-server.js', import.meta.url).pathname;
+
     registerOpenCodeRoutes(app, {
       crypto,
       clientReloadDelayMs,
@@ -90,6 +92,9 @@ export const createFeatureRoutesRuntime = (dependencies) => {
       refreshOpenCodeAfterConfigChange,
       buildOpenCodeUrl,
       getOpenCodeAuthHeaders,
+      onComposioSettingsChanged: async (_apiKey, _userId) => {
+        console.warn('[FeatureRoutes] Composio API key from settings ignored — only COMPOSIO_API_KEY from .env is used');
+      },
     });
 
     registerProjectIconRoutes(app, {
@@ -268,6 +273,7 @@ export const createFeatureRoutesRuntime = (dependencies) => {
     registerGitRoutes(app);
     const composioApiKey = process.env.COMPOSIO_API_KEY;
     const composioUserId = process.env.COMPOSIO_USER_ID;
+
     console.log('[FeatureRoutes] COMPOSIO_API_KEY:', composioApiKey ? `present (${composioApiKey.length} chars)` : 'NOT SET');
     console.log('[FeatureRoutes] COMPOSIO_USER_ID:', composioUserId || 'NOT SET');
     if (!composioApiKey) {
@@ -277,6 +283,38 @@ export const createFeatureRoutesRuntime = (dependencies) => {
       console.warn('[FeatureRoutes] COMPOSIO_USER_ID not set — Composio calls will use req.body.userId or fail');
     }
     registerComposioRoutes(app, composioApiKey, composioUserId);
+
+    if (composioApiKey) {
+      try {
+        const { createMcpConfig, updateMcpConfig } = await import('./mcp.js');
+        try {
+          updateMcpConfig('composio', {
+            type: 'local',
+            command: ['node', composioMcpServerPath],
+            environment: {
+              COMPOSIO_API_KEY: composioApiKey,
+              COMPOSIO_USER_ID: composioUserId || 'default',
+            },
+            enabled: true,
+            isBuiltIn: true,
+          }, process.cwd());
+        } catch {
+          createMcpConfig('composio', {
+            type: 'local',
+            command: ['node', composioMcpServerPath],
+            environment: {
+              COMPOSIO_API_KEY: composioApiKey,
+              COMPOSIO_USER_ID: composioUserId || 'default',
+            },
+            enabled: true,
+            isBuiltIn: true,
+          }, process.cwd(), 'user');
+        }
+        console.log('[FeatureRoutes] Composio MCP server registered');
+      } catch (err) {
+        console.warn('[FeatureRoutes] Failed to register Composio MCP server:', err.message);
+      }
+    }
     registerMagicPromptRoutes(app, {
       fsPromises,
       path,

@@ -260,6 +260,13 @@ export const registerOpenCodeRoutes = (app, dependencies) => {
   app.put('/api/config/settings', async (req, res) => {
     try {
       const updated = await persistSettings(req.body ?? {});
+      if (dependencies.onComposioSettingsChanged && req.body?.composioApiKey) {
+        try {
+          await dependencies.onComposioSettingsChanged(req.body.composioApiKey, req.body.composioUserId);
+        } catch (composioErr) {
+          console.warn('[Settings] Failed to update Composio MCP config:', composioErr.message);
+        }
+      }
       res.json(updated);
     } catch (error) {
       console.error('[API:PUT /api/config/settings] Failed to save settings:', error);
