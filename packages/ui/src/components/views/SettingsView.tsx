@@ -27,6 +27,8 @@ import { SnippetsSidebar } from '@/components/sections/snippets/SnippetsSidebar'
 import { SnippetsPage } from '@/components/sections/snippets/SnippetsPage';
 import { GitPage } from '@/components/sections/git-identities/GitPage';
 import { ConnectorsPage } from '@/components/sections/connectors/ConnectorsPage';
+import { IntegracionesPage } from '@/components/sections/connectors/IntegracionesPage';
+import { IntegracionesSidebar } from '@/components/sections/connectors/IntegracionesSidebar';
 import { McpPage } from '@/components/sections/mcp/McpPage';
 import { McpSidebar } from '@/components/sections/mcp/McpSidebar';
 import { SkillsPage, SkillsSidebar } from '@/components/sections/skills';
@@ -113,6 +115,7 @@ const BASIC_PAGES: SettingsPageSlug[] = [
   ];
 
 const ADVANCED_PAGES: SettingsPageSlug[] = [
+  'integrations',
   'mcp',
   'skills.installed',
   'plugins',
@@ -530,7 +533,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
       case 'connectors':
         return t('settings.connectors.page.title');
       case 'integrations':
-        return 'Integrations';
+        return t('settings.page.integrations.title');
       case 'git':
         return t('settings.page.git.title');
       case 'appearance':
@@ -751,6 +754,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
         return <SnippetsSidebar onItemSelect={opts.onItemSelect} />;
       case 'mcp':
         return <McpSidebar onItemSelect={opts.onItemSelect} />;
+      case 'integrations':
+        return <IntegracionesSidebar onItemSelect={opts.onItemSelect} />;
       case 'skills.installed':
         return <SkillsSidebar onItemSelect={opts.onItemSelect} />;
       case 'plugins':
@@ -780,8 +785,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
       case 'commands':
         return <CommandsPage />;
       case 'connectors':
-      case 'integrations':
         return <ConnectorsPage />;
+      case 'integrations':
+        return <IntegracionesPage />;
       case 'mcp':
         return <McpPage />;
       case 'skills.installed':

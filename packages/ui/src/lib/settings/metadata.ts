@@ -137,8 +137,9 @@ export const SETTINGS_PAGE_METADATA: readonly SettingsPageMeta[] = [
     slug: 'integrations',
     title: 'Integrations',
     group: 'integrations',
-    kind: 'single',
-    keywords: ['integrations', 'mcp', 'registry', 'servers', 'connect', 'services', 'tools', 'marketplace'],
+    kind: 'split',
+    keywords: ['integrations', 'composio', 'oauth', 'services', 'tools', 'apify', 'notion', 'github', 'gmail', 'slack', 'connect'],
+    isAvailable: (ctx) => !ctx.isVSCode,
   },
   {
     slug: 'mcp',

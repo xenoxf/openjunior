@@ -180,6 +180,10 @@ export const CommandAutocomplete = React.forwardRef<CommandAutocompleteHandle, C
             ? [{ id: 'openjunior:explore', name: 'explore', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.exploreDescription'), isOpenJunior: true }]
             : []
           ),
+          ...(canStartSessionCommand
+            ? [{ id: 'openjunior:goal', name: 'goal', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.goalDescription'), isOpenJunior: true }]
+            : []
+          ),
         ];
         const allCommands = [...builtInCommands, ...customCommands, ...skillCommands];
 
@@ -247,6 +251,10 @@ export const CommandAutocomplete = React.forwardRef<CommandAutocompleteHandle, C
           ),
           ...(canStartSessionCommand
             ? [{ id: 'openjunior:explore', name: 'explore', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.exploreDescription'), isOpenJunior: true }]
+            : []
+          ),
+          ...(canStartSessionCommand
+            ? [{ id: 'openjunior:goal', name: 'goal', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.goalDescription'), isOpenJunior: true }]
             : []
           ),
         ];

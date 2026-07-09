@@ -31,12 +31,14 @@ interface ComposioStore {
   nextCursor: string | null;
   searchQuery: string;
   _searchSeq: number;
+  selectedAccountId: string | null;
   loadApps: () => Promise<void>;
   loadMoreApps: () => Promise<void>;
   searchApps: (query: string) => Promise<void>;
   loadConnectedAccounts: () => Promise<void>;
   connectApp: (slug: string) => Promise<{ ok: boolean; redirectUrl?: string; error?: string }>;
   disconnectAccount: (accountId: string) => Promise<boolean>;
+  setSelectedAccount: (id: string | null) => void;
 }
 
 export const useComposioStore = create<ComposioStore>()(
@@ -44,6 +46,7 @@ export const useComposioStore = create<ComposioStore>()(
     (set, get) => ({
       apps: [],
       connectedAccounts: [],
+      selectedAccountId: null,
       isLoadingApps: false,
       isLoadingConnections: false,
       isLoadingMore: false,
@@ -138,6 +141,10 @@ export const useComposioStore = create<ComposioStore>()(
         } catch (err) {
           return { ok: false, error: err instanceof Error ? err.message : 'Network error' };
         }
+      },
+
+      setSelectedAccount: (id) => {
+        set({ selectedAccountId: id });
       },
 
       disconnectAccount: async (accountId) => {

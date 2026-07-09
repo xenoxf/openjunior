@@ -12,6 +12,7 @@ import type { AttachedFile } from '@/stores/types/sessionTypes';
 import * as sessionActions from '@/sync/session-actions';
 import { useDirectorySync, useUserMessageHistory } from '@/sync/sync-context';
 import { useInlineCommentDraftStore, type InlineCommentDraft } from '@/stores/useInlineCommentDraftStore';
+import { useGoalStore } from '@/stores/useGoalStore';
 import { useSnippetsStore } from '@/stores/useSnippetsStore';
 import { appendInlineComments } from '@/lib/messages/inlineComments';
 import { renderMagicPrompt } from '@/lib/magicPrompts';
@@ -19,6 +20,7 @@ import { startReviewFlow } from '@/lib/reviewFlow';
 import { ReviewFlowDialog, type ReviewFlowExecution } from '@/components/session/ReviewFlowDialog';
 import { AttachedFilesList, AttachedVSCodeFileChips, ActiveEditorFileSuggestion } from './FileAttachment';
 import ToolOutputDialog from './message/ToolOutputDialog';
+import { GoalIndicator } from './GoalIndicator';
 import type { ToolPopupContent } from './message/types';
 import { QueuedMessageChips } from './QueuedMessageChips';
 import { FileMentionAutocomplete, type FileMentionHandle } from './FileMentionAutocomplete';
@@ -36,6 +38,7 @@ import { MobileModelButton } from './MobileModelButton';
 import { MobileSessionStatusBar, MobileSessionPanelTrigger } from './MobileSessionStatusBar';
 import { useCurrentSessionActivity } from '@/hooks/useSessionActivity';
 import { toast } from '@/components/ui';
+import { toast as sonnerToast } from 'sonner';
 import { Button } from '@/components/ui/button';
 // useMessageStore removed — messages now come from sync system
 import { isVSCodeRuntime } from '@/lib/desktop';
@@ -2096,6 +2099,68 @@ const ChatInputComponent: React.FC<ChatInputProps> = ({ onOpenSettings, scrollTo
                 }
                 return;
             }
+            else if (commandName === 'goal' && (currentSessionId || newSessionDraftOpen)) {
+                const goalArg = normalizedCommand.slice(1).trim().slice(commandName.length).trim();
+                const clearAliases = ['clear', 'stop', 'off', 'reset', 'none', 'cancel'];
+
+                if (goalArg && clearAliases.includes(goalArg.toLowerCase())) {
+                    if (currentSessionId) {
+                        useGoalStore.getState().clearGoal(currentSessionId);
+                    }
+                    toast.success(t('chat.chatInput.toast.goalCleared') || 'Goal cleared');
+                    return;
+                }
+
+                if (!goalArg) {
+                    if (currentSessionId) {
+                        const currentGoal = useGoalStore.getState().getGoal(currentSessionId);
+                        if (currentGoal) {
+                            const duration = Math.round((Date.now() - currentGoal.createdAt) / 1000);
+                            const minutes = Math.floor(duration / 60);
+                            const seconds = duration % 60;
+                            sonnerToast.custom(() =>
+                                <div className="flex flex-col gap-1">
+                                    <span className="font-medium">Active Goal</span>
+                                    <span className="text-sm">{currentGoal.text}</span>
+                                    <span className="text-xs text-muted-foreground">
+                                        {currentGoal.turnCount} turns · {minutes}m {seconds}s
+                                    </span>
+                                </div>,
+                                { duration: 8000 }
+                            );
+                        } else {
+                            toast.info(t('chat.chatInput.toast.goalNone') || 'No active goal. Set one with /goal <your objective>');
+                        }
+                    } else {
+                        toast.info(t('chat.chatInput.toast.goalNone') || 'No active goal. Set one with /goal <your objective>');
+                    }
+                    return;
+                }
+
+                try {
+                    await sessionActions.waitForConnectionOrThrow();
+                    const goalText = goalArg;
+                    if (currentSessionId) {
+                        useGoalStore.getState().setGoal(currentSessionId, goalText);
+                    }
+                    const instructionsWithGoal = await renderMagicPrompt('session.goal.instructions', { goal: goalText });
+                    await sendMessage(
+                        goalText,
+                        providerIdToSend,
+                        modelIdToSend,
+                        agentNameToSend,
+                        [],
+                        agentMentionName,
+                        [{ text: instructionsWithGoal, synthetic: true }],
+                        variantToSend,
+                        inputMode,
+                    );
+                    scrollToBottom?.();
+                } catch (error) {
+                    toast.error(error instanceof Error ? error.message : (t('chat.chatInput.toast.goalFailed') || 'Failed to set goal'));
+                }
+                return;
+            }
         }
 
         const currentSessionDirectory = currentSessionId
@@ -2110,6 +2175,16 @@ const ChatInputComponent: React.FC<ChatInputProps> = ({ onOpenSettings, scrollTo
                     synthetic: true,
                 });
             }
+        }
+
+        // Inject active goal instructions on every message
+        const activeGoal = currentSessionId ? useGoalStore.getState().getGoal(currentSessionId) : null;
+        if (activeGoal) {
+            const goalWithTemplate = await renderMagicPrompt('session.goal.instructions', { goal: activeGoal.text });
+            additionalParts.push({
+                text: goalWithTemplate,
+                synthetic: true,
+            });
         }
 
         try {
@@ -4388,6 +4463,9 @@ const ChatInputComponent: React.FC<ChatInputProps> = ({ onOpenSettings, scrollTo
                                 rows={1}
                             />
                         </div>
+                    </div>
+                    <div className="px-3 py-1.5">
+                        <GoalIndicator />
                     </div>
                     <div
                         className={cn(
