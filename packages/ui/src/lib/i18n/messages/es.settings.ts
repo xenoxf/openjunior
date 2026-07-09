@@ -1829,4 +1829,6 @@ export const settingsDict = {
   "settings.connectors.integrations.composio.confirmDisconnect": "¿Desconectar cuenta?",
   "settings.connectors.integrations.composio.disconnectWarning": "Esta cuenta ya no estará disponible como herramienta en tus conversaciones. Podés reconectar en cualquier momento.",
   "settings.connectors.integrations.composio.cancel": "Cancelar",
+  "settings.connectors.integrations.composio.back": "Volver",
+  "settings.connectors.integrations.composio.manage": "Administrar",
 } as const;

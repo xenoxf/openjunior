@@ -1825,6 +1825,8 @@ export const settingsDict = {
   'settings.connectors.integrations.composio.confirmDisconnect': 'Disconnect account?',
   'settings.connectors.integrations.composio.disconnectWarning': 'This account will no longer be available as a tool in your conversations. You can reconnect at any time.',
   'settings.connectors.integrations.composio.cancel': 'Cancel',
+  'settings.connectors.integrations.composio.back': 'Back',
+  'settings.connectors.integrations.composio.manage': 'Manage',
 
   // Integrations (Unified Catalog)
   'settings.integrations.page.title': 'Integrations',

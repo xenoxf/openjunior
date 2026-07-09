@@ -87,6 +87,7 @@ const pageOrder: SettingsPageSlug[] = [
   'shortcuts',
   'git',
   'connectors',
+  'integrations',
   'mcp',
   'skills.installed',
   'plugins',
