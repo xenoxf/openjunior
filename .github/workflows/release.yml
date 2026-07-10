@@ -34,9 +34,28 @@ jobs:
 
       - name: Build Electron package
         working-directory: packages/electron
-        run: bun run package
+        shell: bash
+        run: |
+          bun run build:web-assets
+          bun run bundle:main
+          # Native rebuild fails on some Windows toolchains; log error but continue.
+          bun run rebuild:native || {
+            echo "::warning::Native rebuild failed, continuing with npmRebuild fallback"
+          }
+          node ./scripts/package.mjs --publish never
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Create release (if not exists)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ github.ref_name }}"
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            TAG="${{ inputs.tag }}"
+          fi
+          gh release create "$TAG" --title "$TAG" --notes "" || echo "Release already exists, continuing"
 
       - name: Upload to release
         shell: bash
