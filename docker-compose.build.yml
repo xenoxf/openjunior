@@ -1,0 +1,62 @@
+# Docker Compose for Electron cross-platform builds.
+#
+# Prerequisites:
+#   - Docker with BuildKit
+#   - For ARM64 targets: QEMU binfmt support
+#     docker run --privileged --rm tonistiigi/binfmt --install all
+#
+# Usage:
+#   1. Build image:
+#      docker compose -f docker-compose.build.yml build electron-builder
+#
+#   2. Run one or more targets:
+#      docker compose -f docker-compose.build.yml run --rm linux-x64
+#      docker compose -f docker-compose.build.yml run --rm win-x64
+#      docker compose -f docker-compose.build.yml run --rm linux-arm64
+#
+#   3. Or use the orchestrator:
+#      ./scripts/build-electron-all.sh
+#      ./scripts/build-electron-all.sh linux-x64 win-x64   # custom targets
+#
+# Artifacts go to ./dist-electron/<target>/
+
+services:
+  electron-builder:
+    build:
+      context: .
+      dockerfile: Dockerfile.electron
+    image: openjunior-electron-builder:latest
+
+  linux-x64:
+    image: openjunior-electron-builder:latest
+    environment:
+      TARGET_PLATFORM: linux
+      TARGET_ARCH: x64
+    volumes:
+      - ./dist-electron/linux-x64:/app/packages/electron/dist
+
+  linux-arm64:
+    image: openjunior-electron-builder:latest
+    platform: linux/arm64
+    environment:
+      TARGET_PLATFORM: linux
+      TARGET_ARCH: arm64
+    volumes:
+      - ./dist-electron/linux-arm64:/app/packages/electron/dist
+
+  win-x64:
+    image: openjunior-electron-builder:latest
+    environment:
+      TARGET_PLATFORM: win
+      TARGET_ARCH: x64
+    volumes:
+      - ./dist-electron/win-x64:/app/packages/electron/dist
+
+  win-arm64:
+    image: openjunior-electron-builder:latest
+    platform: linux/arm64
+    environment:
+      TARGET_PLATFORM: win
+      TARGET_ARCH: arm64
+    volumes:
+      - ./dist-electron/win-arm64:/app/packages/electron/dist

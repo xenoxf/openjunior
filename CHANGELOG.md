@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.16.0] - 2026-07-10
+
+- Build: Electron cross-platform Docker build system (`Dockerfile.electron`, `docker-compose.build.yml`).
+- Integrations: Composio integration with OAuth flow and account management (thanks to @xenoxf).
+- Integrations: redesigned Advanced > Integraciones as an MCP-style management page with clickable catalog cards.
+
+## [1.15.0] - 2026-07-01
+
 ## [1.13.3] - 2026-06-24
 
 - Chat: selecting a user-installed skill from the slash command menu now invokes the skill instead of inserting the skill name as plain text (thanks to @IbrahimKhan12).

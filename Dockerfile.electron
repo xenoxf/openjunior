@@ -1,0 +1,57 @@
+# syntax=docker/dockerfile:1
+# Docker build image for Electron cross-platform packaging.
+#
+# Builds platform-independent assets (web UI + main process bundle)
+# once in the image layer. Per-target native rebuilds and electron-builder
+# packaging happen at container runtime via the entrypoint.
+#
+# Usage:
+#   # 1. Build image
+#   docker compose -f docker-compose.build.yml build electron-builder
+#
+#   # 2. Run per target (output goes to ./dist-electron/<target>/)
+#   docker compose -f docker-compose.build.yml run --rm linux-x64
+#   docker compose -f docker-compose.build.yml run --rm win-x64
+#   docker compose -f docker-compose.build.yml run --rm linux-arm64
+#
+#   # ARM64 requires QEMU binfmt support on the host:
+#   docker run --privileged --rm tonistiigi/binfmt --install all
+#
+#   # Or build all targets at once:
+#   ./scripts/build-electron-all.sh
+
+FROM oven/bun:1.3.14 AS base
+WORKDIR /app
+
+# Toolchain cross-platform
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wine \
+    wine64 \
+    mingw-w64 \
+    dpkg-dev \
+    rpm \
+    fakeroot \
+    git \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Entrypoint script (small, cached as its own layer)
+COPY scripts/electron-build-entrypoint.sh /usr/local/bin/electron-build-entrypoint.sh
+RUN chmod +x /usr/local/bin/electron-build-entrypoint.sh
+
+# Cache deps layer
+COPY package.json bun.lock ./
+COPY packages/ui/package.json ./packages/ui/
+COPY packages/web/package.json ./packages/web/
+COPY packages/electron/package.json ./packages/electron/
+COPY packages/vscode/package.json ./packages/vscode/
+RUN bun install --frozen-lockfile --ignore-scripts
+
+# Source
+COPY . .
+
+# Build platform-independent assets (cached in image)
+WORKDIR /app/packages/electron
+RUN bun run build:web-assets && bun run bundle:main
+
+ENTRYPOINT ["electron-build-entrypoint.sh"]
