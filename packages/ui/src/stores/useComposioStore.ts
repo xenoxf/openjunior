@@ -2,8 +2,14 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { runtimeFetch } from '@/lib/runtime-fetch';
 
+export interface ComposioAppMeta {
+  toolsCount: number;
+  triggersCount: number;
+}
+
 export interface ComposioApp {
   id: string;
+  slug: string;
   name: string;
   description: string;
   logoUrl: string | null;
@@ -11,6 +17,7 @@ export interface ComposioApp {
   tags: string[];
   authScheme: string | null;
   isManaged: boolean;
+  meta: ComposioAppMeta;
 }
 
 export interface ComposioConnectedAccount {

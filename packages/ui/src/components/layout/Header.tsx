@@ -725,7 +725,9 @@ export const Header: React.FC<HeaderProps> = ({
   const timeFormatPreference = useUIStore((state) => state.timeFormatPreference);
   const showMiniBrowserButton = useUIStore((state) => state.showMiniBrowserButton);
   const showRightSidebarButton = useUIStore((state) => state.showRightSidebarButton);
-  const showAdvancedControls = useUIStore((state) => state.showAdvancedControls);
+  const showTerminalButton = useUIStore((state) => state.showTerminalButton);
+  const isBottomTerminalOpen = useUIStore((state) => state.isBottomTerminalOpen);
+  const toggleBottomTerminal = useUIStore((state) => state.toggleBottomTerminal);
 
   const getCurrentModel = useConfigStore((state) => state.getCurrentModel);
   const runtimeApis = useRuntimeAPIs();
@@ -2083,7 +2085,7 @@ export const Header: React.FC<HeaderProps> = ({
         onOpenRemoteUpdate={openRemoteInstanceUpdate}
         timeFormatPreference={timeFormatPreference}
       />
-      {showAdvancedControls && showMiniBrowserButton && !isMobile ? (
+      {showMiniBrowserButton && !isMobile ? (
         <HeaderIconActionButton
           title={t('contextPanel.browser.open')}
           ariaLabel={t('contextPanel.browser.open')}
@@ -2092,7 +2094,7 @@ export const Header: React.FC<HeaderProps> = ({
           Icon={'global'}
         />
       ) : null}
-      {showAdvancedControls && showRightSidebarButton && (
+      {showRightSidebarButton && (
         <HeaderIconActionButton
           title={t('header.actions.rightSidebarWithShortcut', { shortcut: shortcutLabel('toggle_right_sidebar') })}
           ariaLabel={t('header.actions.toggleRightSidebarAria')}
@@ -2100,6 +2102,15 @@ export const Header: React.FC<HeaderProps> = ({
           Icon={'layout-right'}
         />
       )}
+      {showTerminalButton && !isMobile ? (
+        <HeaderIconActionButton
+          title={t('header.actions.terminalPanelWithShortcut', { shortcut: shortcutLabel('toggle_terminal') })}
+          ariaLabel={t('header.actions.toggleTerminalPanelAria')}
+          onClick={toggleBottomTerminal}
+          pressed={isBottomTerminalOpen}
+          Icon={'terminal'}
+        />
+      ) : null}
       <DesktopGitHubControl
         isMobile={isMobile}
         githubAuthStatus={githubAuthStatus}

@@ -13,7 +13,7 @@ const TYPE_CONFIG: Record<ConnectorType, {
 }> = {
   integration: { icon: 'plug', accent: 'var(--status-info)', bg: 'var(--status-info)/10' },
   mcp: { icon: 'server', accent: 'var(--primary-base)', bg: 'var(--primary-base)/10' },
-  skill: { icon: 'book-open', accent: 'var(--status-success)', bg: 'var(--status-success)/10' },
+  skill: { icon: 'book-open', accent: 'var(--primary-base)', bg: 'var(--primary-base)/10' },
 };
 
 interface ConnectorCardProps {

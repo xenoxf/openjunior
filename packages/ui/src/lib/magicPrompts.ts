@@ -46,7 +46,9 @@ export type MagicPromptId =
   | 'session.explore.visible'
   | 'session.explore.instructions'
   | 'session.fusion.visible'
-  | 'session.fusion.instructions';
+  | 'session.fusion.instructions'
+  | 'session.goal.visible'
+  | 'session.goal.instructions';
 
 export interface MagicPromptDefinition {
   id: MagicPromptId;
@@ -839,6 +841,26 @@ Then give a clear orientation covering:
 Keep it a readable orientation, not an exhaustive file-by-file dump — favor the structure and the mental model over listing everything. Lead with the big picture, then drill down. If the user named a specific area, focus the tour there.
 
 Respond in the same language the user uses.`,
+  },
+  {
+    id: 'session.goal.visible',
+    title: 'Goal Visible Prompt',
+    group: 'Session',
+    description: 'Visible user message sent by the /goal command.',
+    template: '<USER_GOAL>',
+  },
+  {
+    id: 'session.goal.instructions',
+    title: 'Goal Instructions',
+    group: 'Session',
+    description: 'Hidden instructions attached to the /goal command. Establishes the user goal as the north star for all subsequent work.',
+    template: `The user has set a new goal. You are now working towards this objective. Treat this goal as the north star for all subsequent work — every suggestion, code change, explanation, and decision should be evaluated against whether it advances this goal.
+
+GOAL: {{goal}}
+
+Keep this goal in mind for the entire conversation. Periodically revisit it to ensure alignment. If the user's request conflicts with the goal, explain why and suggest a goal-aligned alternative.
+
+Respond confirming you understand the goal and ask clarifying questions if needed. Be concise and focused.`,
   },
   {
     id: 'session.fusion.visible',

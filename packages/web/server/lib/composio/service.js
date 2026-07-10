@@ -52,11 +52,21 @@ export async function listToolkits(apiKey, options = {}) {
   console.log('[Composio:service]   -> items count from SDK:', items.length);
   const mapped = items.map((tk) => ({
     id: tk.slug || tk.name,
+    slug: tk.slug || tk.name,
     name: tk.name || tk.slug,
     description: tk.meta?.description || '',
     logoUrl: tk.logoUrl || tk.logo || tk.meta?.logoUrl || tk.meta?.logo || null,
     category: tk.meta?.categories?.[0]?.name || tk.meta?.categories?.[0]?.slug || 'tools',
-    tags: Array.isArray(tk.tags) ? tk.tags : (tk.meta?.tags || []),
+    tags: Array.isArray(tk.tags)
+      ? tk.tags
+      : (tk.meta?.categories?.length
+        ? tk.meta.categories.map((c) => c.name || c.slug)
+        : []
+      ),
+    meta: {
+      toolsCount: tk.meta?.toolsCount ?? 0,
+      triggersCount: tk.meta?.triggersCount ?? 0,
+    },
     authScheme: Array.isArray(tk.authSchemes) ? tk.authSchemes[0] : (tk.authScheme || null),
     isManaged: tk.isLocalToolkit === true,
   }));
