@@ -39,16 +39,62 @@ export function createComposioClient(apiKey) {
   return client;
 }
 
+export async function getAuthFields(apiKey, toolkitSlug, authScheme) {
+  console.log('[Composio:service] getAuthFields() called');
+  console.log('[Composio:service]   -> toolkitSlug:', toolkitSlug, 'authScheme:', authScheme);
+  try {
+    const client = createComposioClient(apiKey);
+    const fields = await client.toolkits.getConnectedAccountInitiationFields(toolkitSlug, authScheme, {
+      requiredOnly: true,
+    });
+    console.log('[Composio:service]   -> fields:', fields.length);
+    return fields;
+  } catch (err) {
+    console.error('[Composio:service] getAuthFields() failed:', err.message);
+    throw err;
+  }
+}
+
+function buildConnectionData(authScheme, credentials) {
+  console.log('[Composio:service] buildConnectionData() called');
+  console.log('[Composio:service]   -> authScheme:', authScheme, 'credentials keys:', Object.keys(credentials || {}));
+  switch (authScheme) {
+    case 'BASIC':
+      return AuthScheme.Basic({ username: credentials.username, password: credentials.password });
+    case 'BEARER_TOKEN':
+      return AuthScheme.BearerToken({ token: credentials.token });
+    case 'NO_AUTH':
+      return AuthScheme.NoAuth();
+    case 'SERVICE_ACCOUNT':
+    case 'GOOGLE_SERVICE_ACCOUNT':
+      return AuthScheme.GoogleServiceAccount({ credentials_json: credentials.credentials_json });
+    case 'BASIC_WITH_JWT':
+      return AuthScheme.BasicWithJWT({ username: credentials.username, password: credentials.password });
+    default:
+      return AuthScheme.APIKey({ api_key: credentials.api_key || credentials.apiKey || credentials.generic_api_key });
+  }
+}
+
 export async function listToolkits(apiKey, options = {}) {
   console.log('[Composio:service] listToolkits() called');
   console.log('[Composio:service]   -> options:', JSON.stringify(options));
   const client = createComposioClient(apiKey);
+  // NOTE: SDK's ToolkitsListParamsSchema does NOT support a `search` field,
+  // so we must filter client-side after fetching all toolkits
   const result = await client.toolkits.get({
     category: options.category || undefined,
     limit: 100,
-    search: options.search || undefined,
   });
-  const items = Array.isArray(result) ? result : (result?.items || []);
+  let items = Array.isArray(result) ? result : (result?.items || []);
+  if (options.search) {
+    const q = options.search.toLowerCase();
+    items = items.filter((tk) => {
+      const name = (tk.name || tk.slug || '').toLowerCase();
+      const desc = (tk.meta?.description || '').toLowerCase();
+      const tags = (Array.isArray(tk.tags) ? tk.tags : (tk.meta?.categories || []).map((c) => c.name || c.slug || '')).join(' ').toLowerCase();
+      return name.includes(q) || desc.includes(q) || tags.includes(q);
+    });
+  }
   console.log('[Composio:service]   -> items count from SDK:', items.length);
   const mapped = items.map((tk) => ({
     id: tk.slug || tk.name,
@@ -198,14 +244,12 @@ export async function connectWithCredentials(apiKey, userId, toolkitSlug, creden
     console.log('[Composio:service]   -> created auth config:', authConfigId);
   }
 
-  // 2) Initiate the connected account with user-provided credentials
-  const connection = await client.connectedAccounts.initiate(userId, authConfigId, {
-    config: authScheme === 'BASIC'
-      ? AuthScheme.Basic({ username: credentials.username, password: credentials.password })
-      : authScheme === 'BEARER_TOKEN'
-        ? AuthScheme.BearerToken({ token: credentials.token })
-        : AuthScheme.APIKey({ api_key: credentials.apiKey || credentials.api_key || credentials.generic_api_key }),
-  });
+  // 2) Build ConnectionData dynamically from auth scheme
+  const config = buildConnectionData(authScheme, credentials);
+  console.log('[Composio:service]   -> built config authScheme:', config.authScheme);
+
+  // 3) Initiate the connected account with user-provided credentials
+  const connection = await client.connectedAccounts.initiate(userId, authConfigId, { config });
 
   console.log('[Composio:service]   -> connection id:', connection.id, 'status:', connection.status);
   return { id: connection.id, status: connection.status };

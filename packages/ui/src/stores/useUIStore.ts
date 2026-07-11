@@ -616,6 +616,7 @@ interface UIStore {
 
   showTerminalButton: boolean;
   showMiniBrowserButton: boolean;
+  showMiniChatButton: boolean;
   showRightSidebarButton: boolean;
   showTerminalQuickKeysOnDesktop: boolean;
   persistChatDraft: boolean;
@@ -755,6 +756,7 @@ interface UIStore {
   setNotificationMode: (mode: 'always' | 'hidden-only') => void;
   setShowTerminalButton: (value: boolean) => void;
   setShowMiniBrowserButton: (value: boolean) => void;
+  setShowMiniChatButton: (value: boolean) => void;
   setShowRightSidebarButton: (value: boolean) => void;
   setShowTerminalQuickKeysOnDesktop: (value: boolean) => void;
   setNotifyOnSubtasks: (value: boolean) => void;
@@ -911,6 +913,7 @@ export const useUIStore = create<UIStore>()(
 
         showTerminalButton: false,
         showMiniBrowserButton: false,
+        showMiniChatButton: true,
         showRightSidebarButton: false,
         showTerminalQuickKeysOnDesktop: false,
         persistChatDraft: true,
@@ -1980,6 +1983,9 @@ export const useUIStore = create<UIStore>()(
         setShowMiniBrowserButton: (value) => {
           set({ showMiniBrowserButton: value });
         },
+        setShowMiniChatButton: (value) => {
+          set({ showMiniChatButton: value });
+        },
         setShowRightSidebarButton: (value) => {
           set({ showRightSidebarButton: value });
         },
@@ -2274,6 +2280,7 @@ export const useUIStore = create<UIStore>()(
           notificationMode: state.notificationMode,
           showTerminalButton: state.showTerminalButton,
           showMiniBrowserButton: state.showMiniBrowserButton,
+          showMiniChatButton: state.showMiniChatButton,
           showRightSidebarButton: state.showRightSidebarButton,
           showTerminalQuickKeysOnDesktop: state.showTerminalQuickKeysOnDesktop,
           notifyOnSubtasks: state.notifyOnSubtasks,

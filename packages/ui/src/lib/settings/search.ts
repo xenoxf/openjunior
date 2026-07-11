@@ -140,6 +140,12 @@ export const SETTINGS_SEARCH_ITEMS: readonly SettingsSearchItem[] = [
     keywords: ['browser', 'mini browser', 'context panel', 'webview'],
   },
   {
+    id: 'appearance.show-mini-chat',
+    page: 'appearance',
+    titleKey: 'settings.openjunior.visual.field.showMiniChat',
+    keywords: ['mini chat', 'picture in picture', 'pip', 'floating chat'],
+  },
+  {
     id: 'appearance.show-right-sidebar',
     page: 'appearance',
     titleKey: 'settings.openjunior.visual.field.showRightSidebar',

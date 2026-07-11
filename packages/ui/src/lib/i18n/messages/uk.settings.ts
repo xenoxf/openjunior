@@ -1799,6 +1799,7 @@ export const settingsDict = {
   "settings.openjunior.visual.section.layoutPanels": "Макет інтерфейсу",
   "settings.openjunior.visual.field.showTerminalButton": "Показати кнопку терміналу",
   "settings.openjunior.visual.field.showMiniBrowser": "Показати кнопку міні-браузера",
+  "settings.openjunior.visual.field.showMiniChat": "Показати кнопку міні-чату",
   "settings.openjunior.visual.field.showRightSidebar": "Показати кнопку правої бічної панелі",
 
   // Connectors

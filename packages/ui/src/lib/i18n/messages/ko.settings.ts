@@ -1799,6 +1799,7 @@ export const settingsDict = {
   'settings.openjunior.visual.section.layoutPanels': '인터페이스 레이아웃',
   'settings.openjunior.visual.field.showTerminalButton': '터미널 버튼 표시',
   'settings.openjunior.visual.field.showMiniBrowser': '미니 브라우저 버튼 표시',
+  'settings.openjunior.visual.field.showMiniChat': '미니 채팅 버튼 표시',
   'settings.openjunior.visual.field.showRightSidebar': '오른쪽 사이드바 버튼 표시',
 
   // Connectors

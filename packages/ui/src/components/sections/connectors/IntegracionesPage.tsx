@@ -179,20 +179,23 @@ export const IntegracionesPage: React.FC = () => {
     setConnectingSlug(appId);
     try {
       const result = await connectApp(appId);
-      if (result.ok && result.redirectUrl) {
+      if (result.ok && result.redirectUrl && result.connectionId) {
         const w = window.open(result.redirectUrl, '_blank', 'width=600,height=700,noopener,noreferrer');
         if (w) {
           oauthWindowRef.current = w;
           const app = apps.find((a) => a.id === appId) ?? null;
-          setConnectedApp(app);
-          setShowSuccessModal(true);
           oauthCheckIntervalRef.current = setInterval(async () => {
             if (w.closed) {
               if (oauthCheckIntervalRef.current) {
                 clearInterval(oauthCheckIntervalRef.current);
                 oauthCheckIntervalRef.current = null;
               }
+              const waitOk = await useComposioStore.getState().waitForConnection(result.connectionId!);
               await useComposioStore.getState().loadConnectedAccounts();
+              if (waitOk && app) {
+                setConnectedApp(app);
+                setShowSuccessModal(true);
+              }
             }
           }, 1000);
         }

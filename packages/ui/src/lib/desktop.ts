@@ -157,6 +157,7 @@ export type DesktopSettings = {
   inputBarOffset?: number;
   showTerminalButton?: boolean;
   showMiniBrowserButton?: boolean;
+  showMiniChatButton?: boolean;
   showRightSidebarButton?: boolean;
   showTerminalQuickKeysOnDesktop?: boolean;
   shortcutOverrides?: Record<string, string>;

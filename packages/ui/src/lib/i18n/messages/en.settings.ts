@@ -1878,5 +1878,6 @@ export const settingsDict = {
   'settings.openjunior.visual.section.layoutPanels': 'Interface Layout',
   'settings.openjunior.visual.field.showTerminalButton': 'Show terminal button',
   'settings.openjunior.visual.field.showMiniBrowser': 'Show mini browser button',
+  'settings.openjunior.visual.field.showMiniChat': 'Show mini chat button',
   'settings.openjunior.visual.field.showRightSidebar': 'Show right sidebar button',
 } as const;

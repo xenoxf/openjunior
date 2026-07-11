@@ -290,6 +290,8 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
     const setShowTerminalButton = useUIStore(state => state.setShowTerminalButton);
     const showMiniBrowserButton = useUIStore(state => state.showMiniBrowserButton);
     const setShowMiniBrowserButton = useUIStore(state => state.setShowMiniBrowserButton);
+    const showMiniChatButton = useUIStore(state => state.showMiniChatButton);
+    const setShowMiniChatButton = useUIStore(state => state.setShowMiniChatButton);
     const showRightSidebarButton = useUIStore(state => state.showRightSidebarButton);
     const setShowRightSidebarButton = useUIStore(state => state.setShowRightSidebarButton);
     const fileEditorKeymap = useUIStore(state => state.fileEditorKeymap);
@@ -2041,6 +2043,10 @@ export const OpenJuniorVisualSettings: React.FC<OpenJuniorVisualSettingsProps> =
                             <div data-settings-item="appearance.show-mini-browser-button" className="group flex cursor-pointer items-center gap-2 py-1.5" role="button" tabIndex={0} aria-pressed={showMiniBrowserButton} onClick={() => setShowMiniBrowserButton(!showMiniBrowserButton)} onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setShowMiniBrowserButton(!showMiniBrowserButton); }}}>
                                 <Checkbox checked={showMiniBrowserButton} onChange={setShowMiniBrowserButton} ariaLabel={t('settings.openjunior.visual.field.showMiniBrowser')} />
                                 <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.showMiniBrowser')}</span>
+                            </div>
+                            <div data-settings-item="appearance.show-mini-chat-button" className="group flex cursor-pointer items-center gap-2 py-1.5" role="button" tabIndex={0} aria-pressed={showMiniChatButton} onClick={() => setShowMiniChatButton(!showMiniChatButton)} onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setShowMiniChatButton(!showMiniChatButton); }}}>
+                                <Checkbox checked={showMiniChatButton} onChange={setShowMiniChatButton} ariaLabel={t('settings.openjunior.visual.field.showMiniChat')} />
+                                <span className="typography-ui-label text-foreground">{t('settings.openjunior.visual.field.showMiniChat')}</span>
                             </div>
                             <div data-settings-item="appearance.show-right-sidebar-button" className="group flex cursor-pointer items-center gap-2 py-1.5" role="button" tabIndex={0} aria-pressed={showRightSidebarButton} onClick={() => setShowRightSidebarButton(!showRightSidebarButton)} onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setShowRightSidebarButton(!showRightSidebarButton); }}}>
                                 <Checkbox checked={showRightSidebarButton} onChange={setShowRightSidebarButton} ariaLabel={t('settings.openjunior.visual.field.showRightSidebar')} />

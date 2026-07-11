@@ -552,6 +552,9 @@ const applyDesktopUiPreferences = (settings: DesktopSettings) => {
   if (typeof settings.showMiniBrowserButton === 'boolean' && settings.showMiniBrowserButton !== store.showMiniBrowserButton) {
     store.setShowMiniBrowserButton(settings.showMiniBrowserButton);
   }
+  if (typeof settings.showMiniChatButton === 'boolean' && settings.showMiniChatButton !== store.showMiniChatButton) {
+    store.setShowMiniChatButton(settings.showMiniChatButton);
+  }
   if (typeof settings.showRightSidebarButton === 'boolean' && settings.showRightSidebarButton !== store.showRightSidebarButton) {
     store.setShowRightSidebarButton(settings.showRightSidebarButton);
   }

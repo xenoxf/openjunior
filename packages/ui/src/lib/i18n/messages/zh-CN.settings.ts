@@ -1799,6 +1799,7 @@ export const settingsDict = {
   'settings.openjunior.visual.section.layoutPanels': '界面布局',
   'settings.openjunior.visual.field.showTerminalButton': '显示终端按钮',
   'settings.openjunior.visual.field.showMiniBrowser': '显示迷你浏览器按钮',
+  'settings.openjunior.visual.field.showMiniChat': '显示迷你聊天按钮',
   'settings.openjunior.visual.field.showRightSidebar': '显示右侧栏按钮',
 
   // Connectors

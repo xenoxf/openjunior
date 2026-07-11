@@ -724,6 +724,7 @@ export const Header: React.FC<HeaderProps> = ({
   const shortcutOverrides = useUIStore((state) => state.shortcutOverrides);
   const timeFormatPreference = useUIStore((state) => state.timeFormatPreference);
   const showMiniBrowserButton = useUIStore((state) => state.showMiniBrowserButton);
+  const showMiniChatButton = useUIStore((state) => state.showMiniChatButton);
   const showRightSidebarButton = useUIStore((state) => state.showRightSidebarButton);
   const showTerminalButton = useUIStore((state) => state.showTerminalButton);
   const isBottomTerminalOpen = useUIStore((state) => state.isBottomTerminalOpen);
@@ -2123,7 +2124,7 @@ export const Header: React.FC<HeaderProps> = ({
     </>
   );
 
-  const showMiniChatHeaderAction = hasElectronDesktopIPC && (isNewSessionDraftOpen || Boolean(currentSessionId));
+  const showMiniChatHeaderAction = showMiniChatButton && hasElectronDesktopIPC && (isNewSessionDraftOpen || Boolean(currentSessionId));
 
   const renderDesktop = () => (
     <div

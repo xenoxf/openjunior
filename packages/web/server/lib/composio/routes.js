@@ -6,10 +6,12 @@ import {
   getToolkitBySlug,
   authorizeToolkit,
   connectWithCredentials,
+  getAuthFields,
   listConnectedAccounts,
   getConnectedAccount,
   deleteConnectedAccount,
   executeTool,
+  waitForConnection,
 } from './service.js';
 
 export function registerComposioRoutes(app, composioApiKey, composioUserId) {
@@ -108,6 +110,26 @@ export function registerComposioRoutes(app, composioApiKey, composioUserId) {
     }
   });
 
+  app.get('/api/composio/apps/:slug/auth-fields', async (req, res) => {
+    console.log('[Composio:routes] GET /api/composio/apps/:slug/auth-fields', req.params.slug);
+    try {
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        return res.status(500).json({ ok: false, error: 'Composio API key not configured' });
+      }
+      const { scheme } = req.query;
+      if (!scheme) {
+        return res.status(400).json({ ok: false, error: 'scheme query parameter is required' });
+      }
+      const fields = await getAuthFields(apiKey, req.params.slug, scheme);
+      console.log('[Composio:routes]   -> auth fields count:', fields.length);
+      res.json({ ok: true, fields });
+    } catch (err) {
+      console.error('[Composio:routes] GET /api/composio/apps/:slug/auth-fields ERROR:', err.message);
+      res.status(500).json({ ok: false, error: err.message });
+    }
+  });
+
   app.get('/api/composio/connections', async (req, res) => {
     console.log('[Composio:routes] GET /api/composio/connections');
     try {
@@ -157,6 +179,22 @@ export function registerComposioRoutes(app, composioApiKey, composioUserId) {
       res.json({ ok: true });
     } catch (err) {
       console.error('[Composio:routes] DELETE /api/composio/connections/:id ERROR:', err.message);
+      res.status(500).json({ ok: false, error: err.message });
+    }
+  });
+
+  app.post('/api/composio/connections/:id/wait', async (req, res) => {
+    console.log('[Composio:routes] POST /api/composio/connections/:id/wait', req.params.id);
+    try {
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        return res.status(500).json({ ok: false, error: 'Composio API key not configured' });
+      }
+      const result = await waitForConnection(apiKey, req.params.id, 60000);
+      console.log('[Composio:routes]   -> wait result status:', result?.status);
+      res.json({ ok: true, status: result?.status });
+    } catch (err) {
+      console.error('[Composio:routes] POST /api/composio/connections/:id/wait ERROR:', err.message);
       res.status(500).json({ ok: false, error: err.message });
     }
   });

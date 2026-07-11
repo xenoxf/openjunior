@@ -1799,6 +1799,7 @@ export const settingsDict = {
   'settings.openjunior.visual.section.layoutPanels': 'Disposition de l\'interface',
   'settings.openjunior.visual.field.showTerminalButton': 'Afficher le bouton du terminal',
   'settings.openjunior.visual.field.showMiniBrowser': 'Afficher le bouton du mini navigateur',
+  'settings.openjunior.visual.field.showMiniChat': 'Afficher le bouton du mini chat',
   'settings.openjunior.visual.field.showRightSidebar': 'Afficher le bouton de la barre latérale droite',
 
   // Connectors

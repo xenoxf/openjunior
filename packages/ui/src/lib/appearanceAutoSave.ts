@@ -39,6 +39,7 @@ type AppearanceSlice = {
   gitChangesViewMode: 'flat' | 'tree';
   showTerminalButton: boolean;
   showMiniBrowserButton: boolean;
+  showMiniChatButton: boolean;
   showRightSidebarButton: boolean;
   showTerminalQuickKeysOnDesktop: boolean;
 };
@@ -82,6 +83,7 @@ export const startAppearanceAutoSave = (): void => {
     gitChangesViewMode: useUIStore.getState().gitChangesViewMode,
     showTerminalButton: useUIStore.getState().showTerminalButton,
     showMiniBrowserButton: useUIStore.getState().showMiniBrowserButton,
+    showMiniChatButton: useUIStore.getState().showMiniChatButton,
     showRightSidebarButton: useUIStore.getState().showRightSidebarButton,
     showTerminalQuickKeysOnDesktop: useUIStore.getState().showTerminalQuickKeysOnDesktop,
   };
@@ -137,6 +139,7 @@ export const startAppearanceAutoSave = (): void => {
       gitChangesViewMode: state.gitChangesViewMode,
       showTerminalButton: state.showTerminalButton,
       showMiniBrowserButton: state.showMiniBrowserButton,
+      showMiniChatButton: state.showMiniChatButton,
       showRightSidebarButton: state.showRightSidebarButton,
       showTerminalQuickKeysOnDesktop: state.showTerminalQuickKeysOnDesktop,
     };
@@ -230,6 +233,9 @@ export const startAppearanceAutoSave = (): void => {
     }
     if (current.showMiniBrowserButton !== previous.showMiniBrowserButton) {
       diff.showMiniBrowserButton = current.showMiniBrowserButton;
+    }
+    if (current.showMiniChatButton !== previous.showMiniChatButton) {
+      diff.showMiniChatButton = current.showMiniChatButton;
     }
     if (current.showRightSidebarButton !== previous.showRightSidebarButton) {
       diff.showRightSidebarButton = current.showRightSidebarButton;

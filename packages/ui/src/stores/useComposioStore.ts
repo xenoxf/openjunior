@@ -21,6 +21,14 @@ export interface ComposioApp {
   meta: ComposioAppMeta;
 }
 
+export interface ComposioAuthField {
+  name: string;
+  type: string;
+  displayName: string;
+  description: string;
+  required?: boolean;
+}
+
 export interface ComposioConnectedAccount {
   id: string;
   status: string;
@@ -44,7 +52,9 @@ interface ComposioStore {
   loadMoreApps: () => Promise<void>;
   searchApps: (query: string) => Promise<void>;
   loadConnectedAccounts: () => Promise<void>;
-  connectApp: (slug: string) => Promise<{ ok: boolean; redirectUrl?: string; error?: string }>;
+  getAuthFields: (slug: string, scheme: string) => Promise<ComposioAuthField[]>;
+  connectApp: (slug: string) => Promise<{ ok: boolean; redirectUrl?: string; connectionId?: string; error?: string }>;
+  waitForConnection: (connectionId: string) => Promise<boolean>;
   connectAppCustom: (slug: string, credentials: Record<string, string>, authScheme: string) => Promise<{ ok: boolean; error?: string }>;
   disconnectAccount: (accountId: string) => Promise<boolean>;
   setSelectedAccount: (id: string | null) => void;
@@ -135,6 +145,18 @@ export const useComposioStore = create<ComposioStore>()(
         }
       },
 
+      getAuthFields: async (slug, scheme) => {
+        try {
+          const response = await runtimeFetch(`/api/composio/apps/${slug}/auth-fields?scheme=${encodeURIComponent(scheme)}`, {
+            headers: { Accept: 'application/json' },
+          });
+          const data = await response.json();
+          return data?.fields || [];
+        } catch {
+          return [];
+        }
+      },
+
       connectApp: async (slug) => {
         try {
           const response = await runtimeFetch(`/api/composio/apps/${slug}/connect`, {
@@ -144,11 +166,24 @@ export const useComposioStore = create<ComposioStore>()(
           });
           const data = await response.json();
           if (data?.ok && data?.redirectUrl) {
-            return { ok: true, redirectUrl: data.redirectUrl };
+            return { ok: true, redirectUrl: data.redirectUrl, connectionId: data.connectionId };
           }
           return { ok: false, error: data?.error || 'Failed to initiate connection' };
         } catch (err) {
           return { ok: false, error: err instanceof Error ? err.message : 'Network error' };
+        }
+      },
+
+      waitForConnection: async (connectionId) => {
+        try {
+          const response = await runtimeFetch(`/api/composio/connections/${connectionId}/wait`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          });
+          const data = await response.json();
+          return data?.ok === true;
+        } catch {
+          return false;
         }
       },
 

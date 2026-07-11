@@ -1791,6 +1791,7 @@ export const settingsDict = {
   'settings.openjunior.visual.section.layoutPanels': 'Układ interfejsu',
   'settings.openjunior.visual.field.showTerminalButton': 'Pokaż przycisk terminala',
   'settings.openjunior.visual.field.showMiniBrowser': 'Pokaż przycisk mini przeglądarki',
+  'settings.openjunior.visual.field.showMiniChat': 'Pokaż przycisk mini czatu',
   'settings.openjunior.visual.field.showRightSidebar': 'Pokaż przycisk prawego paska bocznego',
 
   // Connectors

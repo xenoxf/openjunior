@@ -1799,6 +1799,7 @@
   'settings.openjunior.visual.section.layoutPanels': '界面佈局',
   'settings.openjunior.visual.field.showTerminalButton': '顯示終端按鈕',
   'settings.openjunior.visual.field.showMiniBrowser': '顯示迷你瀏覽器按鈕',
+  'settings.openjunior.visual.field.showMiniChat': '顯示迷你聊天按鈕',
   'settings.openjunior.visual.field.showRightSidebar': '顯示右側欄按鈕',
 
   // Connectors

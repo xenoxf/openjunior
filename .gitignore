@@ -64,3 +64,5 @@ data/
 workspaces/
 *.pid
 .worktrees/
+squashfs-root/
+squashfs-root/
