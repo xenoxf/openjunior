@@ -1,4 +1,4 @@
-import { Composio } from '@composio/core';
+import { Composio, AuthScheme } from '@composio/core';
 
 console.log('[Composio:service] ===== MODULE LOADED =====');
 console.log('[Composio:service] @composio/core version check - Composio class:', typeof Composio);
@@ -68,6 +68,7 @@ export async function listToolkits(apiKey, options = {}) {
       triggersCount: tk.meta?.triggersCount ?? 0,
     },
     authScheme: Array.isArray(tk.authSchemes) ? tk.authSchemes[0] : (tk.authScheme || null),
+    authSchemes: Array.isArray(tk.authSchemes) ? tk.authSchemes : (tk.authScheme ? [tk.authScheme] : []),
     isManaged: tk.isLocalToolkit === true,
   }));
   console.log('[Composio:service] listToolkits() returning', mapped.length, 'items');
@@ -163,6 +164,51 @@ export async function authorizeToolkit(apiKey, userId, toolkitSlug) {
     id: linkData.connected_account_id || linkData.id,
     status: linkData.status,
   };
+}
+
+export async function connectWithCredentials(apiKey, userId, toolkitSlug, credentials, authScheme) {
+  console.log('[Composio:service] connectWithCredentials() called');
+  console.log('[Composio:service]   -> userId:', userId, 'toolkitSlug:', toolkitSlug, 'authScheme:', authScheme);
+  console.log('[Composio:service]   -> credentials keys:', Object.keys(credentials || {}));
+
+  // 1) Create auth config with use_custom_auth
+  const client = createComposioClient(apiKey);
+  let authConfigId;
+
+  try {
+    // Try to find existing auth config first
+    let configs = await listAuthConfigs(apiKey, { toolkit: toolkitSlug });
+    let existing = findAuthConfigForToolkit(configs, toolkitSlug);
+    if (existing) {
+      authConfigId = existing.id;
+      console.log('[Composio:service]   -> using existing auth config:', authConfigId);
+    }
+  } catch {
+    // ignore
+  }
+
+  if (!authConfigId) {
+    const created = await client.authConfigs.create(toolkitSlug, {
+      type: 'use_custom_auth',
+      authScheme: authScheme || 'API_KEY',
+      name: `${toolkitSlug} Custom Auth`,
+      credentials: {},
+    });
+    authConfigId = created.id;
+    console.log('[Composio:service]   -> created auth config:', authConfigId);
+  }
+
+  // 2) Initiate the connected account with user-provided credentials
+  const connection = await client.connectedAccounts.initiate(userId, authConfigId, {
+    config: authScheme === 'BASIC'
+      ? AuthScheme.Basic({ username: credentials.username, password: credentials.password })
+      : authScheme === 'BEARER_TOKEN'
+        ? AuthScheme.BearerToken({ token: credentials.token })
+        : AuthScheme.APIKey({ api_key: credentials.apiKey || credentials.api_key || credentials.generic_api_key }),
+  });
+
+  console.log('[Composio:service]   -> connection id:', connection.id, 'status:', connection.status);
+  return { id: connection.id, status: connection.status };
 }
 
 export async function listConnectedAccounts(apiKey, options = {}) {

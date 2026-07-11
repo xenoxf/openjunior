@@ -22,6 +22,7 @@ export const IntegrationsTab: React.FC = () => {
   const loadMoreApps = useComposioStore((s) => s.loadMoreApps);
   const searchApps = useComposioStore((s) => s.searchApps);
   const connectApp = useComposioStore((s) => s.connectApp);
+  const connectAppCustom = useComposioStore((s) => s.connectAppCustom);
   const disconnectAccount = useComposioStore((s) => s.disconnectAccount);
 
   const sentinelRef = React.useRef<HTMLDivElement>(null);
@@ -35,6 +36,11 @@ export const IntegrationsTab: React.FC = () => {
   const [detailOpen, setDetailOpen] = React.useState(false);
   const [connectedApp, setConnectedApp] = React.useState<ComposioApp | null>(null);
   const [showSuccessModal, setShowSuccessModal] = React.useState(false);
+  const [credentialApp, setCredentialApp] = React.useState<ComposioApp | null>(null);
+  const [credentialValue, setCredentialValue] = React.useState('');
+  const [credentialUsername, setCredentialUsername] = React.useState('');
+  const [credentialPassword, setCredentialPassword] = React.useState('');
+  const [credentialConnecting, setCredentialConnecting] = React.useState(false);
 
   React.useEffect(() => {
     loadApps();
@@ -80,6 +86,35 @@ export const IntegrationsTab: React.FC = () => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     loadApps();
   }, [loadApps]);
+
+  const needsCustomAuth = React.useCallback((app: ComposioApp) => {
+    const schemes = app.authSchemes || (app.authScheme ? [app.authScheme] : []);
+    return schemes.some((s) => s === 'API_KEY' || s === 'BASIC' || s === 'BEARER_TOKEN' || s === 'NO_AUTH')
+      && !schemes.some((s) => s === 'OAUTH2' || s === 'OAUTH1');
+  }, []);
+
+  const doConnectCustom = React.useCallback(async (app: ComposioApp) => {
+    setCredentialConnecting(true);
+    try {
+      const scheme = app.authScheme === 'BASIC' ? 'BASIC' : 'API_KEY';
+      const credentials: Record<string, string> = scheme === 'BASIC'
+        ? { username: credentialUsername, password: credentialPassword }
+        : { apiKey: credentialValue };
+      const result = await connectAppCustom(app.id, credentials, scheme);
+      if (result.ok) {
+        setCredentialApp(null);
+        setCredentialValue('');
+        setCredentialUsername('');
+        setCredentialPassword('');
+        setDetailOpen(false);
+        setConnectedApp(app);
+        setShowSuccessModal(true);
+        await useComposioStore.getState().loadConnectedAccounts();
+      }
+    } finally {
+      setCredentialConnecting(false);
+    }
+  }, [connectAppCustom, credentialValue, credentialUsername, credentialPassword]);
 
   const doConnect = React.useCallback(async (appId: string) => {
     setConnectingSlug(appId);
@@ -249,7 +284,7 @@ export const IntegrationsTab: React.FC = () => {
       </div>
 
       {/* Detail Dialog — opens on card click */}
-      <Dialog open={detailOpen} onOpenChange={(open) => { if (!open) { setDetailOpen(false); setDetailApp(null); } }}>
+      <Dialog open={detailOpen} onOpenChange={(open) => { if (!open) { setDetailOpen(false); setDetailApp(null); setCredentialValue(''); setCredentialUsername(''); setCredentialPassword(''); } }}>
         <DialogContent className="sm:max-w-lg">
           {detailApp && (
             <>
@@ -301,24 +336,89 @@ export const IntegrationsTab: React.FC = () => {
                 )}
               </div>
 
-              <div className="flex justify-end gap-3 border-t border-border px-6 py-4">
-                <DialogClose asChild>
-                  <Button variant="outline">{t('settings.connectors.integrations.composio.cancel')}</Button>
-                </DialogClose>
-                {(() => {
-                  const account = getConnectedAccountForApp(detailApp);
-                  if (account) {
-                    return (
+              {(() => {
+                const account = getConnectedAccountForApp(detailApp);
+                const isCustomAuth = needsCustomAuth(detailApp);
+                const alreadyConnected = !!account;
+
+                if (alreadyConnected) {
+                  return (
+                    <div className="flex justify-end gap-3 border-t border-border px-6 py-4">
+                      <DialogClose asChild>
+                        <Button variant="outline">{t('settings.connectors.integrations.composio.cancel')}</Button>
+                      </DialogClose>
                       <Button
                         variant="outline"
-                        onClick={() => handleDisconnect(account.id)}
+                        onClick={() => handleDisconnect(account!.id)}
                         className="text-[var(--status-error)] border-[var(--status-error)]/30 hover:border-[var(--status-error)]/60"
                       >
                         {t('settings.connectors.integrations.composio.disconnect')}
                       </Button>
-                    );
-                  }
+                    </div>
+                  );
+                }
+
+                if (isCustomAuth) {
                   return (
+                    <div className="border-t border-border px-6 py-4 space-y-3">
+                      {detailApp.authScheme === 'BASIC' ? (
+                        <>
+                          <div>
+                            <label className="typography-ui-label text-xs text-muted-foreground mb-1 block">Username</label>
+                            <input
+                              type="text"
+                              value={credentialUsername}
+                              onChange={(e) => setCredentialUsername(e.target.value)}
+                              placeholder="username"
+                              className="h-8 w-full rounded-md border border-border bg-[var(--surface-muted)] px-3 text-sm text-foreground outline-none focus:border-[var(--primary-base)]/50"
+                            />
+                          </div>
+                          <div>
+                            <label className="typography-ui-label text-xs text-muted-foreground mb-1 block">Password</label>
+                            <input
+                              type="password"
+                              value={credentialPassword}
+                              onChange={(e) => setCredentialPassword(e.target.value)}
+                              placeholder="password"
+                              className="h-8 w-full rounded-md border border-border bg-[var(--surface-muted)] px-3 text-sm text-foreground outline-none focus:border-[var(--primary-base)]/50"
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <div>
+                          <label className="typography-ui-label text-xs text-muted-foreground mb-1 block">API Key</label>
+                          <input
+                            type="password"
+                            value={credentialValue}
+                            onChange={(e) => setCredentialValue(e.target.value)}
+                            placeholder={`Enter your ${detailApp.name} API key`}
+                            className="h-8 w-full rounded-md border border-border bg-[var(--surface-muted)] px-3 text-sm text-foreground outline-none focus:border-[var(--primary-base)]/50"
+                          />
+                        </div>
+                      )}
+                      <div className="flex justify-end gap-3">
+                        <DialogClose asChild>
+                          <Button variant="outline">{t('settings.connectors.integrations.composio.cancel')}</Button>
+                        </DialogClose>
+                        <Button
+                          variant="default"
+                          onClick={() => doConnectCustom(detailApp)}
+                          disabled={credentialConnecting || (detailApp.authScheme === 'BASIC' ? !credentialUsername || !credentialPassword : !credentialValue)}
+                        >
+                          {credentialConnecting
+                            ? t('settings.connectors.integrations.composio.connecting')
+                            : t('settings.connectors.integrations.composio.connect')}
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="flex justify-end gap-3 border-t border-border px-6 py-4">
+                    <DialogClose asChild>
+                      <Button variant="outline">{t('settings.connectors.integrations.composio.cancel')}</Button>
+                    </DialogClose>
                     <Button
                       variant="default"
                       onClick={() => doConnect(detailApp.id)}
@@ -328,9 +428,9 @@ export const IntegrationsTab: React.FC = () => {
                         ? t('settings.connectors.integrations.composio.connecting')
                         : t('settings.connectors.integrations.composio.connect')}
                     </Button>
-                  );
-                })()}
-              </div>
+                  </div>
+                );
+              })()}
             </>
           )}
         </DialogContent>

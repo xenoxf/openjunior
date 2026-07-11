@@ -16,6 +16,7 @@ export interface ComposioApp {
   category: string;
   tags: string[];
   authScheme: string | null;
+  authSchemes: string[];
   isManaged: boolean;
   meta: ComposioAppMeta;
 }
@@ -44,6 +45,7 @@ interface ComposioStore {
   searchApps: (query: string) => Promise<void>;
   loadConnectedAccounts: () => Promise<void>;
   connectApp: (slug: string) => Promise<{ ok: boolean; redirectUrl?: string; error?: string }>;
+  connectAppCustom: (slug: string, credentials: Record<string, string>, authScheme: string) => Promise<{ ok: boolean; error?: string }>;
   disconnectAccount: (accountId: string) => Promise<boolean>;
   setSelectedAccount: (id: string | null) => void;
 }
@@ -145,6 +147,23 @@ export const useComposioStore = create<ComposioStore>()(
             return { ok: true, redirectUrl: data.redirectUrl };
           }
           return { ok: false, error: data?.error || 'Failed to initiate connection' };
+        } catch (err) {
+          return { ok: false, error: err instanceof Error ? err.message : 'Network error' };
+        }
+      },
+
+      connectAppCustom: async (slug, credentials, authScheme) => {
+        try {
+          const response = await runtimeFetch(`/api/composio/apps/${slug}/connect-custom`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ userId: 'default', credentials, authScheme }),
+          });
+          const data = await response.json();
+          if (data?.ok) {
+            return { ok: true };
+          }
+          return { ok: false, error: data?.error || 'Failed to connect' };
         } catch (err) {
           return { ok: false, error: err instanceof Error ? err.message : 'Network error' };
         }

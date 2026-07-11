@@ -26,6 +26,7 @@ export const IntegracionesSidebar: React.FC<IntegracionesSidebarProps> = ({ onIt
   const getAppForAccount = (toolkit: string) => apps.find((a) => a.id === toolkit || a.name === toolkit);
 
   const filteredAccounts = connectedAccounts.filter((acct) => {
+    if (acct.status !== 'connected') return false;
     if (!searchInput) return true;
     const q = searchInput.toLowerCase();
     const app = getAppForAccount(acct.toolkit);
@@ -80,7 +81,7 @@ export const IntegracionesSidebar: React.FC<IntegracionesSidebarProps> = ({ onIt
         </span>
       </div>
 
-      <div className="flex-1 min-h-0">
+      <div className="flex-1 min-h-0 overflow-y-auto">
         <ScrollableOverlay className="h-full">
           {isLoadingConnections && filteredAccounts.length === 0 ? (
             <div className="px-4 py-8 text-center">

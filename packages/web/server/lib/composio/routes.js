@@ -5,6 +5,7 @@ import {
   listToolkits,
   getToolkitBySlug,
   authorizeToolkit,
+  connectWithCredentials,
   listConnectedAccounts,
   getConnectedAccount,
   deleteConnectedAccount,
@@ -185,6 +186,30 @@ export function registerComposioRoutes(app, composioApiKey, composioUserId) {
       });
     } catch (err) {
       console.error('[Composio:routes] POST /api/composio/apps/:slug/connect ERROR:', err.message);
+      res.status(500).json({ ok: false, error: err.message });
+    }
+  });
+
+  app.post('/api/composio/apps/:slug/connect-custom', express.json(), async (req, res) => {
+    console.log('[Composio:routes] POST /api/composio/apps/:slug/connect-custom', req.params.slug);
+    try {
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        return res.status(500).json({ ok: false, error: 'Composio API key not configured' });
+      }
+      const { userId, credentials, authScheme } = req.body;
+      const effectiveUserId = userId || composioUserId;
+      if (!effectiveUserId) {
+        return res.status(400).json({ ok: false, error: 'userId is required' });
+      }
+      if (!credentials) {
+        return res.status(400).json({ ok: false, error: 'credentials are required' });
+      }
+      const result = await connectWithCredentials(apiKey, effectiveUserId, req.params.slug, credentials, authScheme || 'API_KEY');
+      console.log('[Composio:routes]   -> result id:', result.id, 'status:', result.status);
+      res.json({ ok: true, connectionId: result.id, status: result.status });
+    } catch (err) {
+      console.error('[Composio:routes] POST /api/composio/apps/:slug/connect-custom ERROR:', err.message);
       res.status(500).json({ ok: false, error: err.message });
     }
   });
