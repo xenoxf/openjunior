@@ -83,14 +83,30 @@ export async function getToolkitBySlug(apiKey, slug) {
   return result;
 }
 
+function findAuthConfigForToolkit(configs, toolkitSlug) {
+  for (const c of configs) {
+    if (c.toolkit?.slug === toolkitSlug) return c;
+    if (c.name?.toLowerCase() === toolkitSlug.toLowerCase()) return c;
+  }
+  return null;
+}
+
 export async function authorizeToolkit(apiKey, userId, toolkitSlug) {
   console.log('[Composio:service] authorizeToolkit() called');
   console.log('[Composio:service]   -> userId:', userId, 'toolkitSlug:', toolkitSlug);
 
-  // 1) get auth config for the toolkit via SDK
+  // 1) Find the auth config matching the requested toolkit
   console.log('[Composio:service]   -> fetching auth configs for toolkit...');
-  const configs = await listAuthConfigs(apiKey, { toolkit: toolkitSlug });
-  const authConfigId = configs?.[0]?.id;
+  let configs = await listAuthConfigs(apiKey, { toolkit: toolkitSlug });
+  let authConfig = findAuthConfigForToolkit(configs, toolkitSlug);
+
+  if (!authConfig && configs.length > 0) {
+    console.log('[Composio:service]   -> SDK filter may have been ignored, scanning all configs...');
+    const allConfigs = await listAuthConfigs(apiKey, {});
+    authConfig = findAuthConfigForToolkit(allConfigs, toolkitSlug);
+  }
+
+  const authConfigId = authConfig?.id || null;
   console.log('[Composio:service]   -> authConfigId:', authConfigId);
 
   if (!authConfigId) {
@@ -181,11 +197,11 @@ export async function listAuthConfigs(apiKey, options = {}) {
   try {
     const client = createComposioClient(apiKey);
     const result = await client.authConfigs.list({
-      toolkit_slug: options.toolkit || undefined,
+      toolkit: options.toolkit || undefined,
     });
-    const configs = Array.isArray(result) ? result : (result?.items || []);
-    console.log('[Composio:service]   -> auth configs count:', configs.length);
-    return configs;
+    const items = result?.items || [];
+    console.log('[Composio:service]   -> auth configs count:', items.length);
+    return items;
   } catch (err) {
     console.error('[Composio:service] Failed to fetch auth configs:', err.message);
     return [];
