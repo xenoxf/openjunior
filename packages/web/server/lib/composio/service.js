@@ -91,26 +91,46 @@ function findAuthConfigForToolkit(configs, toolkitSlug) {
   return null;
 }
 
+async function resolveAuthConfigId(apiKey, toolkitSlug) {
+  let configs = await listAuthConfigs(apiKey, { toolkit: toolkitSlug });
+  let found = findAuthConfigForToolkit(configs, toolkitSlug);
+
+  if (!found && configs.length > 0) {
+    console.log('[Composio:service]   -> SDK filter may have been ignored, scanning all configs...');
+    const allConfigs = await listAuthConfigs(apiKey, {});
+    found = findAuthConfigForToolkit(allConfigs, toolkitSlug);
+  }
+
+  if (found) return found.id;
+
+  console.log('[Composio:service]   -> no existing config, creating composio-managed auth config...');
+  try {
+    const client = createComposioClient(apiKey);
+    const created = await client.authConfigs.create(toolkitSlug, {
+      type: 'use_composio_managed_auth',
+    });
+    console.log('[Composio:service]   -> created auth config:', created?.id);
+    return created?.id || null;
+  } catch (err) {
+    console.error('[Composio:service]   -> failed to create auth config:', err.message);
+    return null;
+  }
+}
+
 export async function authorizeToolkit(apiKey, userId, toolkitSlug) {
   console.log('[Composio:service] authorizeToolkit() called');
   console.log('[Composio:service]   -> userId:', userId, 'toolkitSlug:', toolkitSlug);
 
-  // 1) Find the auth config matching the requested toolkit
-  console.log('[Composio:service]   -> fetching auth configs for toolkit...');
-  let configs = await listAuthConfigs(apiKey, { toolkit: toolkitSlug });
-  let authConfig = findAuthConfigForToolkit(configs, toolkitSlug);
-
-  if (!authConfig && configs.length > 0) {
-    console.log('[Composio:service]   -> SDK filter may have been ignored, scanning all configs...');
-    const allConfigs = await listAuthConfigs(apiKey, {});
-    authConfig = findAuthConfigForToolkit(allConfigs, toolkitSlug);
-  }
-
-  const authConfigId = authConfig?.id || null;
+  // 1) Find or create an auth config for the requested toolkit
+  console.log('[Composio:service]   -> resolving auth config for toolkit...');
+  const authConfigId = await resolveAuthConfigId(apiKey, toolkitSlug);
   console.log('[Composio:service]   -> authConfigId:', authConfigId);
 
   if (!authConfigId) {
-    throw new Error(`No auth config found for toolkit "${toolkitSlug}"`);
+    throw new Error(
+      `No auth config found for toolkit "${toolkitSlug}" and could not create one automatically. `
+      + `Create it manually at https://app.composio.dev/auth-configs`
+    );
   }
 
   // 2) call v3 link endpoint directly (SDK uses /api/v3.1/connected_accounts which is deprecated for OAuth)
