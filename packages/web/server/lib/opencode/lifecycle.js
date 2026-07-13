@@ -7,13 +7,13 @@ const parsePositiveInt = (value, fallback) => {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 };
 
-const HEALTH_CHECK_TIMEOUT_MS = parsePositiveInt(process.env.OPENJUNIOR_OPENCODE_HEALTH_TIMEOUT_MS, 5000);
+const HEALTH_CHECK_TIMEOUT_MS = parsePositiveInt(process.env.GLENKER_OPENCODE_HEALTH_TIMEOUT_MS, 5000);
 const HEALTH_CHECK_MAX_CONSECUTIVE_FAILURES = parsePositiveInt(
-  process.env.OPENJUNIOR_OPENCODE_HEALTH_CONSECUTIVE_FAILURES,
+  process.env.GLENKER_OPENCODE_HEALTH_CONSECUTIVE_FAILURES,
   20
 );
-const HEALTH_CHECK_INTERVAL_OVERRIDE_MS = parsePositiveInt(process.env.OPENJUNIOR_OPENCODE_HEALTH_INTERVAL_MS, 0);
-const HEALTH_CHECK_RESULT_CACHE_MS = parsePositiveInt(process.env.OPENJUNIOR_OPENCODE_HEALTH_CACHE_MS, 750);
+const HEALTH_CHECK_INTERVAL_OVERRIDE_MS = parsePositiveInt(process.env.GLENKER_OPENCODE_HEALTH_INTERVAL_MS, 0);
+const HEALTH_CHECK_RESULT_CACHE_MS = parsePositiveInt(process.env.GLENKER_OPENCODE_HEALTH_CACHE_MS, 750);
 const OPENCODE_HEALTH_PATH = '/global/health';
 
 export const createOpenCodeLifecycleRuntime = (deps) => {
@@ -319,7 +319,7 @@ export const createOpenCodeLifecycleRuntime = (deps) => {
       const onExit = (code, signal) => {
         const reason = signal ? `signal ${signal}` : `code ${code}`;
         const appBundleHint = process.platform === 'darwin' && /\/OpenCode\.app\/Contents\/MacOS\/(?:OpenCode|opencode-cli)$/i.test(binary)
-          ? ' The configured binary appears to point at the macOS desktop app bundle; OpenJunior needs the standalone opencode CLI.'
+          ? ' The configured binary appears to point at the macOS desktop app bundle; Glenker needs the standalone opencode CLI.'
           : '';
         finish(reject, new Error(`OpenCode process exited before serving with ${reason}. Binary used: ${binary}.${appBundleHint} ${formatCapturedOutput({ stdout, stderr })}`));
       };
@@ -340,7 +340,7 @@ export const createOpenCodeLifecycleRuntime = (deps) => {
 
     // Record this child so a future run can reap it if we crash before teardown.
     // The web-server lifecycle runs in-process inside multiple hosts, so tag the
-    // actual host (Electron sets OPENJUNIOR_RUNTIME='desktop'; the standalone
+    // actual host (Electron sets GLENKER_RUNTIME='desktop'; the standalone
     // web CLI leaves it unset → 'web'; SSH remote → 'ssh-remote') rather than a
     // hardcoded label, matching the server's existing runtimeName convention.
     registerManagedProcess({
@@ -348,7 +348,7 @@ export const createOpenCodeLifecycleRuntime = (deps) => {
       ownerPid: process.pid,
       port,
       binary,
-      runtime: process.env.OPENJUNIOR_RUNTIME || 'web',
+      runtime: process.env.GLENKER_RUNTIME || 'web',
     });
 
     return {

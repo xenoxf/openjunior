@@ -16,7 +16,7 @@ const MAX_LOG_LINES_PER_INSTANCE = 1200;
 const MONITOR_INITIAL_POLL_MS = 2000;
 const MONITOR_STEADY_POLL_MS = 10000;
 const MONITOR_STABILIZE_TICKS = 5;
-const SSH_STATUS_EVENT = 'openjunior:ssh-instance-status';
+const SSH_STATUS_EVENT = 'glenker:ssh-instance-status';
 const WINDOWS_HIDDEN_SPAWN_OPTIONS = process.platform === 'win32' ? { windowsHide: true } : {};
 
 const nowMillis = () => Date.now();
@@ -286,9 +286,9 @@ const stopControlMasterBestEffort = async (parsed, controlPath) => {
 const askpassScriptContent = () => `#!/bin/bash
 PROMPT="$1"
 
-if [[ -n "$OPENJUNIOR_SSH_ASKPASS_VALUE" ]]; then
+if [[ -n "$GLENKER_SSH_ASKPASS_VALUE" ]]; then
   if [[ "$PROMPT" == *"assword"* || "$PROMPT" == *"passphrase"* ]]; then
-    printf '%s\\n' "$OPENJUNIOR_SSH_ASKPASS_VALUE"
+    printf '%s\\n' "$GLENKER_SSH_ASKPASS_VALUE"
     exit 0
   fi
 fi
@@ -391,7 +391,7 @@ const waitLocalForwardReady = async (localPort) => {
     await new Promise((resolve) => setTimeout(resolve, pollMs));
     pollMs = Math.min(pollMs * 2, 2000);
   }
-  throw new Error('Timed out waiting for forwarded OpenJunior health');
+  throw new Error('Timed out waiting for forwarded Glenker health');
 };
 
 const parseVersionToken = (raw) => {
@@ -678,14 +678,14 @@ export class ElectronSshManager {
       connectionTimeoutSec: Number.isFinite(instance?.connectionTimeoutSec) && Number(instance.connectionTimeoutSec) > 0
         ? Number(instance.connectionTimeoutSec)
         : DEFAULT_CONNECTION_TIMEOUT_SEC,
-      remoteOpenchamber: {
-        mode: instance?.remoteOpenchamber?.mode === 'external' ? 'external' : 'managed',
-        keepRunning: instance?.remoteOpenchamber?.keepRunning !== false,
-        ...(Number.isFinite(instance?.remoteOpenchamber?.preferredPort) ? { preferredPort: Number(instance.remoteOpenchamber.preferredPort) } : {}),
-        installMethod: ['npm', 'bun', 'download_release', 'upload_bundle'].includes(instance?.remoteOpenchamber?.installMethod)
-          ? instance.remoteOpenchamber.installMethod
+      remoteGlenker: {
+        mode: instance?.remoteGlenker?.mode === 'external' ? 'external' : 'managed',
+        keepRunning: instance?.remoteGlenker?.keepRunning !== false,
+        ...(Number.isFinite(instance?.remoteGlenker?.preferredPort) ? { preferredPort: Number(instance.remoteGlenker.preferredPort) } : {}),
+        installMethod: ['npm', 'bun', 'download_release', 'upload_bundle'].includes(instance?.remoteGlenker?.installMethod)
+          ? instance.remoteGlenker.installMethod
           : 'bun',
-        uploadBundleOverSsh: Boolean(instance?.remoteOpenchamber?.uploadBundleOverSsh),
+        uploadBundleOverSsh: Boolean(instance?.remoteGlenker?.uploadBundleOverSsh),
       },
       localForward: {
         bindHost: sanitizeBindHost(instance?.localForward?.bindHost),
@@ -693,7 +693,7 @@ export class ElectronSshManager {
       },
       auth: {
         ...(this.sanitizeStoredSecret(instance?.auth?.sshPassword) ? { sshPassword: this.sanitizeStoredSecret(instance.auth.sshPassword) } : {}),
-        ...(this.sanitizeStoredSecret(instance?.auth?.openjuniorPassword) ? { openjuniorPassword: this.sanitizeStoredSecret(instance.auth.openjuniorPassword) } : {}),
+        ...(this.sanitizeStoredSecret(instance?.auth?.glenkerPassword) ? { glenkerPassword: this.sanitizeStoredSecret(instance.auth.glenkerPassword) } : {}),
       },
       portForwards,
     };
@@ -769,7 +769,7 @@ export class ElectronSshManager {
         SSH_ASKPASS_REQUIRE: 'force',
         SSH_ASKPASS: askpassPath,
         DISPLAY: '1',
-        ...(sshPassword ? { OPENJUNIOR_SSH_ASKPASS_VALUE: sshPassword.trim() } : {}),
+        ...(sshPassword ? { GLENKER_SSH_ASKPASS_VALUE: sshPassword.trim() } : {}),
       },
     });
     return child;
@@ -796,8 +796,8 @@ export class ElectronSshManager {
     throw new Error('SSH ControlMaster connection timed out');
   }
 
-  configuredOpenJuniorPassword(instance) {
-    const secret = instance?.auth?.openjuniorPassword;
+  configuredGlenkerPassword(instance) {
+    const secret = instance?.auth?.glenkerPassword;
     return secret?.enabled && typeof secret.value === 'string' && secret.value.trim() ? secret.value.trim() : null;
   }
 
@@ -810,29 +810,29 @@ export class ElectronSshManager {
     }
   }
 
-  async currentRemoteOpenJuniorVersion(parsed, controlPath) {
+  async currentRemoteGlenkerVersion(parsed, controlPath) {
     try {
-      const output = await runRemoteCommand(parsed, controlPath, 'openjunior --version 2>/dev/null || true');
+      const output = await runRemoteCommand(parsed, controlPath, 'glenker --version 2>/dev/null || true');
       return parseVersionToken(output);
     } catch {
       return null;
     }
   }
 
-  async installOpenJuniorManaged(parsed, controlPath, version, preferred) {
+  async installGlenkerManaged(parsed, controlPath, version, preferred) {
     const hasBun = await this.remoteCommandExists(parsed, controlPath, 'bun');
     const hasNpm = await this.remoteCommandExists(parsed, controlPath, 'npm');
     const commands = [];
 
     if (preferred === 'bun') {
-      if (hasBun) commands.push(`bun add -g @openjunior/web@${version}`);
-      if (hasNpm) commands.push(`npm install -g @openjunior/web@${version}`);
+      if (hasBun) commands.push(`bun add -g @glenker/web@${version}`);
+      if (hasNpm) commands.push(`npm install -g @glenker/web@${version}`);
     } else if (preferred === 'npm') {
-      if (hasNpm) commands.push(`npm install -g @openjunior/web@${version}`);
-      if (hasBun) commands.push(`bun add -g @openjunior/web@${version}`);
+      if (hasNpm) commands.push(`npm install -g @glenker/web@${version}`);
+      if (hasBun) commands.push(`bun add -g @glenker/web@${version}`);
     } else {
-      if (hasBun) commands.push(`bun add -g @openjunior/web@${version}`);
-      if (hasNpm) commands.push(`npm install -g @openjunior/web@${version}`);
+      if (hasBun) commands.push(`bun add -g @glenker/web@${version}`);
+      if (hasNpm) commands.push(`npm install -g @glenker/web@${version}`);
     }
 
     if (commands.length === 0) {
@@ -848,12 +848,12 @@ export class ElectronSshManager {
         lastError = error;
       }
     }
-    throw lastError || new Error('Failed to install OpenJunior on remote host');
+    throw lastError || new Error('Failed to install Glenker on remote host');
   }
 
-  async probeRemoteSystemInfo(parsed, controlPath, port, openjuniorPassword) {
-    const authPayload = openjuniorPassword ? JSON.stringify({ password: openjuniorPassword }) : '{}';
-    const authEnabled = openjuniorPassword ? '1' : '0';
+  async probeRemoteSystemInfo(parsed, controlPath, port, glenkerPassword) {
+    const authPayload = glenkerPassword ? JSON.stringify({ password: glenkerPassword }) : '{}';
+    const authEnabled = glenkerPassword ? '1' : '0';
     const script = `AUTH_STATUS=0; INFO_STATUS=0; HEALTH_STATUS=0; BODY_FILE="$(mktemp)"; COOKIE_FILE="$(mktemp)"; cleanup(){ rm -f "$BODY_FILE" "$COOKIE_FILE"; }; trap cleanup EXIT; if command -v curl >/dev/null 2>&1; then if [ "${authEnabled}" = "1" ]; then AUTH_STATUS="$(curl -sS --max-time 3 -o /dev/null -w '%{http_code}' -c "$COOKIE_FILE" -H 'content-type: application/json' --data ${shellQuote(authPayload)} http://127.0.0.1:${port}/auth/session || true)"; if [ "$AUTH_STATUS" = "200" ]; then INFO_STATUS="$(curl -sS --max-time 3 -b "$COOKIE_FILE" -o "$BODY_FILE" -w '%{http_code}' http://127.0.0.1:${port}/api/system/info || true)"; else INFO_STATUS="$(curl -sS --max-time 3 -o "$BODY_FILE" -w '%{http_code}' http://127.0.0.1:${port}/api/system/info || true)"; fi; else INFO_STATUS="$(curl -sS --max-time 3 -o "$BODY_FILE" -w '%{http_code}' http://127.0.0.1:${port}/api/system/info || true)"; fi; HEALTH_STATUS="$(curl -sS --max-time 3 -o /dev/null -w '%{http_code}' http://127.0.0.1:${port}/health || true)"; elif command -v wget >/dev/null 2>&1; then wget -qO "$BODY_FILE" http://127.0.0.1:${port}/api/system/info >/dev/null 2>&1; if [ $? -eq 0 ]; then INFO_STATUS=200; fi; wget -qO- http://127.0.0.1:${port}/health >/dev/null 2>&1; if [ $? -eq 0 ]; then HEALTH_STATUS=200; fi; else exit 127; fi; printf 'INFO_STATUS=%s\\nAUTH_STATUS=%s\\nHEALTH_STATUS=%s\\n' "$INFO_STATUS" "$AUTH_STATUS" "$HEALTH_STATUS"; cat "$BODY_FILE" 2>/dev/null || true`;
     const output = await runRemoteCommand(parsed, controlPath, script);
     const lines = output.split(/\r?\n/);
@@ -864,16 +864,16 @@ export class ElectronSshManager {
 
     if (isLivenessHttpStatus(infoStatus)) {
       if (isAuthHttpStatus(infoStatus)) {
-        if (openjuniorPassword && authStatus !== 200) {
-          throw new Error(`Remote OpenJunior requires UI authentication and configured password was rejected (auth status ${authStatus})`);
+        if (glenkerPassword && authStatus !== 200) {
+          throw new Error(`Remote Glenker requires UI authentication and configured password was rejected (auth status ${authStatus})`);
         }
         if (isLivenessHttpStatus(healthStatus)) return {};
-        throw new Error('Remote OpenJunior requires UI authentication on /api/system/info; configure OpenJunior UI password');
+        throw new Error('Remote Glenker requires UI authentication on /api/system/info; configure Glenker UI password');
       }
     } else if (isLivenessHttpStatus(healthStatus)) {
       return {};
     } else {
-      throw new Error(`Remote OpenJunior probe failed (info status ${infoStatus}, health status ${healthStatus})`);
+      throw new Error(`Remote Glenker probe failed (info status ${infoStatus}, health status ${healthStatus})`);
     }
 
     try {
@@ -883,9 +883,9 @@ export class ElectronSshManager {
     }
   }
 
-  async remoteServerRunning(parsed, controlPath, port, openjuniorPassword) {
+  async remoteServerRunning(parsed, controlPath, port, glenkerPassword) {
     try {
-      await this.probeRemoteSystemInfo(parsed, controlPath, port, openjuniorPassword);
+      await this.probeRemoteSystemInfo(parsed, controlPath, port, glenkerPassword);
       return true;
     } catch {
       return false;
@@ -893,12 +893,12 @@ export class ElectronSshManager {
   }
 
   async startRemoteServerManaged(parsed, controlPath, instance, desiredPort) {
-    let envPrefix = 'OPENJUNIOR_RUNTIME=ssh-remote';
-    const secret = this.configuredOpenJuniorPassword(instance);
+    let envPrefix = 'GLENKER_RUNTIME=ssh-remote';
+    const secret = this.configuredGlenkerPassword(instance);
     if (secret) {
-      envPrefix += ` OPENJUNIOR_UI_PASSWORD=${shellQuote(secret)}`;
+      envPrefix += ` GLENKER_UI_PASSWORD=${shellQuote(secret)}`;
     }
-    const output = await runRemoteCommand(parsed, controlPath, `${envPrefix} openjunior serve --hostname 127.0.0.1 --port ${desiredPort}`);
+    const output = await runRemoteCommand(parsed, controlPath, `${envPrefix} glenker serve --hostname 127.0.0.1 --port ${desiredPort}`);
     const port = output.split(/\s+/).map((token) => Number.parseInt(token, 10)).find((value) => Number.isFinite(value));
     return port || desiredPort;
   }
@@ -946,40 +946,40 @@ export class ElectronSshManager {
   }
 
   async ensureRemoteServer(instance, parsed, controlPath) {
-    if (instance.remoteOpenchamber.mode === 'external') {
-      if (!instance.remoteOpenchamber.preferredPort) {
-        throw new Error('External mode requires a preferred remote OpenJunior port');
+    if (instance.remoteGlenker.mode === 'external') {
+      if (!instance.remoteGlenker.preferredPort) {
+        throw new Error('External mode requires a preferred remote Glenker port');
       }
-      const port = instance.remoteOpenchamber.preferredPort;
-      this.setStatus(instance.id, 'server_detecting', 'Probing external OpenJunior server', null, null, port, false, 0, false);
-      await this.probeRemoteSystemInfo(parsed, controlPath, port, this.configuredOpenJuniorPassword(instance));
+      const port = instance.remoteGlenker.preferredPort;
+      this.setStatus(instance.id, 'server_detecting', 'Probing external Glenker server', null, null, port, false, 0, false);
+      await this.probeRemoteSystemInfo(parsed, controlPath, port, this.configuredGlenkerPassword(instance));
       return { remotePort: port, startedByUs: false };
     }
 
-    this.setStatus(instance.id, 'remote_probe', 'Checking remote OpenJunior installation');
-    const installedVersion = await this.currentRemoteOpenJuniorVersion(parsed, controlPath);
+    this.setStatus(instance.id, 'remote_probe', 'Checking remote Glenker installation');
+    const installedVersion = await this.currentRemoteGlenkerVersion(parsed, controlPath);
     if (!installedVersion) {
-      this.setStatus(instance.id, 'installing', 'Installing OpenJunior on remote host');
-      await this.installOpenJuniorManaged(parsed, controlPath, this.appVersion, instance.remoteOpenchamber.installMethod);
+      this.setStatus(instance.id, 'installing', 'Installing Glenker on remote host');
+      await this.installGlenkerManaged(parsed, controlPath, this.appVersion, instance.remoteGlenker.installMethod);
     } else if (installedVersion !== this.appVersion) {
-      this.setStatus(instance.id, 'updating', `Updating remote OpenJunior from ${installedVersion} to ${this.appVersion}`);
-      await this.installOpenJuniorManaged(parsed, controlPath, this.appVersion, instance.remoteOpenchamber.installMethod);
+      this.setStatus(instance.id, 'updating', `Updating remote Glenker from ${installedVersion} to ${this.appVersion}`);
+      await this.installGlenkerManaged(parsed, controlPath, this.appVersion, instance.remoteGlenker.installMethod);
     }
 
-    this.setStatus(instance.id, 'server_detecting', 'Detecting managed OpenJunior server');
-    let remotePort = instance.remoteOpenchamber.preferredPort || null;
+    this.setStatus(instance.id, 'server_detecting', 'Detecting managed Glenker server');
+    let remotePort = instance.remoteGlenker.preferredPort || null;
     let startedByUs = false;
-    if (remotePort && !(await this.remoteServerRunning(parsed, controlPath, remotePort, this.configuredOpenJuniorPassword(instance)))) {
+    if (remotePort && !(await this.remoteServerRunning(parsed, controlPath, remotePort, this.configuredGlenkerPassword(instance)))) {
       remotePort = null;
     }
     if (!remotePort) {
-      this.setStatus(instance.id, 'server_starting', 'Starting managed OpenJunior server');
-      const desiredPort = instance.remoteOpenchamber.preferredPort || randomPortCandidate(instance.id);
+      this.setStatus(instance.id, 'server_starting', 'Starting managed Glenker server');
+      const desiredPort = instance.remoteGlenker.preferredPort || randomPortCandidate(instance.id);
       remotePort = await this.startRemoteServerManaged(parsed, controlPath, instance, desiredPort);
       startedByUs = true;
     }
-    if (!(await this.remoteServerRunning(parsed, controlPath, remotePort, this.configuredOpenJuniorPassword(instance)))) {
-      throw new Error('Managed OpenJunior server failed to become reachable');
+    if (!(await this.remoteServerRunning(parsed, controlPath, remotePort, this.configuredGlenkerPassword(instance)))) {
+      throw new Error('Managed Glenker server failed to become reachable');
     }
     return { remotePort, startedByUs };
   }
@@ -995,7 +995,7 @@ export class ElectronSshManager {
     this.sessions.delete(id);
 
     if (session) {
-      if (session.startedByUs && session.instance.remoteOpenchamber.mode === 'managed' && !session.instance.remoteOpenchamber.keepRunning) {
+      if (session.startedByUs && session.instance.remoteGlenker.mode === 'managed' && !session.instance.remoteGlenker.keepRunning) {
         await this.stopRemoteServerBestEffort(session.parsed, session.controlPath, session.remotePort);
       }
       await stopControlMasterBestEffort(session.parsed, session.controlPath);

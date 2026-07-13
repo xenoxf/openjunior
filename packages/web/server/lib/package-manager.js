@@ -8,24 +8,24 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PACKAGE_NAME = '@openjunior/web';
+const PACKAGE_NAME = '@glenker/web';
 const PACKAGE_PATH_SEGMENTS = PACKAGE_NAME.split('/');
 const NPM_REGISTRY_URL = `https://registry.npmjs.org/${PACKAGE_NAME}`;
-const CHANGELOG_URL = 'https://raw.githubusercontent.com/btriapitsyn/openjunior/main/CHANGELOG.md';
+const CHANGELOG_URL = 'https://raw.githubusercontent.com/btriapitsyn/glenker/main/CHANGELOG.md';
 let cachedDetectedPm = null;
 
 function getSpawnSyncBaseOptions() {
   return process.platform === 'win32' ? { windowsHide: true } : {};
 }
-const UPDATE_CHECK_URL = process.env.OPENJUNIOR_UPDATE_API_URL || 'https://api.openjunior.dev/v1/update/check';
+const UPDATE_CHECK_URL = process.env.GLENKER_UPDATE_API_URL || 'https://api.glenker.dev/v1/update/check';
 
-function getOpenJuniorConfigDir() {
+function getGlenkerConfigDir() {
   if (process.platform === 'win32') {
     const appData = process.env.APPDATA;
-    if (appData) return path.join(appData, 'openjunior');
+    if (appData) return path.join(appData, 'glenker');
   }
 
-  return path.join(os.homedir(), '.config', 'openjunior');
+  return path.join(os.homedir(), '.config', 'glenker');
 }
 
 function sanitizeInstallScope(scope) {
@@ -34,7 +34,7 @@ function sanitizeInstallScope(scope) {
 }
 
 function getOrCreateInstallId(scope = 'web') {
-  const configDir = getOpenJuniorConfigDir();
+  const configDir = getGlenkerConfigDir();
   const normalizedScope = sanitizeInstallScope(scope);
   const idPath = path.join(configDir, `install-id-${normalizedScope}`);
 
@@ -294,7 +294,7 @@ function getGlobalNodeModulesRoots(pm) {
 function getOwnedPackagePathsFromGlobalBins(pm) {
   const packagePaths = [];
   for (const binDir of getGlobalBinDirs(pm)) {
-    const binaryName = process.platform === 'win32' ? 'openjunior.cmd' : 'openjunior';
+    const binaryName = process.platform === 'win32' ? 'glenker.cmd' : 'glenker';
     const binaryPath = path.join(binDir, binaryName);
     if (!fs.existsSync(binaryPath)) continue;
 
@@ -336,7 +336,7 @@ export function detectPackageManagerDetails() {
   // dozen spawnSync(pm, ['bin', '-g']) calls with 10s timeouts each; under
   // the in-process server every one blocks the Electron main event loop and
   // manifests as a multi-second UI freeze. Short-circuit here.
-  if (process.env.OPENJUNIOR_RUNTIME === 'desktop') {
+  if (process.env.GLENKER_RUNTIME === 'desktop') {
     return {
       packageManager: 'electron',
       reason: 'desktop-runtime',
@@ -356,7 +356,7 @@ export function detectPackageManagerDetails() {
       };
   }
 
-  const forcedPm = process.env.OPENJUNIOR_PACKAGE_MANAGER?.trim();
+  const forcedPm = process.env.GLENKER_PACKAGE_MANAGER?.trim();
   if (forcedPm && ['npm', 'pnpm', 'yarn', 'bun'].includes(forcedPm)) {
     const forcedPmCommand = resolvePackageManagerCommand(forcedPm);
     if (isCommandAvailable(forcedPmCommand)) {
@@ -595,7 +595,7 @@ function isPackageInstalledWith(pm) {
     });
 
     if (result.status !== 0) return false;
-    return result.stdout.includes(PACKAGE_NAME) || result.stdout.includes('openjunior');
+    return result.stdout.includes(PACKAGE_NAME) || result.stdout.includes('glenker');
   } catch {
     return false;
   }
@@ -734,7 +734,7 @@ export async function checkForUpdates(options = {}) {
       return {
         ...remote,
         packageManager: pm,
-        updateCommand: 'openjunior update',
+        updateCommand: 'glenker update',
       };
     }
   }
@@ -762,7 +762,7 @@ export async function checkForUpdates(options = {}) {
     body: changelog,
     packageManager: pm,
     // Show our CLI command, not raw package manager command
-    updateCommand: 'openjunior update',
+    updateCommand: 'glenker update',
   };
 }
 

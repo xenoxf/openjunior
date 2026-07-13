@@ -18,13 +18,13 @@ import { readAuthFile } from '../../../opencode/auth.js';
 import { parseGoogleRefreshToken } from './transforms.js';
 
 const ANTIGRAVITY_GOOGLE_CLIENT_ID =
-  process.env.OPENCHAMBER_GOOGLE_ANTIGRAVITY_CLIENT_ID ?? '';
+  process.env.GLENKER_GOOGLE_ANTIGRAVITY_CLIENT_ID ?? '';
 const ANTIGRAVITY_GOOGLE_CLIENT_SECRET =
-  process.env.OPENCHAMBER_GOOGLE_ANTIGRAVITY_CLIENT_SECRET ?? '';
+  process.env.GLENKER_GOOGLE_ANTIGRAVITY_CLIENT_SECRET ?? '';
 const GEMINI_GOOGLE_CLIENT_ID =
-  process.env.OPENCHAMBER_GOOGLE_GEMINI_CLIENT_ID ?? '';
+  process.env.GLENKER_GOOGLE_GEMINI_CLIENT_ID ?? '';
 const GEMINI_GOOGLE_CLIENT_SECRET =
-  process.env.OPENCHAMBER_GOOGLE_GEMINI_CLIENT_SECRET ?? '';
+  process.env.GLENKER_GOOGLE_GEMINI_CLIENT_SECRET ?? '';
 export const DEFAULT_PROJECT_ID = 'rising-fact-p41fc';
 
 export const resolveGoogleOAuthClient = (sourceId) => {

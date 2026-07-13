@@ -1,5 +1,5 @@
-import type { SettingsAPI, SettingsLoadResult, SettingsPayload } from '@openjunior/ui/lib/api/types';
-import { runtimeFetch } from '@openjunior/ui/lib/runtime-fetch';
+import type { SettingsAPI, SettingsLoadResult, SettingsPayload } from '@glenker/ui/lib/api/types';
+import { runtimeFetch } from '@glenker/ui/lib/runtime-fetch';
 
 const SETTINGS_ENDPOINT = '/api/config/settings';
 const RELOAD_ENDPOINT = '/api/config/reload';

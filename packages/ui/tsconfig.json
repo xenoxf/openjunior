@@ -16,7 +16,7 @@
     "baseUrl": "./src",
     "paths": {
       "@/*": ["./*"],
-      "@openjunior/ui/*": ["./*"]
+      "@glenker/ui/*": ["./*"]
     }
   },
   "include": ["src"]

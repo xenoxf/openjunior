@@ -17,7 +17,7 @@ let activeSessionTitle: string | null = null;
 
 const t = vscode.l10n.t;
 
-const SETTINGS_KEY = 'openjunior.settings';
+const SETTINGS_KEY = 'glenker.settings';
 const CHAT_VIEW_BOOTSTRAP_DELAY_MS = 80;
 
 const waitForChatViewBootstrap = () => new Promise<void>((resolve) => setTimeout(resolve, CHAT_VIEW_BOOTSTRAP_DELAY_MS));
@@ -38,7 +38,7 @@ const formatDurationMs = (value: number | null | undefined) => {
 };
 
 export async function activate(context: vscode.ExtensionContext) {
-  outputChannel = vscode.window.createOutputChannel('OpenJunior');
+  outputChannel = vscode.window.createOutputChannel('Glenker');
 
   let moveToRightSidebarScheduled = false;
 
@@ -80,12 +80,12 @@ export async function activate(context: vscode.ExtensionContext) {
     if (!moveCommandId) return 'unsupported';
 
     try {
-      await vscode.commands.executeCommand('openjunior.chatView.focus');
+      await vscode.commands.executeCommand('glenker.chatView.focus');
       await vscode.commands.executeCommand(moveCommandId);
       return 'moved';
     } catch (error) {
       outputChannel?.appendLine(
-        `[OpenJunior] Failed moving chat view to right sidebar (command=${moveCommandId}): ${error instanceof Error ? error.message : String(error)}`
+        `[Glenker] Failed moving chat view to right sidebar (command=${moveCommandId}): ${error instanceof Error ? error.message : String(error)}`
       );
       return 'failed';
     }
@@ -94,9 +94,9 @@ export async function activate(context: vscode.ExtensionContext) {
   const maybeMoveChatToRightSidebarOnStartup = async () => {
     if (isCursorLikeHost()) return;
 
-    const attempted = context.globalState.get<boolean>('openjunior.sidebarAutoMoveAttempted') || false;
+    const attempted = context.globalState.get<boolean>('glenker.sidebarAutoMoveAttempted') || false;
     if (attempted) return;
-    await context.globalState.update('openjunior.sidebarAutoMoveAttempted', true);
+    await context.globalState.update('glenker.sidebarAutoMoveAttempted', true);
 
     if (moveToRightSidebarScheduled) return;
     moveToRightSidebarScheduled = true;
@@ -115,7 +115,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
   // Migration: clear legacy auto-set API URLs (ports 47680-47689 were auto-assigned by older extension versions)
-  const config = vscode.workspace.getConfiguration('openjunior');
+  const config = vscode.workspace.getConfiguration('glenker');
   const legacyApiUrl = config.get<string>('apiUrl') || '';
   if (/^https?:\/\/localhost:4768\d\/?$/.test(legacyApiUrl.trim())) {
     await config.update('apiUrl', '', vscode.ConfigurationTarget.Global);
@@ -138,25 +138,25 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Register sidebar/focus commands AFTER the webview view provider is registered
   context.subscriptions.push(
-    vscode.commands.registerCommand('openjunior.openSidebar', async () => {
+    vscode.commands.registerCommand('glenker.openSidebar', async () => {
       // Best-effort: open the container (if available), then focus the chat view.
       try {
-        await vscode.commands.executeCommand('workbench.view.extension.openjunior');
+        await vscode.commands.executeCommand('workbench.view.extension.glenker');
       } catch (e) {
-        outputChannel?.appendLine(`[OpenJunior] workbench.view.extension.openjunior failed: ${e}`);
+        outputChannel?.appendLine(`[Glenker] workbench.view.extension.glenker failed: ${e}`);
       }
 
       try {
-        await vscode.commands.executeCommand('openjunior.chatView.focus');
+        await vscode.commands.executeCommand('glenker.chatView.focus');
       } catch (e) {
-        outputChannel?.appendLine(`[OpenJunior] openjunior.chatView.focus failed: ${e}`);
-        vscode.window.showErrorMessage(t('OpenJunior: Failed to open sidebar - {0}', String(e)));
+        outputChannel?.appendLine(`[Glenker] glenker.chatView.focus failed: ${e}`);
+        vscode.window.showErrorMessage(t('Glenker: Failed to open sidebar - {0}', String(e)));
         return false;
       }
 
       if (!chatViewProvider?.hasResolvedView()) {
-        outputChannel?.appendLine('[OpenJunior] Chat sidebar focus completed before the webview was resolved');
-        vscode.window.showWarningMessage(t('OpenJunior: Chat sidebar is not ready'));
+        outputChannel?.appendLine('[Glenker] Chat sidebar focus completed before the webview was resolved');
+        vscode.window.showWarningMessage(t('Glenker: Chat sidebar is not ready'));
         return false;
       }
 
@@ -165,15 +165,15 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   const revealChatViewForPayload = async () => {
-    const opened = await vscode.commands.executeCommand<boolean>('openjunior.openSidebar');
+    const opened = await vscode.commands.executeCommand<boolean>('glenker.openSidebar');
     if (!opened) {
       return false;
     }
 
     await waitForChatViewBootstrap();
     if (!chatViewProvider?.hasResolvedView()) {
-      outputChannel?.appendLine('[OpenJunior] Chat sidebar webview was disposed before payload delivery');
-      vscode.window.showWarningMessage(t('OpenJunior: Chat sidebar is not ready'));
+      outputChannel?.appendLine('[Glenker] Chat sidebar webview was disposed before payload delivery');
+      vscode.window.showWarningMessage(t('Glenker: Chat sidebar is not ready'));
       return false;
     }
 
@@ -181,8 +181,8 @@ export async function activate(context: vscode.ExtensionContext) {
   };
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('openjunior.focusChat', async () => {
-      await vscode.commands.executeCommand('openjunior.chatView.focus');
+    vscode.commands.registerCommand('glenker.focusChat', async () => {
+      await vscode.commands.executeCommand('glenker.chatView.focus');
     })
   );
 
@@ -193,7 +193,7 @@ export async function activate(context: vscode.ExtensionContext) {
   sessionEditorProvider = new SessionEditorPanelProvider(context, context.extensionUri, openCodeManager);
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('openjunior.internal.settingsSynced', (settings: unknown) => {
+    vscode.commands.registerCommand('glenker.internal.settingsSynced', (settings: unknown) => {
       chatViewProvider?.notifySettingsSynced(settings);
       sessionEditorProvider?.notifySettingsSynced(settings);
       agentManagerProvider?.notifySettingsSynced(settings);
@@ -209,13 +209,13 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('openjunior.openAgentManager', () => {
+    vscode.commands.registerCommand('glenker.openAgentManager', () => {
       agentManagerProvider?.createOrShow();
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('openjunior.setActiveSession', (sessionId: unknown, title?: unknown) => {
+    vscode.commands.registerCommand('glenker.setActiveSession', (sessionId: unknown, title?: unknown) => {
       if (typeof sessionId === 'string' && sessionId.trim().length > 0) {
         activeSessionId = sessionId.trim();
         activeSessionTitle = typeof title === 'string' && title.trim().length > 0 ? title.trim() : null;
@@ -228,9 +228,9 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('openjunior.openActiveSessionInEditor', () => {
+    vscode.commands.registerCommand('glenker.openActiveSessionInEditor', () => {
       if (!activeSessionId) {
-        vscode.window.showInformationMessage(t('OpenJunior: No active session'));
+        vscode.window.showInformationMessage(t('Glenker: No active session'));
         return;
       }
       sessionEditorProvider?.createOrShow(activeSessionId, activeSessionTitle ?? undefined);
@@ -238,7 +238,7 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('openjunior.openSessionInEditor', (sessionId: string, title?: string) => {
+    vscode.commands.registerCommand('glenker.openSessionInEditor', (sessionId: string, title?: string) => {
       if (typeof sessionId !== 'string' || sessionId.trim().length === 0) {
         return;
       }
@@ -247,13 +247,13 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('openjunior.openNewSessionInEditor', () => {
+    vscode.commands.registerCommand('glenker.openNewSessionInEditor', () => {
       sessionEditorProvider?.createOrShowNewSession();
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('openjunior.openCurrentOrNewSessionInEditor', () => {
+    vscode.commands.registerCommand('glenker.openCurrentOrNewSessionInEditor', () => {
       if (activeSessionId) {
         sessionEditorProvider?.createOrShow(activeSessionId, activeSessionTitle ?? undefined);
       } else {
@@ -263,7 +263,7 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('openjunior.restartApi', async () => {
+    vscode.commands.registerCommand('glenker.restartApi', async () => {
       try {
         // Prefer the full in-app reload flow (overlay + managed restart via the
         // bridge + config/data refresh) driven by the webview — same as after an
@@ -273,18 +273,18 @@ export async function activate(context: vscode.ExtensionContext) {
           return;
         }
         await openCodeManager?.restart();
-        vscode.window.showInformationMessage(t('OpenJunior: API connection restarted'));
+        vscode.window.showInformationMessage(t('Glenker: API connection restarted'));
       } catch (e) {
-        vscode.window.showErrorMessage(t('OpenJunior: Failed to restart API - {0}', String(e)));
+        vscode.window.showErrorMessage(t('Glenker: Failed to restart API - {0}', String(e)));
       }
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('openjunior.addToContext', async () => {
+    vscode.commands.registerCommand('glenker.addToContext', async () => {
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
-        vscode.window.showWarningMessage(t('OpenJunior [Add to Context]: No active editor'));
+        vscode.window.showWarningMessage(t('Glenker [Add to Context]: No active editor'));
         return;
       }
 
@@ -292,7 +292,7 @@ export async function activate(context: vscode.ExtensionContext) {
       const selectedText = editor.document.getText(selection);
 
       if (!selectedText) {
-        vscode.window.showWarningMessage(t('OpenJunior [Add to Context]: No text selected'));
+        vscode.window.showWarningMessage(t('Glenker [Add to Context]: No text selected'));
         return;
       }
 
@@ -320,7 +320,7 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('openjunior.attachExplorerToChat', async (resource?: vscode.Uri, resources?: vscode.Uri[]) => {
+    vscode.commands.registerCommand('glenker.attachExplorerToChat', async (resource?: vscode.Uri, resources?: vscode.Uri[]) => {
       const uriCandidates: vscode.Uri[] = [];
       if (Array.isArray(resources)) {
         uriCandidates.push(...resources.filter((entry): entry is vscode.Uri => entry instanceof vscode.Uri));
@@ -373,7 +373,7 @@ export async function activate(context: vscode.ExtensionContext) {
       }
 
       if (attachedFiles.length === 0) {
-        vscode.window.showWarningMessage(t('OpenJunior: No file selected to mention'));
+        vscode.window.showWarningMessage(t('Glenker: No file selected to mention'));
         return;
       }
 
@@ -385,16 +385,16 @@ export async function activate(context: vscode.ExtensionContext) {
       }
 
       if (skippedEntries.length > 0) {
-        vscode.window.showInformationMessage(t('OpenJunior: Some selected entries were skipped (folders or unsupported resources)'));
+        vscode.window.showInformationMessage(t('Glenker: Some selected entries were skipped (folders or unsupported resources)'));
       }
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('openjunior.explain', async () => {
+    vscode.commands.registerCommand('glenker.explain', async () => {
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
-        vscode.window.showWarningMessage(t('OpenJunior [Explain]: No active editor'));
+        vscode.window.showWarningMessage(t('Glenker [Explain]: No active editor'));
         return;
       }
 
@@ -426,10 +426,10 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('openjunior.improveCode', async () => {
+    vscode.commands.registerCommand('glenker.improveCode', async () => {
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
-        vscode.window.showWarningMessage(t('OpenJunior [Improve Code]: No active editor'));
+        vscode.window.showWarningMessage(t('Glenker [Improve Code]: No active editor'));
         return;
       }
 
@@ -437,7 +437,7 @@ export async function activate(context: vscode.ExtensionContext) {
       const selectedText = editor.document.getText(selection);
 
       if (!selectedText) {
-        vscode.window.showWarningMessage(t('OpenJunior [Improve Code]: No text selected'));
+        vscode.window.showWarningMessage(t('Glenker [Improve Code]: No text selected'));
         return;
       }
 
@@ -459,12 +459,12 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('openjunior.newSession', async (directory?: unknown) => {
+    vscode.commands.registerCommand('glenker.newSession', async (directory?: unknown) => {
       const candidates = resolveWorkspaceFolders(vscode.workspace.workspaceFolders ?? []);
       let folderPath: string | undefined = typeof directory === 'string' ? directory : undefined;
 
       if (!folderPath && candidates.length === 0) {
-        vscode.window.showInformationMessage('OpenJunior: No folder is open. Open a folder to start a new session.');
+        vscode.window.showInformationMessage('Glenker: No folder is open. Open a folder to start a new session.');
         return;
       }
 
@@ -484,7 +484,7 @@ export async function activate(context: vscode.ExtensionContext) {
       if (openCodeManager) {
         const result = await openCodeManager.setWorkingDirectory(folderPath);
         if (!result.success) {
-          vscode.window.showErrorMessage(`OpenJunior: ${result.error}`);
+          vscode.window.showErrorMessage(`Glenker: ${result.error}`);
           return;
         }
       }
@@ -508,14 +508,14 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('openjunior.showSettings', () => {
+    vscode.commands.registerCommand('glenker.showSettings', () => {
       chatViewProvider?.showSettings();
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand('openjunior.showOpenCodeStatus', async () => {
-      const config = vscode.workspace.getConfiguration('openjunior');
+    vscode.commands.registerCommand('glenker.showOpenCodeStatus', async () => {
+      const config = vscode.workspace.getConfiguration('glenker');
       const configuredApiUrl = (config.get<string>('apiUrl') || '').trim();
 
       const extensionVersion = String(context.extension?.packageJSON?.version || '');
@@ -624,7 +624,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
       const lines = [
         `Time: ${new Date().toISOString()}`,
-        `OpenJunior version: ${extensionVersion || '(unknown)'}`,
+        `Glenker version: ${extensionVersion || '(unknown)'}`,
         `OpenCode Version: ${debug?.version ?? '(unknown)'}`,
         `VS Code version: ${vscode.version}`,
         `Platform: ${process.platform} ${process.arch}`,
@@ -633,7 +633,7 @@ export async function activate(context: vscode.ExtensionContext) {
         `Working directory: ${workingDirectory}`,
         `Working dir matches workspace: ${workingDirectoryMatchesWorkspace ? 'yes' : 'no'}`,
         `API URL (configured): ${configuredApiUrl || '(none)'}`,
-        `OpenCode binary (configured): ${(vscode.workspace.getConfiguration('openjunior').get<string>('opencodeBinary') || '').trim() || '(none)'}`,
+        `OpenCode binary (configured): ${(vscode.workspace.getConfiguration('glenker').get<string>('opencodeBinary') || '').trim() || '(none)'}`,
         `API URL (resolved): ${openCodeManager?.getApiUrl() ?? '(none)'}`,
         `API URL path: ${resolvedApiPath || '(none)'}`,
         debug

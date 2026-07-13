@@ -59,7 +59,7 @@ export function showComposioHelp() {
  Composio Integration Manager
 
  USAGE:
-   openjunior composio <SUBCOMMAND> [OPTIONS]
+   glenker composio <SUBCOMMAND> [OPTIONS]
 
  SUBCOMMANDS:
    list          List available apps/integrations
@@ -75,14 +75,14 @@ export function showComposioHelp() {
  SETTINGS:
     API key is read from:
       1. COMPOSIO_API_KEY env var (or .env file in project root)
-      2. ~/.config/openjunior/settings.json (composioApiKey)
+      2. ~/.config/glenker/settings.json (composioApiKey)
     User ID is read from COMPOSIO_USER_ID env var (default: "default").
 
  EXAMPLES:
-   openjunior composio list
-   openjunior composio list --json
-   openjunior composio connect github
-   openjunior composio status
+   glenker composio list
+   glenker composio list --json
+   glenker composio connect github
+   glenker composio status
 `;
   console.log(help);
 }
@@ -100,7 +100,7 @@ async function handleList(options) {
     } catch {
       console.error('[Composio:CLI] @composio/core not found');
       if (shouldRenderHumanOutput(options)) {
-        logStatus('error', '@composio/core not found. Run the OpenJunior web server first.');
+        logStatus('error', '@composio/core not found. Run the Glenker web server first.');
       }
       if (isJsonMode(options)) {
         printJson({ status: 'error', error: '@composio/core not found' });
@@ -184,7 +184,7 @@ async function handleConnect(options) {
     options._toolkitSlug = toolkitSlug;
   } else {
     if (shouldRenderHumanOutput(options)) {
-      logStatus('error', 'App slug is required. Usage: openjunior composio connect <app>');
+      logStatus('error', 'App slug is required. Usage: glenker composio connect <app>');
     }
     if (isJsonMode(options)) {
       printJson({ status: 'error', error: 'App slug required' });
@@ -207,7 +207,7 @@ async function handleConnect(options) {
     } catch {
       console.error('[Composio:CLI] @composio/core not found');
       if (shouldRenderHumanOutput(options)) {
-        logStatus('error', '@composio/core not found. Run the OpenJunior web server first.');
+        logStatus('error', '@composio/core not found. Run the Glenker web server first.');
       }
       return;
     }
@@ -269,7 +269,7 @@ async function handleStatus(options) {
     } catch {
       console.error('[Composio:CLI] @composio/core not found');
       if (shouldRenderHumanOutput(options)) {
-        logStatus('error', '@composio/core not found. Run the OpenJunior web server first.');
+        logStatus('error', '@composio/core not found. Run the Glenker web server first.');
       }
       return;
     }

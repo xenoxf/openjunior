@@ -23,7 +23,7 @@ const sessionState = {
   availableWorktrees: [] as WorktreeMetadata[],
 };
 
-mock.module('@/lib/openjuniorConfig', () => ({
+mock.module('@/lib/glenkerConfig', () => ({
   substituteCommandVariables: (command: string) => command,
 }));
 

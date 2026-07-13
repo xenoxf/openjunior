@@ -35,7 +35,7 @@ const normalizeBaseUrl = (value: string | null | undefined): string => {
 
 const readInjectedApiBaseUrl = (): string => {
   if (typeof window === 'undefined') return '';
-  const injected = (window as typeof window & { __OPENJUNIOR_API_BASE_URL__?: string }).__OPENJUNIOR_API_BASE_URL__;
+  const injected = (window as typeof window & { __GLENKER_API_BASE_URL__?: string }).__GLENKER_API_BASE_URL__;
   return normalizeBaseUrl(injected);
 };
 

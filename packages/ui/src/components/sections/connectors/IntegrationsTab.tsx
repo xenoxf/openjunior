@@ -5,6 +5,8 @@ import { cn } from '@/lib/utils';
 import { Icon } from '@/components/icon/Icon';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { useComposioConnect } from '@/hooks/useComposioConnect';
+import { toast } from '@/components/ui';
 
 function getInitials(name: string): string {
   return name.split(/[\s_-]+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
@@ -21,21 +23,26 @@ export const IntegrationsTab: React.FC = () => {
   const loadApps = useComposioStore((s) => s.loadApps);
   const loadMoreApps = useComposioStore((s) => s.loadMoreApps);
   const searchApps = useComposioStore((s) => s.searchApps);
-  const connectApp = useComposioStore((s) => s.connectApp);
   const connectAppCustom = useComposioStore((s) => s.connectAppCustom);
   const disconnectAccount = useComposioStore((s) => s.disconnectAccount);
 
+  const {
+    connectingSlug,
+    connectedApp,
+    showSuccessModal,
+    pendingCustomAuth,
+    setShowSuccessModal,
+    setConnectedApp,
+    clearCustomAuth,
+    startConnect,
+  } = useComposioConnect();
+
   const sentinelRef = React.useRef<HTMLDivElement>(null);
   const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-  const oauthWindowRef = React.useRef<Window | null>(null);
-  const oauthCheckIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
 
   const [searchInput, setSearchInput] = React.useState('');
-  const [connectingSlug, setConnectingSlug] = React.useState<string | null>(null);
   const [detailApp, setDetailApp] = React.useState<ComposioApp | null>(null);
   const [detailOpen, setDetailOpen] = React.useState(false);
-  const [connectedApp, setConnectedApp] = React.useState<ComposioApp | null>(null);
-  const [showSuccessModal, setShowSuccessModal] = React.useState(false);
   const [credentialFields, setCredentialFields] = React.useState<ComposioAuthField[]>([]);
   const [credentialValues, setCredentialValues] = React.useState<Record<string, string>>({});
   const [isLoadingFields, setIsLoadingFields] = React.useState(false);
@@ -59,13 +66,6 @@ export const IntegrationsTab: React.FC = () => {
     observer.observe(sentinel);
     return () => observer.disconnect();
   }, [hasMore, isLoadingMore, isLoadingApps, loadMoreApps]);
-
-  React.useEffect(() => {
-    return () => {
-      if (oauthCheckIntervalRef.current) clearInterval(oauthCheckIntervalRef.current);
-      if (oauthWindowRef.current && !oauthWindowRef.current.closed) oauthWindowRef.current.close();
-    };
-  }, []);
 
   const handleSearchInput = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,71 +115,87 @@ export const IntegrationsTab: React.FC = () => {
     setCredentialConnecting(true);
     try {
       const result = await connectAppCustom(app.id, credentialValues, app.authScheme || 'API_KEY');
-      if (result.ok) {
+      if (result.ok && result.redirectUrl && result.connectionId) {
+        setCredentialFields([]);
+        setCredentialValues({});
+        setDetailOpen(false);
+        // Open OAuth popup with the redirectUrl from the custom auth config
+        const left = Math.max(0, Math.round((window.screen.width - 600) / 2));
+        const top = Math.max(0, Math.round((window.screen.height - 700) / 2));
+        const popup = window.open(
+          result.redirectUrl,
+          'composio-oauth',
+          `width=600,height=700,left=${left},top=${top},popup=1`,
+        );
+        if (popup) popup.focus();
+      } else if (result.ok) {
         setCredentialFields([]);
         setCredentialValues({});
         setDetailOpen(false);
         setConnectedApp(app);
         setShowSuccessModal(true);
         await useComposioStore.getState().loadConnectedAccounts();
+        toast.success(t('settings.connectors.integrations.toast.connected', { app: app.name }));
+      } else {
+        toast.error(t('settings.connectors.integrations.toast.connectFailed', { app: app.name }), {
+          description: result.error,
+        });
       }
     } finally {
       setCredentialConnecting(false);
     }
-  }, [connectAppCustom, credentialValues]);
+  }, [connectAppCustom, credentialValues, setConnectedApp, setShowSuccessModal, t]);
 
-  const doConnect = React.useCallback(async (appId: string) => {
-    const app = apps.find((a) => a.id === appId);
-    if (!app) return;
-    // NO_AUTH toolkits work without any backend connection
-    if (app.authScheme === 'NO_AUTH') {
-      setConnectedApp(app);
-      setDetailOpen(false);
-      setShowSuccessModal(true);
-      return;
-    }
-    setConnectingSlug(appId);
-    try {
-      const result = await connectApp(appId);
-      if (result.ok && result.redirectUrl && result.connectionId) {
-        const w = window.open(result.redirectUrl, '_blank', 'width=600,height=700,noopener,noreferrer');
-        if (w) {
-          oauthWindowRef.current = w;
-          setDetailOpen(false);
-          oauthCheckIntervalRef.current = setInterval(async () => {
-            if (w.closed) {
-              if (oauthCheckIntervalRef.current) {
-                clearInterval(oauthCheckIntervalRef.current);
-                oauthCheckIntervalRef.current = null;
-              }
-              const waitOk = await useComposioStore.getState().waitForConnection(result.connectionId!);
-              await useComposioStore.getState().loadConnectedAccounts();
-              if (waitOk) {
-                setConnectedApp(app);
-                setShowSuccessModal(true);
-              }
-            }
-          }, 1000);
-        }
-      }
-    } finally {
-      setConnectingSlug(null);
-    }
-  }, [connectApp, apps]);
-
-  const handleDisconnect = React.useCallback(async (accountId: string) => {
-    try {
-      await disconnectAccount(accountId);
-    } catch {
-      // store handles errors
-    }
-  }, [disconnectAccount]);
-
-  const connectedToolkitIds = new Set(connectedAccounts.map((acct) => acct.toolkit));
-  const showSentinel = hasMore && !isLoadingApps && apps.length > 0;
+  const toolkitMatches = (toolkit: string, app: ComposioApp) =>
+    toolkit === app.id || toolkit === app.slug || toolkit === app.name;
 
   const getConnectedAccountForApp = (app: ComposioApp) =>
-    connectedAccounts.find((acct) => acct.toolkit === app.id || acct.toolkit === app.name);
+    connectedAccounts.find((acct) => toolkitMatches(acct.toolkit, app) && (acct.status === 'connected' || acct.status === 'active'));
+
+  // When OAuth connect fails because managed auth isn't available, switch
+  // the detail dialog to custom-credentials mode for the same app.
+  React.useEffect(() => {
+    if (!pendingCustomAuth) return;
+    const { app, authScheme } = pendingCustomAuth;
+    setDetailApp(app);
+    setDetailOpen(true);
+    setIsLoadingFields(true);
+    setCredentialValues({});
+    useComposioStore.getState().getAuthFields(app.id, authScheme).then((fields) => {
+      setCredentialFields(fields);
+      const initialValues: Record<string, string> = {};
+      fields.forEach((f) => { initialValues[f.name] = ''; });
+      setCredentialValues(initialValues);
+      setIsLoadingFields(false);
+    });
+    clearCustomAuth();
+  }, [pendingCustomAuth, clearCustomAuth]);
+
+  const handleDisconnect = React.useCallback(async (accountId: string) => {
+    const account = connectedAccounts.find((acct) => acct.id === accountId);
+    const matchedApp = account ? apps.find((a) => toolkitMatches(account.toolkit, a)) : undefined;
+    const appName = matchedApp?.name ?? account?.toolkit ?? 'Account';
+    try {
+      const ok = await disconnectAccount(accountId);
+      if (ok) {
+        toast.success(t('settings.connectors.integrations.toast.disconnected', { app: appName }));
+        setDetailOpen(false);
+        setDetailApp(null);
+      } else {
+        toast.error(t('settings.connectors.integrations.toast.disconnectFailed', { app: appName }));
+      }
+    } catch {
+      toast.error(t('settings.connectors.integrations.toast.disconnectFailed', { app: appName }));
+    }
+  }, [disconnectAccount, connectedAccounts, apps, toolkitMatches, t]);
+
+  const connectedToolkitIds = new Set(
+    connectedAccounts.map((acct) => acct.toolkit),
+  );
+  const showSentinel = hasMore && !isLoadingApps && apps.length > 0;
+
+  const isAppConnected = (app: ComposioApp) =>
+    connectedToolkitIds.has(app.id) || connectedToolkitIds.has(app.slug) || connectedToolkitIds.has(app.name) || app.authScheme === 'NO_AUTH';
 
   return (
     <div className="flex-1 overflow-auto px-6 py-4">
@@ -235,7 +251,7 @@ export const IntegrationsTab: React.FC = () => {
         {apps.length > 0 && (
           <div className="grid gap-4 sm:grid-cols-2">
             {apps.map((app) => {
-              const isConnected = connectedToolkitIds.has(app.id) || connectedToolkitIds.has(app.name) || app.authScheme === 'NO_AUTH';
+              const isConnected = isAppConnected(app);
               const initials = getInitials(app.name);
 
               return (
@@ -360,9 +376,10 @@ export const IntegrationsTab: React.FC = () => {
 
               {(() => {
                 const account = getConnectedAccountForApp(detailApp);
-                const isCustomAuth = isNonOAuthScheme(detailApp);
+                const hasCredentialFields = credentialFields.length > 0;
+                const isCustomAuth = isNonOAuthScheme(detailApp) || hasCredentialFields;
                 const isNoAuth = detailApp.authScheme === 'NO_AUTH';
-                const alreadyConnected = !!account || isNoAuth;
+                const alreadyConnected = (!!account || isNoAuth) && !hasCredentialFields;
 
                 if (alreadyConnected) {
                   return (
@@ -437,7 +454,10 @@ export const IntegrationsTab: React.FC = () => {
                     </DialogClose>
                     <Button
                       variant="default"
-                      onClick={() => doConnect(detailApp.id)}
+                      onClick={() => {
+                        setDetailOpen(false);
+                        startConnect(detailApp);
+                      }}
                       disabled={connectingSlug === detailApp.id}
                     >
                       {connectingSlug === detailApp.id

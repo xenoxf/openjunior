@@ -360,7 +360,7 @@ export function CodeMirrorEditor({
       if (typeof document === 'undefined') return null;
       const metaNonce = document.querySelector('meta[name="csp-nonce"]')?.getAttribute('content');
       if (metaNonce) return metaNonce;
-      const windowNonce = (window as Window & { __OPENJUNIOR_CSP_NONCE__?: string }).__OPENJUNIOR_CSP_NONCE__;
+      const windowNonce = (window as Window & { __GLENKER_CSP_NONCE__?: string }).__GLENKER_CSP_NONCE__;
       return typeof windowNonce === 'string' && windowNonce.length > 0 ? windowNonce : null;
     })();
 

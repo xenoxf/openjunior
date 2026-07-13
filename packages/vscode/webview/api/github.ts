@@ -18,7 +18,7 @@ import type {
   GitHubDeviceFlowStart,
   GitHubRepoUpstreamResult,
   GitHubUserSummary,
-} from '@openjunior/ui/lib/api/types';
+} from '@glenker/ui/lib/api/types';
 
 import { sendBridgeMessage } from './bridge';
 

@@ -53,7 +53,7 @@ export const useTodosPersistStore = create<TodosPersistState>()(
                 },
             }),
             {
-                name: 'openjunior-session-todos',
+                name: 'glenker-session-todos',
                 version: 1,
                 storage: createJSONStorage(() => getSafeStorage()),
                 partialize: (state) => ({ sessions: state.sessions }),

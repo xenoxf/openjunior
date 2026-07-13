@@ -20,8 +20,8 @@ export const GitSettings: React.FC = () => {
   const [isLoading, setIsLoading] = React.useState(true);
   const viewOptions = React.useMemo(
     () => [
-      { id: 'flat' as const, label: t('settings.openjunior.git.option.flatList') },
-      { id: 'tree' as const, label: t('settings.openjunior.git.option.treeView') },
+      { id: 'flat' as const, label: t('settings.glenker.git.option.flatList') },
+      { id: 'tree' as const, label: t('settings.glenker.git.option.treeView') },
     ],
     [t]
   );
@@ -118,13 +118,13 @@ export const GitSettings: React.FC = () => {
   return (
     <div className="mb-8">
       <div className="mb-1 px-1">
-        <h3 className="typography-ui-header font-medium text-foreground">{t('settings.openjunior.git.title')}</h3>
+        <h3 className="typography-ui-header font-medium text-foreground">{t('settings.glenker.git.title')}</h3>
       </div>
 
       <section className="px-2 pb-2 pt-0 space-y-0.5">
         <div data-settings-item="git.changes-view" className="pt-1 pb-1">
-          <h4 className="typography-ui-header font-medium text-foreground">{t('settings.openjunior.git.changesViewTitle')}</h4>
-          <div role="radiogroup" aria-label={t('settings.openjunior.git.changesViewAria')} className="mt-0.5 space-y-0">
+          <h4 className="typography-ui-header font-medium text-foreground">{t('settings.glenker.git.changesViewTitle')}</h4>
+          <div role="radiogroup" aria-label={t('settings.glenker.git.changesViewAria')} className="mt-0.5 space-y-0">
             {viewOptions.map((option) => {
               const selected = gitChangesViewMode === option.id;
               return (
@@ -145,7 +145,7 @@ export const GitSettings: React.FC = () => {
                   <Radio
                     checked={selected}
                     onChange={() => { handleGitChangesViewModeChange(option.id); }}
-                    ariaLabel={t('settings.openjunior.git.optionAria', { option: option.label })}
+                    ariaLabel={t('settings.glenker.git.optionAria', { option: option.label })}
                   />
                   <span className={selected ? 'typography-ui-label font-normal text-foreground' : 'typography-ui-label font-normal text-foreground/50'}>
                     {option.label}
@@ -177,9 +177,9 @@ export const GitSettings: React.FC = () => {
             onChange={(checked) => {
               void handleGitmojiChange(checked);
             }}
-            ariaLabel={t('settings.openjunior.git.enableGitmojiAria')}
+            ariaLabel={t('settings.glenker.git.enableGitmojiAria')}
           />
-          <span className="typography-ui-label text-foreground">{t('settings.openjunior.git.enableGitmoji')}</span>
+          <span className="typography-ui-label text-foreground">{t('settings.glenker.git.enableGitmoji')}</span>
         </div>
 
         <div
@@ -199,9 +199,9 @@ export const GitSettings: React.FC = () => {
           <Checkbox
             checked={showGitignored}
             onChange={setFilesViewShowGitignored}
-            ariaLabel={t('settings.openjunior.git.showGitignoredAria')}
+            ariaLabel={t('settings.glenker.git.showGitignoredAria')}
           />
-          <span className="typography-ui-label text-foreground">{t('settings.openjunior.git.showGitignored')}</span>
+          <span className="typography-ui-label text-foreground">{t('settings.glenker.git.showGitignored')}</span>
         </div>
       </section>
     </div>

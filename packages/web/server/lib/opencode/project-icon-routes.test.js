@@ -79,7 +79,7 @@ describe('project icon routes', () => {
       fsPromises,
       path,
       crypto,
-      openjuniorDataDir: '/tmp/openjunior-test',
+      glenkerDataDir: '/tmp/glenker-test',
       sanitizeProjects: (projects) => projects,
       readSettingsFromDiskMigrated: async () => ({
         projects: [{

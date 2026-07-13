@@ -1,6 +1,6 @@
 # Composio Module
 
-Composio integration for OpenJunior. Provides access to 1000+ third-party apps
+Composio integration for Glenker. Provides access to 1000+ third-party apps
 (Gmail, Slack, GitHub, Notion, etc.) through the Composio platform.
 
 ## Architecture
@@ -16,8 +16,8 @@ server/lib/composio/
 
 The Composio API key is **NOT hardcoded** and is **NOT read from process.env**.
 
-It is stored in `~/.config/openjunior/settings.json` as `composioApiKey`.
-Configure it via the OpenJunior UI at **Settings > Connectors > Composio**.
+It is stored in `~/.config/glenker/settings.json` as `composioApiKey`.
+Configure it via the Glenker UI at **Settings > Connectors > Composio**.
 
 The API key is:
 - Never exposed in API responses (masked as `hasComposioApiKey: boolean`)
@@ -26,7 +26,7 @@ The API key is:
 
 ## Flow
 
-1. The app reads settings from `~/.config/openjunior/settings.json` including `composioApiKey`.
+1. The app reads settings from `~/.config/glenker/settings.json` including `composioApiKey`.
 2. The Integrations tab in Settings loads available apps from Composio.
 3. User clicks "Connect [App]" which initiates the OAuth flow via Composio.
 4. Composio returns a redirect URL; user authenticates with the provider.
@@ -48,9 +48,9 @@ The API key is:
 ## CLI Commands
 
 ```
-openjunior composio list          List available apps/integrations
-openjunior composio connect <app>  Connect an app
-openjunior composio status         Show connected accounts
+glenker composio list          List available apps/integrations
+glenker composio connect <app>  Connect an app
+glenker composio status         Show connected accounts
 ```
 
 The CLI reads the API key from `settings.json` (same as the server).

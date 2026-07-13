@@ -17,7 +17,7 @@ COPY . .
 RUN bun run build:web
 
 FROM oven/bun:1.3.5 AS runtime
-WORKDIR /home/openjunior
+WORKDIR /home/glenker
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   bash \
@@ -30,21 +30,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   python3 \
   && rm -rf /var/lib/apt/lists/*
 
-# Replace the base image's 'bun' user (UID 1000) with 'openjunior'
+# Replace the base image's 'bun' user (UID 1000) with 'glenker'
 # so mounted volumes with 1000:1000 ownership work correctly.
 RUN userdel bun \
-  && groupadd -g 1000 openjunior \
-  && useradd -u 1000 -g 1000 -m -s /bin/bash openjunior \
-  && chown -R openjunior:openjunior /home/openjunior
+  && groupadd -g 1000 glenker \
+  && useradd -u 1000 -g 1000 -m -s /bin/bash glenker \
+  && chown -R glenker:glenker /home/glenker
 
-# Switch to openjunior user
-USER openjunior
+# Switch to glenker user
+USER glenker
 
-ENV NPM_CONFIG_PREFIX=/home/openjunior/.npm-global
+ENV NPM_CONFIG_PREFIX=/home/glenker/.npm-global
 ENV PATH=${NPM_CONFIG_PREFIX}/bin:${PATH}
 
-RUN npm config set prefix /home/openjunior/.npm-global && mkdir -p /home/openjunior/.npm-global && \
-  mkdir -p /home/openjunior/.local /home/openjunior/.config /home/openjunior/.ssh && \
+RUN npm config set prefix /home/glenker/.npm-global && mkdir -p /home/glenker/.npm-global && \
+  mkdir -p /home/glenker/.local /home/glenker/.config /home/glenker/.ssh && \
   npm install -g opencode-ai
 
 # cloudflared 2026.3.0 - update digest explicitly when upgrading
@@ -52,7 +52,7 @@ COPY --from=cloudflare/cloudflared@sha256:ba461b8aa9c042156dbd39c38657fe7431bafa
 
 ENV NODE_ENV=production
 
-COPY scripts/docker-entrypoint.sh /home/openjunior/openjunior-entrypoint.sh
+COPY scripts/docker-entrypoint.sh /home/glenker/glenker-entrypoint.sh
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/packages/web/node_modules ./packages/web/node_modules
@@ -64,4 +64,4 @@ COPY --from=builder /app/packages/web/dist ./packages/web/dist
 
 EXPOSE 3000
 
-ENTRYPOINT ["sh", "/home/openjunior/openjunior-entrypoint.sh"]
+ENTRYPOINT ["sh", "/home/glenker/glenker-entrypoint.sh"]

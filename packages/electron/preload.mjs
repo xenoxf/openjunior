@@ -11,24 +11,24 @@ const readArgValue = (name) => {
   return entry.slice(prefix.length);
 };
 
-const localOrigin = readArgValue('--openjunior-local-origin');
-const apiBaseUrl = readArgValue('--openjunior-api-base-url');
-const clientToken = readArgValue('--openjunior-client-token');
-const homeDirectory = readArgValue('--openjunior-home');
-const macosMajorRaw = readArgValue('--openjunior-macos-major');
+const localOrigin = readArgValue('--glenker-local-origin');
+const apiBaseUrl = readArgValue('--glenker-api-base-url');
+const clientToken = readArgValue('--glenker-client-token');
+const homeDirectory = readArgValue('--glenker-home');
+const macosMajorRaw = readArgValue('--glenker-macos-major');
 const macosMajor = Number.parseInt(macosMajorRaw, 10);
 const macVibrancySupported = process.platform === 'darwin';
 // Effective state for this window (main process resolves the saved preference
 // and passes it in). Defaults on when supported unless explicitly '0'.
-const hasMacVibrancy = macVibrancySupported && readArgValue('--openjunior-mac-vibrancy') !== '0';
+const hasMacVibrancy = macVibrancySupported && readArgValue('--glenker-mac-vibrancy') !== '0';
 
 // Preload re-executes on every cross-origin navigation (we run with
 // sandbox:false, per-document). Two separate concerns to balance:
-//  - __OPENJUNIOR_ELECTRON__ is a shell-identity flag (no capability).
+//  - __GLENKER_ELECTRON__ is a shell-identity flag (no capability).
 //    Remote UIs still need it so isDesktopShell() returns true and the
 //    window renders with desktop affordances (DesktopHostSwitcher,
 //    title bar offsets, etc.). Expose unconditionally.
-//  - __OPENJUNIOR_DESKTOP__ is the IPC channel to the main process. It is
+//  - __GLENKER_DESKTOP__ is the IPC channel to the main process. It is
 //    exposed broadly, but privileged commands are gated in main.mjs.
 //    Local-only globals below stay limited to packaged UI / exact localOrigin.
 // Everything driven by localOrigin (home dir, macOS hints) also stays
@@ -41,46 +41,46 @@ const currentOrigin = (() => {
   }
 })();
 const isLocalPage = currentOrigin !== 'null'
-  && (currentOrigin === 'openjunior-ui://app'
+  && (currentOrigin === 'glenker-ui://app'
   || (localOrigin && currentOrigin === localOrigin));
 
-// Remote pages need __OPENJUNIOR_LOCAL_ORIGIN__ so the HostSwitcher knows
+// Remote pages need __GLENKER_LOCAL_ORIGIN__ so the HostSwitcher knows
 // the URL of the Local entry (isDesktopLocalOriginActive() falls back to
 // window.location.origin otherwise — wrong on remote). Low risk: the value
 // is just "http://127.0.0.1:<port>" which is not exploitable without the
 // IPC channel, and CORS on the local server prevents remote-origin fetches.
 if (localOrigin) {
-  contextBridge.exposeInMainWorld('__OPENJUNIOR_LOCAL_ORIGIN__', localOrigin);
+  contextBridge.exposeInMainWorld('__GLENKER_LOCAL_ORIGIN__', localOrigin);
 }
 
 if (apiBaseUrl) {
-  contextBridge.exposeInMainWorld('__OPENJUNIOR_API_BASE_URL__', apiBaseUrl);
+  contextBridge.exposeInMainWorld('__GLENKER_API_BASE_URL__', apiBaseUrl);
 }
 
 if (clientToken && isLocalPage) {
-  contextBridge.exposeInMainWorld('__OPENJUNIOR_CLIENT_TOKEN__', clientToken);
+  contextBridge.exposeInMainWorld('__GLENKER_CLIENT_TOKEN__', clientToken);
 }
 
 // Home directory leaks the OS username — keep local-only. Remote pages
 // operate on the REMOTE server's filesystem, local home is irrelevant
 // (and would be misleading if consumed as a workspace hint).
 if (isLocalPage && homeDirectory) {
-  contextBridge.exposeInMainWorld('__OPENJUNIOR_HOME__', homeDirectory);
+  contextBridge.exposeInMainWorld('__GLENKER_HOME__', homeDirectory);
 }
 
 // macOS major version drives window chrome offsets (traffic lights) — UI
 // presentation only, safe to expose.
 if (Number.isFinite(macosMajor) && macosMajor > 0) {
-  contextBridge.exposeInMainWorld('__OPENJUNIOR_MACOS_MAJOR__', macosMajor);
+  contextBridge.exposeInMainWorld('__GLENKER_MACOS_MAJOR__', macosMajor);
 }
 
-contextBridge.exposeInMainWorld('__OPENJUNIOR_ELECTRON__', {
+contextBridge.exposeInMainWorld('__GLENKER_ELECTRON__', {
   runtime: 'electron',
   macVibrancy: hasMacVibrancy,
   macVibrancySupported,
 });
 
-contextBridge.exposeInMainWorld('__OPENJUNIOR_PLATFORM__', process.platform);
+contextBridge.exposeInMainWorld('__GLENKER_PLATFORM__', process.platform);
 
 // Note: bootOutcome must stay writable from the main world's initScript so
 // re-navigations (host switch via deep link) can refresh it. contextBridge-
@@ -141,7 +141,7 @@ const setVibrancyReady = (ready) => {
 // Main-process events are read-only notifications (update progress,
 // window focus, etc.) — safe to deliver to any page rendered in this
 // webContents. The events themselves don't grant capability.
-ipcRenderer.on('openjunior:emit', (_evt, payload) => {
+ipcRenderer.on('glenker:emit', (_evt, payload) => {
   if (!payload || typeof payload !== 'object') {
     return;
   }
@@ -151,7 +151,7 @@ ipcRenderer.on('openjunior:emit', (_evt, payload) => {
     return;
   }
 
-  if (event === 'openjunior:vibrancy-ready') {
+  if (event === 'glenker:vibrancy-ready') {
     setVibrancyReady(payload.detail?.ready === true);
   }
 
@@ -159,13 +159,13 @@ ipcRenderer.on('openjunior:emit', (_evt, payload) => {
 });
 
 // The desktop bridge is exposed on all pages; the main-process gate in
-// ipcMain.handle('openjunior:invoke') decides per-command what is safe
+// ipcMain.handle('glenker:invoke') decides per-command what is safe
 // for non-local callers (window/host-switcher ops yes, file/shell ops
 // no). See COMMANDS_SAFE_FOR_REMOTE in main.mjs.
-contextBridge.exposeInMainWorld('__OPENJUNIOR_DESKTOP__', {
-  invoke: (cmd, args) => ipcRenderer.invoke('openjunior:invoke', cmd, args || {}),
-  openDialog: (options) => ipcRenderer.invoke('openjunior:dialog:open', options || {}),
-  grantFileAccess: (filePath) => ipcRenderer.invoke('openjunior:file:grant-existing', filePath),
-  openExternal: (url) => ipcRenderer.invoke('openjunior:invoke', 'desktop_open_external_url', { url }),
+contextBridge.exposeInMainWorld('__GLENKER_DESKTOP__', {
+  invoke: (cmd, args) => ipcRenderer.invoke('glenker:invoke', cmd, args || {}),
+  openDialog: (options) => ipcRenderer.invoke('glenker:dialog:open', options || {}),
+  grantFileAccess: (filePath) => ipcRenderer.invoke('glenker:file:grant-existing', filePath),
+  openExternal: (url) => ipcRenderer.invoke('glenker:invoke', 'desktop_open_external_url', { url }),
   listen: async (event, handler) => addListener(event, handler),
 });

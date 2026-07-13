@@ -1,11 +1,11 @@
-import type { RuntimeAPIs } from '@openjunior/ui/lib/api/types';
+import type { RuntimeAPIs } from '@glenker/ui/lib/api/types';
 import {
   createRuntimeUrlResolver,
   getRuntimeUrlResolver,
   setRuntimeUrlResolver,
   type RuntimeUrlResolver,
-} from '@openjunior/ui/lib/runtime-url';
-import { useDirectoryStore } from '@openjunior/ui/stores/useDirectoryStore';
+} from '@glenker/ui/lib/runtime-url';
+import { useDirectoryStore } from '@glenker/ui/stores/useDirectoryStore';
 import { createWebTerminalAPI } from './terminal';
 import { createWebGitAPI } from './git';
 import { createWebFilesAPI } from './files';

@@ -4,7 +4,7 @@ import type {
   FileSearchQuery,
   FileSearchResult,
   FilesAPI,
-} from '@openjunior/ui/lib/api/types';
+} from '@glenker/ui/lib/api/types';
 
 import { sendBridgeMessage, sendBridgeMessageWithOptions } from './bridge';
 

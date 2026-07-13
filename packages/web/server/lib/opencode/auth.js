@@ -29,7 +29,7 @@ function writeAuthFile(auth) {
     }
 
     if (fs.existsSync(AUTH_FILE)) {
-      const backupFile = `${AUTH_FILE}.openjunior.backup`;
+      const backupFile = `${AUTH_FILE}.glenker.backup`;
       fs.copyFileSync(AUTH_FILE, backupFile);
       console.log(`Created auth backup: ${backupFile}`);
     }

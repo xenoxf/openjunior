@@ -12,8 +12,8 @@
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "paths": {
-      "@openjunior/ui/*": ["./packages/ui/src/*"],
-      "@openjunior/web/*": ["./packages/web/src/*"]
+      "@glenker/ui/*": ["./packages/ui/src/*"],
+      "@glenker/web/*": ["./packages/web/src/*"]
     }
   }
 }

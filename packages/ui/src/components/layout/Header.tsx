@@ -797,7 +797,7 @@ export const Header: React.FC<HeaderProps> = ({
     if (typeof window === 'undefined') {
       return false;
     }
-    return Boolean(window.__OPENJUNIOR_ELECTRON__) && window.__OPENJUNIOR_PLATFORM__ !== 'darwin';
+    return Boolean(window.__GLENKER_ELECTRON__) && window.__GLENKER_PLATFORM__ !== 'darwin';
   }, []);
 
   const macosMajorVersion = React.useMemo(() => {
@@ -805,7 +805,7 @@ export const Header: React.FC<HeaderProps> = ({
       return null;
     }
 
-    const injected = (window as unknown as { __OPENJUNIOR_MACOS_MAJOR__?: unknown }).__OPENJUNIOR_MACOS_MAJOR__;
+    const injected = (window as unknown as { __GLENKER_MACOS_MAJOR__?: unknown }).__GLENKER_MACOS_MAJOR__;
     if (typeof injected === 'number' && Number.isFinite(injected) && injected > 0) {
       return injected;
     }
@@ -904,7 +904,7 @@ export const Header: React.FC<HeaderProps> = ({
       setCurrentInstanceIsLocal(false);
 
       const cfg = await desktopHostsGet();
-      const localOrigin = window.__OPENJUNIOR_LOCAL_ORIGIN__ || window.location.origin;
+      const localOrigin = window.__GLENKER_LOCAL_ORIGIN__ || window.location.origin;
       const runtimeApiBaseUrl = getRuntimeApiBaseUrl();
 
       if (runtimeApiBaseUrl && locationMatchesHost(runtimeApiBaseUrl, localOrigin)) {
@@ -944,7 +944,7 @@ export const Header: React.FC<HeaderProps> = ({
     setRemoteUpdateError(null);
     try {
       const params = new URLSearchParams({ appType: 'web', instanceMode: 'remote' });
-      const response = await runtimeFetch(`/api/openjunior/update-check?${params.toString()}`, {
+      const response = await runtimeFetch(`/api/glenker/update-check?${params.toString()}`, {
         method: 'GET',
         headers: { Accept: 'application/json' },
       });
@@ -1288,7 +1288,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const currentSessionTitle = React.useMemo(() => {
     if (!currentSessionId) {
-      return activeProjectLabel ?? 'OpenJunior';
+      return activeProjectLabel ?? 'Glenker';
     }
     const trimmedTitle = currentSession?.title?.trim();
     return trimmedTitle && trimmedTitle.length > 0 ? trimmedTitle : 'Untitled Session';
@@ -1653,11 +1653,11 @@ export const Header: React.FC<HeaderProps> = ({
     };
 
     void syncFullscreenState();
-    window.addEventListener('openjunior:window-resized', onResize);
+    window.addEventListener('glenker:window-resized', onResize);
 
     return () => {
       disposed = true;
-      window.removeEventListener('openjunior:window-resized', onResize);
+      window.removeEventListener('glenker:window-resized', onResize);
     };
   }, [isDesktopApp, isMacPlatform]);
 

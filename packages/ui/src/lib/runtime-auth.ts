@@ -20,13 +20,13 @@ const normalizeBearerToken = (token: string | null | undefined): string => {
 
 const readInjectedBearerToken = (): string => {
   if (typeof window === 'undefined') return '';
-  const injected = (window as typeof window & { __OPENJUNIOR_CLIENT_TOKEN__?: string }).__OPENJUNIOR_CLIENT_TOKEN__;
+  const injected = (window as typeof window & { __GLENKER_CLIENT_TOKEN__?: string }).__GLENKER_CLIENT_TOKEN__;
   return normalizeBearerToken(injected);
 };
 
 const readInjectedApiBaseUrl = (): string => {
   if (typeof window === 'undefined') return '';
-  const injected = (window as typeof window & { __OPENJUNIOR_API_BASE_URL__?: string }).__OPENJUNIOR_API_BASE_URL__;
+  const injected = (window as typeof window & { __GLENKER_API_BASE_URL__?: string }).__GLENKER_API_BASE_URL__;
   return typeof injected === 'string' ? injected.trim() : '';
 };
 

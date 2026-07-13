@@ -39,7 +39,7 @@ import type {
   CherryPickResponse,
   RevertCommitResponse,
   ResetToCommitResponse,
-} from '@openjunior/ui/lib/api/types';
+} from '@glenker/ui/lib/api/types';
 
 type GitIdentityStoreState = {
   profiles: GitIdentityProfile[];

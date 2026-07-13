@@ -2,7 +2,7 @@ import type { Session } from '@opencode-ai/sdk/v2';
 
 export type SessionMetadataRecord = Record<string, unknown>;
 
-type OpenJuniorMetadata = {
+type GlenkerMetadata = {
   kind?: 'review';
   originalSessionID?: string;
   reviewSessionID?: string;
@@ -16,32 +16,32 @@ export const getSessionMetadata = (session: Session | null | undefined): Session
   return isRecord(metadata) ? metadata : {};
 };
 
-const getOpenJuniorMetadata = (metadata: SessionMetadataRecord): OpenJuniorMetadata => {
-  const value = metadata.openjunior;
-  return isRecord(value) ? value as OpenJuniorMetadata : {};
+const getGlenkerMetadata = (metadata: SessionMetadataRecord): GlenkerMetadata => {
+  const value = metadata.glenker;
+  return isRecord(value) ? value as GlenkerMetadata : {};
 };
 
 export const getReviewSessionID = (session: Session | null | undefined): string | null => {
-  const value = getOpenJuniorMetadata(getSessionMetadata(session)).reviewSessionID;
+  const value = getGlenkerMetadata(getSessionMetadata(session)).reviewSessionID;
   return typeof value === 'string' && value.trim().length > 0 ? value : null;
 };
 
 export const getOriginalSessionID = (session: Session | null | undefined): string | null => {
-  const value = getOpenJuniorMetadata(getSessionMetadata(session)).originalSessionID;
+  const value = getGlenkerMetadata(getSessionMetadata(session)).originalSessionID;
   return typeof value === 'string' && value.trim().length > 0 ? value : null;
 };
 
 export const isReviewSession = (session: Session | null | undefined): boolean =>
-  getOpenJuniorMetadata(getSessionMetadata(session)).kind === 'review' && Boolean(getOriginalSessionID(session));
+  getGlenkerMetadata(getSessionMetadata(session)).kind === 'review' && Boolean(getOriginalSessionID(session));
 
 export const withReviewSessionLink = (
   metadata: SessionMetadataRecord,
   reviewSessionID: string,
 ): SessionMetadataRecord => {
-  const current = getOpenJuniorMetadata(metadata);
+  const current = getGlenkerMetadata(metadata);
   return {
     ...metadata,
-    openjunior: {
+    glenker: {
       ...current,
       reviewSessionID,
     },
@@ -52,10 +52,10 @@ export const withReviewSessionMarker = (
   metadata: SessionMetadataRecord,
   originalSessionID: string,
 ): SessionMetadataRecord => {
-  const current = getOpenJuniorMetadata(metadata);
+  const current = getGlenkerMetadata(metadata);
   return {
     ...metadata,
-    openjunior: {
+    glenker: {
       ...current,
       kind: 'review' as const,
       originalSessionID,
@@ -67,16 +67,16 @@ export const withoutReviewSessionLink = (
   metadata: SessionMetadataRecord,
   reviewSessionID: string,
 ): SessionMetadataRecord => {
-  const current = getOpenJuniorMetadata(metadata);
+  const current = getGlenkerMetadata(metadata);
   if (current.reviewSessionID !== reviewSessionID) return metadata;
 
-  const restOpenJunior = { ...current };
-  delete restOpenJunior.reviewSessionID;
+  const restGlenker = { ...current };
+  delete restGlenker.reviewSessionID;
   const next: SessionMetadataRecord = { ...metadata };
-  if (Object.keys(restOpenJunior).length > 0) {
-    next.openjunior = restOpenJunior;
+  if (Object.keys(restGlenker).length > 0) {
+    next.glenker = restGlenker;
   } else {
-    delete next.openjunior;
+    delete next.glenker;
   }
   return next;
 };

@@ -2,12 +2,12 @@ import type { DesktopBootOutcome } from '@/lib/desktopBoot';
 
 declare global {
   interface Window {
-    __OPENJUNIOR_HOME__?: string;
-    __OPENJUNIOR_MACOS_MAJOR__?: number;
-    __OPENJUNIOR_LOCAL_ORIGIN__?: string;
-    __OPENJUNIOR_ELECTRON__?: { runtime?: string; macVibrancy?: boolean; macVibrancySupported?: boolean };
-    __OPENJUNIOR_PLATFORM__?: string;
-    __OPENJUNIOR_DESKTOP_BOOT_OUTCOME__?: DesktopBootOutcome;
+    __GLENKER_HOME__?: string;
+    __GLENKER_MACOS_MAJOR__?: number;
+    __GLENKER_LOCAL_ORIGIN__?: string;
+    __GLENKER_ELECTRON__?: { runtime?: string; macVibrancy?: boolean; macVibrancySupported?: boolean };
+    __GLENKER_PLATFORM__?: string;
+    __GLENKER_DESKTOP_BOOT_OUTCOME__?: DesktopBootOutcome;
   }
 
   interface WebviewElement extends HTMLElement {

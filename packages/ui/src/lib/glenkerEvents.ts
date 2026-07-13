@@ -10,8 +10,8 @@ export type ScheduledTaskRanEvent = {
   sessionId?: string;
 };
 
-type OpenJuniorEvent = ScheduledTaskRanEvent;
-type Listener = (event: OpenJuniorEvent) => void;
+type GlenkerEvent = ScheduledTaskRanEvent;
+type Listener = (event: GlenkerEvent) => void;
 
 let eventSource: EventSource | null = null;
 let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
@@ -81,16 +81,16 @@ const parseEnvelope = (raw: string): { type: string; properties: unknown } | nul
 };
 
 const dispatchFromEnvelope = (envelope: { type: string; properties: unknown }) => {
-  if (envelope.type === 'openjunior:event-stream-ready') {
+  if (envelope.type === 'glenker:event-stream-ready') {
     reconnectAttempt = 0;
     return;
   }
 
-  if (envelope.type === 'openjunior:heartbeat') {
+  if (envelope.type === 'glenker:heartbeat') {
     return;
   }
 
-  if (envelope.type !== 'openjunior:scheduled-task-ran') {
+  if (envelope.type !== 'glenker:scheduled-task-ran') {
     return;
   }
 
@@ -133,7 +133,7 @@ const connect = () => {
 
   cleanupSource();
 
-  const source = new EventSource(getRuntimeUrlResolver().sse('/api/openjunior/events'));
+  const source = new EventSource(getRuntimeUrlResolver().sse('/api/glenker/events'));
   source.onopen = () => {
     resetHeartbeatTimer();
   };
@@ -168,7 +168,7 @@ const cleanupRuntimeChangeSubscription = () => {
   runtimeChangeUnsubscribe = null;
 };
 
-export const subscribeOpenchamberEvents = (listener: Listener): (() => void) => {
+export const subscribeGlenkerEvents = (listener: Listener): (() => void) => {
   listeners.add(listener);
   ensureRuntimeChangeSubscription();
   connect();

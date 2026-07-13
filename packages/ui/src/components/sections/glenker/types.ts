@@ -1,4 +1,4 @@
-export type OpenJuniorSection =
+export type GlenkerSection =
   | 'visual'
   | 'chat'
   | 'shortcuts'

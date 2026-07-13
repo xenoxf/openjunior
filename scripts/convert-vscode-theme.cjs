@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * VS Code Theme to OpenJunior Theme Converter
+ * VS Code Theme to Glenker Theme Converter
  * 
  * USAGE:
  *   node scripts/convert-vscode-theme.cjs <path-to-vscode-theme.json>
@@ -12,7 +12,7 @@
  * 
  * WHAT IT DOES:
  *   1. Reads a VS Code theme JSON file (with comments support)
- *   2. Converts it to OpenJunior theme format:
+ *   2. Converts it to Glenker theme format:
  *      - Extracts color palette (primary, surface, interactive, status, syntax)
  *      - Generates derived sections (markdown, chat, tools)
  *      - Adds default config (fonts, radius, transitions)
@@ -130,8 +130,8 @@ function convertVsCodeTheme(vscodeThemePath) {
   const statusColors = extractStatusColors(colors, tokenColors, semanticTokenColors);
   const syntaxColors = extractSyntaxColors(tokenColors, semanticTokenColors, colors);
   
-  // Build OpenJunior theme
-  const openjuniorTheme = {
+  // Build Glenker theme
+  const glenkerTheme = {
     metadata: {
       id: makeThemeId(normalizedTheme.name || 'untitled-theme', variant),
       name: themeName,
@@ -155,7 +155,7 @@ function convertVsCodeTheme(vscodeThemePath) {
     config: generateConfig()
   };
   
-  return openjuniorTheme;
+  return glenkerTheme;
 }
 
 function generatePrColors(status, syntax) {

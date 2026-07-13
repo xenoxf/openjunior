@@ -568,7 +568,7 @@ export async function handleStandardGitBridgeMessage(message: BridgeMessageInput
       return { id, type, success: false, error: `Unsupported method: ${normalizedMethod}` };
     }
 
-    case 'api:git/ignore-openjunior': {
+    case 'api:git/ignore-glenker': {
       return { id, type, success: true, data: { success: true } };
     }
 

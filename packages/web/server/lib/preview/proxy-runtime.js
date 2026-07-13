@@ -14,7 +14,7 @@ const LOOPBACK_HOSTS = new Set([
   '0.0.0.0',
 ]);
 
-const PREVIEW_BRIDGE_SCRIPT_ID = 'openjunior-preview-bridge';
+const PREVIEW_BRIDGE_SCRIPT_ID = 'glenker-preview-bridge';
 
 const parsePreviewResourcePath = (url) => {
   try {
@@ -195,14 +195,14 @@ export const classifyPreviewNavigation = ({ url, currentUrl, targetOrigin }) => 
 };
 
 const PREVIEW_BRIDGE_SCRIPT = String.raw`(() => {
-  if (window.__openjuniorPreviewBridgeInstalled) return;
-  window.__openjuniorPreviewBridgeInstalled = true;
+  if (window.__glenkerPreviewBridgeInstalled) return;
+  window.__glenkerPreviewBridgeInstalled = true;
 
-  const SOURCE = 'openjunior-preview-bridge';
+  const SOURCE = 'glenker-preview-bridge';
   const VERSION = 1;
   const MAX_TEXT = 500;
   const MAX_ARG = 1000;
-  const TARGET_ORIGIN = typeof window.__openjuniorPreviewTargetOrigin === 'string' ? window.__openjuniorPreviewTargetOrigin : '';
+  const TARGET_ORIGIN = typeof window.__glenkerPreviewTargetOrigin === 'string' ? window.__glenkerPreviewTargetOrigin : '';
   let inspectMode = false;
   let lastHoverKey = '';
   let pendingHover = null;
@@ -273,8 +273,8 @@ const PREVIEW_BRIDGE_SCRIPT = String.raw`(() => {
   };
 
   const installColorSchemeMatchMediaPatch = () => {
-    if (window.__openjuniorPreviewColorSchemePatched || typeof window.matchMedia !== 'function') return;
-    window.__openjuniorPreviewColorSchemePatched = true;
+    if (window.__glenkerPreviewColorSchemePatched || typeof window.matchMedia !== 'function') return;
+    window.__glenkerPreviewColorSchemePatched = true;
     nativeMatchMedia = window.matchMedia.bind(window);
     window.matchMedia = function(query) {
       const nativeMql = nativeMatchMedia(query);
@@ -326,7 +326,7 @@ const PREVIEW_BRIDGE_SCRIPT = String.raw`(() => {
     try {
       const root = document.documentElement;
       root.style.colorScheme = next;
-      root.dataset.openjuniorPreviewColorScheme = next;
+      root.dataset.glenkerPreviewColorScheme = next;
       if (shouldSyncDataTheme()) {
         root.dataset.theme = next;
       }
@@ -474,8 +474,8 @@ const PREVIEW_BRIDGE_SCRIPT = String.raw`(() => {
   };
 
   const installViteHmrProxyPatch = () => {
-    if (window.__openjuniorViteHmrProxyPatched || typeof window.WebSocket !== 'function') return;
-    window.__openjuniorViteHmrProxyPatched = true;
+    if (window.__glenkerViteHmrProxyPatched || typeof window.WebSocket !== 'function') return;
+    window.__glenkerViteHmrProxyPatched = true;
     const NativeWebSocket = window.WebSocket;
     const proxyMatch = window.location.pathname.match(/^(\/api\/preview\/proxy\/[a-f0-9]{16,64})(?:\/|$)/i);
     if (!proxyMatch) return;
@@ -513,7 +513,7 @@ const PREVIEW_BRIDGE_SCRIPT = String.raw`(() => {
       }
     };
 
-    function OpenJuniorPreviewWebSocket(url, protocols) {
+    function GlenkerPreviewWebSocket(url, protocols) {
       const protocolList = Array.isArray(protocols) ? protocols : [protocols];
       const isViteSocket = protocolList.indexOf('vite-hmr') >= 0;
       const nextUrl = rewriteUrl(url, protocols);
@@ -535,15 +535,15 @@ const PREVIEW_BRIDGE_SCRIPT = String.raw`(() => {
       return socket;
     }
 
-    OpenJuniorPreviewWebSocket.prototype = NativeWebSocket.prototype;
-    Object.setPrototypeOf(OpenJuniorPreviewWebSocket, NativeWebSocket);
-    Object.defineProperty(OpenJuniorPreviewWebSocket, 'name', { value: 'WebSocket' });
-    window.WebSocket = OpenJuniorPreviewWebSocket;
+    GlenkerPreviewWebSocket.prototype = NativeWebSocket.prototype;
+    Object.setPrototypeOf(GlenkerPreviewWebSocket, NativeWebSocket);
+    Object.defineProperty(GlenkerPreviewWebSocket, 'name', { value: 'WebSocket' });
+    window.WebSocket = GlenkerPreviewWebSocket;
   };
 
   const installAppRequestProxyPatch = () => {
-    if (window.__openjuniorAppRequestProxyPatched) return;
-    window.__openjuniorAppRequestProxyPatched = true;
+    if (window.__glenkerAppRequestProxyPatched) return;
+    window.__glenkerAppRequestProxyPatched = true;
     const proxyMatch = window.location.pathname.match(/^(\/api\/preview\/proxy\/[a-f0-9]{16,64})(?:\/|$)/i);
     if (!proxyMatch) return;
     const proxyBase = proxyMatch[1];
@@ -671,27 +671,27 @@ const PREVIEW_BRIDGE_SCRIPT = String.raw`(() => {
 
     if (typeof window.EventSource === 'function') {
       const NativeEventSource = window.EventSource;
-      function OpenJuniorPreviewEventSource(url, eventSourceInitDict) {
+      function GlenkerPreviewEventSource(url, eventSourceInitDict) {
         return new NativeEventSource(proxiedUrl(String(url)), eventSourceInitDict);
       }
-      OpenJuniorPreviewEventSource.prototype = NativeEventSource.prototype;
-      Object.setPrototypeOf(OpenJuniorPreviewEventSource, NativeEventSource);
-      Object.defineProperty(OpenJuniorPreviewEventSource, 'name', { value: 'EventSource' });
-      window.EventSource = OpenJuniorPreviewEventSource;
+      GlenkerPreviewEventSource.prototype = NativeEventSource.prototype;
+      Object.setPrototypeOf(GlenkerPreviewEventSource, NativeEventSource);
+      Object.defineProperty(GlenkerPreviewEventSource, 'name', { value: 'EventSource' });
+      window.EventSource = GlenkerPreviewEventSource;
     }
 
     if (typeof window.WebSocket === 'function') {
       const NativeWebSocket = window.WebSocket;
-      function OpenJuniorPreviewAppWebSocket(url, protocols) {
+      function GlenkerPreviewAppWebSocket(url, protocols) {
         const nextUrl = proxiedWebSocketUrl(String(url));
         return arguments.length === 1
           ? new NativeWebSocket(nextUrl)
           : new NativeWebSocket(nextUrl, protocols);
       }
-      OpenJuniorPreviewAppWebSocket.prototype = NativeWebSocket.prototype;
-      Object.setPrototypeOf(OpenJuniorPreviewAppWebSocket, NativeWebSocket);
-      Object.defineProperty(OpenJuniorPreviewAppWebSocket, 'name', { value: 'WebSocket' });
-      window.WebSocket = OpenJuniorPreviewAppWebSocket;
+      GlenkerPreviewAppWebSocket.prototype = NativeWebSocket.prototype;
+      Object.setPrototypeOf(GlenkerPreviewAppWebSocket, NativeWebSocket);
+      Object.defineProperty(GlenkerPreviewAppWebSocket, 'name', { value: 'WebSocket' });
+      window.WebSocket = GlenkerPreviewAppWebSocket;
     }
   };
 
@@ -776,9 +776,9 @@ const PREVIEW_BRIDGE_SCRIPT = String.raw`(() => {
   const sendHover = (event) => {
     if (!inspectMode) return;
     pendingHover = event;
-    if (window.__openjuniorPreviewHoverFrame) return;
-    window.__openjuniorPreviewHoverFrame = window.requestAnimationFrame(() => {
-      window.__openjuniorPreviewHoverFrame = 0;
+    if (window.__glenkerPreviewHoverFrame) return;
+    window.__glenkerPreviewHoverFrame = window.requestAnimationFrame(() => {
+      window.__glenkerPreviewHoverFrame = 0;
       const currentEvent = pendingHover;
       pendingHover = null;
       if (!currentEvent || !inspectMode) return;
@@ -860,7 +860,7 @@ const PREVIEW_BRIDGE_SCRIPT = String.raw`(() => {
   window.addEventListener('message', (event) => {
     if (event.source !== window.parent) return;
     const data = event.data;
-    if (!data || data.source !== 'openjunior-preview-parent' || data.version !== VERSION) return;
+    if (!data || data.source !== 'glenker-preview-parent' || data.version !== VERSION) return;
     if (data.type === 'set-inspect-mode') {
       setInspectMode(data.enabled === true);
     }
@@ -1012,7 +1012,7 @@ export const normalizeProxyTargetUrl = (rawUrl, { allowExternal = false } = {}) 
     url.hostname = '127.0.0.1';
   }
 
-  // Only keep origin here; the proxy path is preserved on the OpenJunior side.
+  // Only keep origin here; the proxy path is preserved on the Glenker side.
   return { ok: true, origin: url.origin };
 };
 
@@ -1024,7 +1024,7 @@ const appendProxyAuthToProxyUrl = (value, { previewToken = '', urlAuthToken = ''
     || value.includes(URL_AUTH_TOKEN_QUERY_PARAM);
   if (!needsQueryRewrite) return value;
   try {
-    const parsed = new URL(value, 'http://openjunior-preview.local');
+    const parsed = new URL(value, 'http://glenker-preview.local');
     parsed.searchParams.delete(CLIENT_TOKEN_QUERY_PARAM);
     parsed.searchParams.delete(URL_AUTH_TOKEN_QUERY_PARAM);
     if (previewToken) parsed.searchParams.set(TOKEN_QUERY_PARAM, previewToken);
@@ -1318,7 +1318,7 @@ export const createPreviewProxyRuntime = ({
       }
 
       const nonceAttr = bridgeNonce ? ` nonce="${bridgeNonce}"` : '';
-      const targetOriginScript = `<script${nonceAttr}>window.__openjuniorPreviewTargetOrigin=${JSON.stringify(targetOrigin || '')};</script>`;
+      const targetOriginScript = `<script${nonceAttr}>window.__glenkerPreviewTargetOrigin=${JSON.stringify(targetOrigin || '')};</script>`;
       const script = `${targetOriginScript}<script id="${PREVIEW_BRIDGE_SCRIPT_ID}"${nonceAttr}>${PREVIEW_BRIDGE_SCRIPT}</script>`;
       if (/<head(?:\s[^>]*)?>/i.test(bodyText)) {
         return bodyText.replace(/<head(\s[^>]*)?>/i, (match) => `${match}${script}`);
@@ -1444,10 +1444,10 @@ export const createPreviewProxyRuntime = ({
       on: {
         proxyReq: (proxyReq, req) => {
           applyPreviewPassthroughRequestHeaders(req, proxyReq);
-          // Keep local dev servers from receiving OpenJunior credentials.
+          // Keep local dev servers from receiving Glenker credentials.
           proxyReq.removeHeader('cookie');
           proxyReq.removeHeader('authorization');
-          proxyReq.removeHeader('x-openjunior-ui-session');
+          proxyReq.removeHeader('x-glenker-ui-session');
           proxyReq.setHeader('accept-encoding', 'identity');
         },
         proxyRes: responseInterceptor(async (responseBuffer, proxyRes, req, res) => {
@@ -1455,7 +1455,7 @@ export const createPreviewProxyRuntime = ({
           // Per-response nonce lets the injected bridge run under the dev
           // server's CSP without dropping its script restrictions wholesale.
           const bridgeNonce = crypto.randomBytes(16).toString('base64');
-          // Allow the dev server response to be framed inside OpenJunior even
+          // Allow the dev server response to be framed inside Glenker even
           // if it normally sets X-Frame-Options or a CSP frame-ancestors rule.
           // The proxy is same-origin so embedding is otherwise safe.
           stripFrameBustingHeaders(proxyRes.headers, bridgeNonce);

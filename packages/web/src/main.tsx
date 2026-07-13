@@ -1,20 +1,20 @@
 import { createConfiguredWebAPIs } from './runtimeConfig';
 import { registerSW } from 'virtual:pwa-register';
 
-import type { RuntimeAPIs } from '@openjunior/ui/lib/api/types';
-import { getStoredMobileLayoutPreference } from '@openjunior/ui/lib/mobileLayoutPreference';
-import type { HostedSurface } from '@openjunior/ui/lib/runtimeSurface';
-import '@openjunior/ui/index.css';
-import '@openjunior/ui/styles/fonts';
+import type { RuntimeAPIs } from '@glenker/ui/lib/api/types';
+import { getStoredMobileLayoutPreference } from '@glenker/ui/lib/mobileLayoutPreference';
+import type { HostedSurface } from '@glenker/ui/lib/runtimeSurface';
+import '@glenker/ui/index.css';
+import '@glenker/ui/styles/fonts';
 
 declare global {
   interface Window {
-    __OPENJUNIOR_RUNTIME_APIS__?: RuntimeAPIs;
-    __OPENJUNIOR_SURFACE__?: HostedSurface;
+    __GLENKER_RUNTIME_APIS__?: RuntimeAPIs;
+    __GLENKER_SURFACE__?: HostedSurface;
   }
 }
 
-window.__OPENJUNIOR_RUNTIME_APIS__ = createConfiguredWebAPIs();
+window.__GLENKER_RUNTIME_APIS__ = createConfiguredWebAPIs();
 
 const isCoarsePointer = (): boolean => {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
@@ -37,7 +37,7 @@ const detectHostedSurface = (): HostedSurface => {
 };
 
 const hostedSurface = detectHostedSurface();
-window.__OPENJUNIOR_SURFACE__ = hostedSurface;
+window.__GLENKER_SURFACE__ = hostedSurface;
 
 type PrerenderingDocument = Document & {
   prerendering?: boolean;
@@ -105,12 +105,12 @@ const unregisterDevelopmentServiceWorkers = (): void => {
 };
 
 if (hostedSurface === 'mobile') {
-  void import('@openjunior/ui/apps/renderMobileApp')
+  void import('@glenker/ui/apps/renderMobileApp')
     .then(({ renderMobileApp }) => {
-      renderMobileApp(window.__OPENJUNIOR_RUNTIME_APIS__ ?? createConfiguredWebAPIs());
+      renderMobileApp(window.__GLENKER_RUNTIME_APIS__ ?? createConfiguredWebAPIs());
     });
 } else {
-  void import('@openjunior/ui/main');
+  void import('@glenker/ui/main');
 }
 
 if (import.meta.env.PROD) {

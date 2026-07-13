@@ -40,8 +40,8 @@ export const createFeatureRoutesRuntime = (dependencies) => {
       spawn,
       resolveGitBinaryForSpawn,
       createFsSearchRuntime,
-      openjuniorDataDir,
-      openjuniorUserConfigRoot,
+      glenkerDataDir,
+      glenkerUserConfigRoot,
       normalizeDirectoryPath,
       resolveProjectDirectory,
       resolveOptionalProjectDirectory,
@@ -62,7 +62,7 @@ export const createFeatureRoutesRuntime = (dependencies) => {
       buildAugmentedPath,
       projectConfigRuntime,
       scheduledTasksRuntime,
-      getOpenJuniorEventClients,
+      getGlenkerEventClients,
       writeSseEvent,
     } = routeDependencies;
 
@@ -101,7 +101,7 @@ export const createFeatureRoutesRuntime = (dependencies) => {
       fsPromises,
       path,
       crypto,
-      openjuniorDataDir,
+      glenkerDataDir,
       sanitizeProjects,
       readSettingsFromDiskMigrated,
       persistSettings,
@@ -115,7 +115,7 @@ export const createFeatureRoutesRuntime = (dependencies) => {
       sanitizeProjects,
       projectConfigRuntime,
       scheduledTasksRuntime,
-      getOpenJuniorEventClients,
+      getGlenkerEventClients,
       writeSseEvent,
     });
 
@@ -318,12 +318,12 @@ export const createFeatureRoutesRuntime = (dependencies) => {
     registerMagicPromptRoutes(app, {
       fsPromises,
       path,
-      openjuniorDataDir,
+      glenkerDataDir,
     });
     registerSessionFoldersRoutes(app, {
       fsPromises,
       path,
-      openjuniorDataDir,
+      glenkerDataDir,
     });
     registerFsRoutes(app, {
       os,
@@ -335,7 +335,7 @@ export const createFeatureRoutesRuntime = (dependencies) => {
       resolveProjectDirectory,
       buildAugmentedPath,
       resolveGitBinaryForSpawn,
-      openjuniorUserConfigRoot,
+      glenkerUserConfigRoot,
     });
 
     // Unified Catalog routes

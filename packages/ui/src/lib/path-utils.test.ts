@@ -11,7 +11,7 @@ import {
 
 describe('path-utils', () => {
   test('normalizes Windows paths without losing drive roots', () => {
-    expect(normalizeFilePath('C:\\Users\\Bohdan Triapitsyn\\projects\\openjunior\\')).toBe('C:/Users/Bohdan Triapitsyn/projects/openjunior');
+    expect(normalizeFilePath('C:\\Users\\Bohdan Triapitsyn\\projects\\glenker\\')).toBe('C:/Users/Bohdan Triapitsyn/projects/glenker');
     expect(normalizeFilePath('C:/')).toBe('C:/');
     expect(normalizeFilePath('\\\\server\\share\\project')).toBe('//server/share/project');
   });
@@ -24,36 +24,36 @@ describe('path-utils', () => {
   });
 
   test('does not prefix Windows absolute targets with the workspace directory', () => {
-    expect(toAbsoluteFilePath('C:/Users/Bohdan Triapitsyn/projects/openjunior', 'C:/Users/Bohdan Triapitsyn/projects/openjunior/packages/ui/Button.tsx')).toBe(
-      'C:/Users/Bohdan Triapitsyn/projects/openjunior/packages/ui/Button.tsx',
+    expect(toAbsoluteFilePath('C:/Users/Bohdan Triapitsyn/projects/glenker', 'C:/Users/Bohdan Triapitsyn/projects/glenker/packages/ui/Button.tsx')).toBe(
+      'C:/Users/Bohdan Triapitsyn/projects/glenker/packages/ui/Button.tsx',
     );
   });
 
   test('joins relative targets under Windows workspaces', () => {
-    expect(toAbsoluteFilePath('C:/Users/Bohdan Triapitsyn/projects/openjunior', 'packages/ui/Button.tsx')).toBe(
-      'C:/Users/Bohdan Triapitsyn/projects/openjunior/packages/ui/Button.tsx',
+    expect(toAbsoluteFilePath('C:/Users/Bohdan Triapitsyn/projects/glenker', 'packages/ui/Button.tsx')).toBe(
+      'C:/Users/Bohdan Triapitsyn/projects/glenker/packages/ui/Button.tsx',
     );
-    expect(toAbsoluteFilePath('C:/Users/Bohdan Triapitsyn/projects/openjunior/packages/ui', '../web/package.json')).toBe(
-      'C:/Users/Bohdan Triapitsyn/projects/openjunior/packages/web/package.json',
+    expect(toAbsoluteFilePath('C:/Users/Bohdan Triapitsyn/projects/glenker/packages/ui', '../web/package.json')).toBe(
+      'C:/Users/Bohdan Triapitsyn/projects/glenker/packages/web/package.json',
     );
   });
 
   test('compares Windows workspace containment case-insensitively', () => {
     expect(isFilePathWithinDirectory(
-      'c:/users/bohdan triapitsyn/projects/openjunior/packages/ui/button.tsx',
-      'C:/Users/Bohdan Triapitsyn/projects/openjunior',
+      'c:/users/bohdan triapitsyn/projects/glenker/packages/ui/button.tsx',
+      'C:/Users/Bohdan Triapitsyn/projects/glenker',
     )).toBe(true);
     expect(getRelativeFilePath(
-      'C:/Users/Bohdan Triapitsyn/projects/openjunior/packages/ui/Button.tsx',
-      'c:/users/bohdan triapitsyn/projects/openjunior',
+      'C:/Users/Bohdan Triapitsyn/projects/glenker/packages/ui/Button.tsx',
+      'c:/users/bohdan triapitsyn/projects/glenker',
     )).toBe('packages/ui/Button.tsx');
   });
 
   test('falls back to file parent when current directory does not contain the path', () => {
     expect(getDirectoryForFilePath(
       'C:/Users/Bohdan Triapitsyn/projects/other',
-      'C:/Users/Bohdan Triapitsyn/projects/openjunior/packages/ui/Button.tsx',
-    )).toBe('C:/Users/Bohdan Triapitsyn/projects/openjunior/packages/ui');
+      'C:/Users/Bohdan Triapitsyn/projects/glenker/packages/ui/Button.tsx',
+    )).toBe('C:/Users/Bohdan Triapitsyn/projects/glenker/packages/ui');
     expect(getDirectoryForFilePath('', '/tmp/file.txt')).toBe('/tmp');
   });
 });

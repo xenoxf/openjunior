@@ -15,6 +15,6 @@ export const getRegisteredRuntimeAPIs = (): RuntimeAPIs | null => {
     return null;
   }
 
-  return (window as typeof window & { __OPENJUNIOR_RUNTIME_APIS__?: RuntimeAPIs })
-    .__OPENJUNIOR_RUNTIME_APIS__ ?? null;
+  return (window as typeof window & { __GLENKER_RUNTIME_APIS__?: RuntimeAPIs })
+    .__GLENKER_RUNTIME_APIS__ ?? null;
 };

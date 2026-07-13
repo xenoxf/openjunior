@@ -14,7 +14,7 @@ interface GoalStore {
   incrementTurnCount: (sessionId: string) => void;
 }
 
-const STORAGE_KEY = 'openjunior_goals';
+const STORAGE_KEY = 'glenker_goals';
 
 const loadGoalsFromStorage = (): Record<string, GoalState> => {
   try {

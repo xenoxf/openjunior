@@ -219,7 +219,7 @@ export const registerNotificationRoutes = (app, dependencies) => {
 
     try {
       writeSseEvent(res, {
-        type: 'openjunior:notification-stream-ready',
+        type: 'glenker:notification-stream-ready',
         properties: { uiToken },
       });
       flushSse();

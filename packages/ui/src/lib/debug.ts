@@ -221,7 +221,7 @@ export const debugUtils = {
     })();
 
     const runtimeApis = getRegisteredRuntimeAPIs();
-    const isDesktopRuntime = typeof window !== 'undefined' && Boolean((window as { __OPENJUNIOR_ELECTRON__?: unknown }).__OPENJUNIOR_ELECTRON__);
+    const isDesktopRuntime = typeof window !== 'undefined' && Boolean((window as { __GLENKER_ELECTRON__?: unknown }).__GLENKER_ELECTRON__);
 
     const safeJson = async (resp: Response) => {
       try {
@@ -372,7 +372,7 @@ export const debugUtils = {
         projectInfo,
         health: opencodeHealth,
       },
-      openjunior: {
+      glenker: {
         settingsInfo,
       },
     };

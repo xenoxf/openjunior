@@ -28,9 +28,9 @@ import { isDesktopShell } from '@/lib/desktop';
 import {
   getProjectActionsState,
   saveProjectActionsState,
-  type OpenJuniorProjectAction,
+  type GlenkerProjectAction,
   type ProjectRef,
-} from '@/lib/openjuniorConfig';
+} from '@/lib/glenkerConfig';
 import {
   buildProjectActionDesktopForwardOptions,
   PROJECT_ACTION_ICON_MAP,
@@ -40,7 +40,7 @@ import {
 import { useI18n } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 
-type EditableProjectAction = OpenJuniorProjectAction;
+type EditableProjectAction = GlenkerProjectAction;
 
 const createActionId = (): string => {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {

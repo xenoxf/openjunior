@@ -13,10 +13,10 @@ import { CommandAutocomplete, type CommandAutocompleteHandle, type CommandInfo }
 import { FileMentionAutocomplete, type FileMentionHandle } from '@/components/chat/FileMentionAutocomplete';
 import { Icon } from "@/components/icon/Icon";
 import { isIMECompositionEvent } from '@/lib/ime';
-import { getWorktreeSetupCommands } from '@/lib/openjuniorConfig';
+import { getWorktreeSetupCommands } from '@/lib/glenkerConfig';
 import { useThemeSystem } from '@/contexts/useThemeSystem';
 import { useRuntimeAPIs } from '@/hooks/useRuntimeAPIs';
-import type { ProjectRef } from '@/lib/openjuniorConfig';
+import type { ProjectRef } from '@/lib/glenkerConfig';
 import type { CreateMultiRunParams, MultiRunFileAttachment } from '@/types/multirun';
 import { useI18n } from '@/lib/i18n';
 

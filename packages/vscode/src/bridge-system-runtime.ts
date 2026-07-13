@@ -43,12 +43,12 @@ const claimNotification = (key: string): boolean => {
 };
 
 
-const getOpenJuniorConfigDir = (): string => {
+const getGlenkerConfigDir = (): string => {
   if (process.platform === 'win32') {
     const appData = process.env.APPDATA;
-    if (appData) return path.join(appData, 'openjunior');
+    if (appData) return path.join(appData, 'glenker');
   }
-  return path.join(os.homedir(), '.config', 'openjunior');
+  return path.join(os.homedir(), '.config', 'glenker');
 };
 
 const sanitizeInstallScope = (scope: string): 'vscode' | 'web' => {
@@ -57,7 +57,7 @@ const sanitizeInstallScope = (scope: string): 'vscode' | 'web' => {
 };
 
 const getOrCreateInstallId = (scope: string): string => {
-  const configDir = getOpenJuniorConfigDir();
+  const configDir = getGlenkerConfigDir();
   const normalizedScope = sanitizeInstallScope(scope);
   const idPath = path.join(configDir, `install-id-${normalizedScope}`);
 
@@ -93,7 +93,7 @@ type ParsedDiffHunk = {
   newLines: string[];
 };
 
-const VIRTUAL_DIFF_SCHEME = 'openjunior-diff';
+const VIRTUAL_DIFF_SCHEME = 'glenker-diff';
 const virtualDiffContents = new Map<string, string>();
 let virtualDiffCounter = 0;
 let virtualDiffProviderDisposable: vscode.Disposable | null = null;
@@ -283,7 +283,7 @@ export async function handleSystemBridgeMessage(
       return { id, type, success: true, data: { models } };
     }
 
-    case 'api:openjunior:update-check': {
+    case 'api:glenker:update-check': {
       try {
         const body = (payload && typeof payload === 'object' ? payload : {}) as Record<string, unknown>;
         const currentVersion = typeof body.currentVersion === 'string' && body.currentVersion.trim().length > 0

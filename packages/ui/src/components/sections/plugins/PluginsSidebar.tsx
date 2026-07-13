@@ -70,8 +70,8 @@ export const PluginsSidebar: React.FC<PluginsSidebarProps> = ({
 
   React.useEffect(() => {
     const handleOpenAdd = () => setIsAddOpen(true);
-    window.addEventListener('openjunior:settings-open-plugin-add', handleOpenAdd);
-    return () => window.removeEventListener('openjunior:settings-open-plugin-add', handleOpenAdd);
+    window.addEventListener('glenker:settings-open-plugin-add', handleOpenAdd);
+    return () => window.removeEventListener('glenker:settings-open-plugin-add', handleOpenAdd);
   }, []);
 
   const updateCounts = React.useMemo(() => {

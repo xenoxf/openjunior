@@ -151,7 +151,7 @@ const sendPlainMessage = async (
 
 const requestChatForceScrollBottom = (sessionId: string): void => {
   if (typeof window === 'undefined') return;
-  window.dispatchEvent(new CustomEvent('openjunior:chat-force-scroll-bottom', {
+  window.dispatchEvent(new CustomEvent('glenker:chat-force-scroll-bottom', {
     detail: { sessionId },
   }));
 };
@@ -180,11 +180,11 @@ const createOrReuseReviewSession = async (originalSessionID: string, directory: 
     if (existing && isReviewSession(existing)) return existing;
     await patchSessionMetadata(originalSessionID, directory, (metadata) => {
       const next = { ...metadata };
-      const openjunior = next.openjunior;
-      if (openjunior && typeof openjunior === 'object' && !Array.isArray(openjunior)) {
-        const rest = { ...(openjunior as Record<string, unknown>) };
+      const glenker = next.glenker;
+      if (glenker && typeof glenker === 'object' && !Array.isArray(glenker)) {
+        const rest = { ...(glenker as Record<string, unknown>) };
         delete rest.reviewSessionID;
-        next.openjunior = rest;
+        next.glenker = rest;
       }
       return next;
     });

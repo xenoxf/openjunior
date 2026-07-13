@@ -7,19 +7,19 @@ export const parseServeCliOptions = ({
 }) => {
   const args = Array.isArray(argv) ? [...argv] : [];
   const envPassword =
-    env.OPENJUNIOR_UI_PASSWORD ||
+    env.GLENKER_UI_PASSWORD ||
     env.OPENCODE_UI_PASSWORD ||
     null;
-  const envCfTunnel = env.OPENJUNIOR_TRY_CF_TUNNEL === 'true';
-  const envTunnelProvider = env.OPENJUNIOR_TUNNEL_PROVIDER || undefined;
-  const envTunnelMode = env.OPENJUNIOR_TUNNEL_MODE || undefined;
-  const envTunnelConfigRaw = env.OPENJUNIOR_TUNNEL_CONFIG;
+  const envCfTunnel = env.GLENKER_TRY_CF_TUNNEL === 'true';
+  const envTunnelProvider = env.GLENKER_TUNNEL_PROVIDER || undefined;
+  const envTunnelMode = env.GLENKER_TUNNEL_MODE || undefined;
+  const envTunnelConfigRaw = env.GLENKER_TUNNEL_CONFIG;
   const envTunnelConfig = typeof envTunnelConfigRaw === 'string'
     ? (envTunnelConfigRaw.trim().length > 0 ? envTunnelConfigRaw.trim() : null)
     : undefined;
-  const envTunnelToken = env.OPENJUNIOR_TUNNEL_TOKEN || undefined;
-  const envTunnelHostname = env.OPENJUNIOR_TUNNEL_HOSTNAME || undefined;
-  const envApiOnly = env.OPENJUNIOR_API_ONLY === '1' || env.OPENJUNIOR_API_ONLY === 'true';
+  const envTunnelToken = env.GLENKER_TUNNEL_TOKEN || undefined;
+  const envTunnelHostname = env.GLENKER_TUNNEL_HOSTNAME || undefined;
+  const envApiOnly = env.GLENKER_API_ONLY === '1' || env.GLENKER_API_ONLY === 'true';
 
   const options = {
     port: defaultPort,

@@ -1,7 +1,7 @@
 export const streamDebugEnabled = (): boolean => {
     if (typeof window === 'undefined') return false;
     try {
-        return window.localStorage.getItem('openjunior_stream_debug') === '1';
+        return window.localStorage.getItem('glenker_stream_debug') === '1';
     } catch {
         return false;
     }
@@ -10,13 +10,13 @@ export const streamDebugEnabled = (): boolean => {
 export const sessionStatusDebugEnabled = (): boolean => {
     if (typeof window === 'undefined') return false;
     try {
-        return window.localStorage.getItem('openjunior_session_status_debug') === '1';
+        return window.localStorage.getItem('glenker_session_status_debug') === '1';
     } catch {
         return false;
     }
 };
 
-const STREAM_PERF_STORAGE_KEY = 'openjunior_stream_perf';
+const STREAM_PERF_STORAGE_KEY = 'glenker_stream_perf';
 
 type PerfCounter = {
     count: number;
@@ -50,8 +50,8 @@ export type StreamPerfSnapshot = {
 
 declare global {
     interface Window {
-        __openjuniorStreamPerfState?: StreamPerfState;
-        __openjuniorVsCodeStreamPerfState?: {
+        __glenkerStreamPerfState?: StreamPerfState;
+        __glenkerVsCodeStreamPerfState?: {
             counters: Map<string, PerfCounter>;
             lastReportAt?: number;
             lastUpdatedAt?: number;
@@ -82,16 +82,16 @@ const ensureStreamPerfState = (): StreamPerfState | null => {
         return null;
     }
 
-    if (!window.__openjuniorStreamPerfState) {
+    if (!window.__glenkerStreamPerfState) {
         const startedAt = Date.now();
-        window.__openjuniorStreamPerfState = {
+        window.__glenkerStreamPerfState = {
             counters: new Map<string, PerfCounter>(),
             startedAt,
             lastUpdatedAt: startedAt,
         };
     }
 
-    return window.__openjuniorStreamPerfState;
+    return window.__glenkerStreamPerfState;
 };
 
 const normalizePerfEntries = (counters: Map<string, PerfCounter>): StreamPerfEntry[] => {
@@ -130,7 +130,7 @@ export const setStreamPerfEnabled = (enabled: boolean): void => {
     try {
         if (enabled) {
             window.localStorage.setItem(STREAM_PERF_STORAGE_KEY, '1');
-            window.__openjuniorStreamPerfState = {
+            window.__glenkerStreamPerfState = {
                 counters: new Map<string, PerfCounter>(),
                 startedAt: Date.now(),
                 lastUpdatedAt: Date.now(),
@@ -139,8 +139,8 @@ export const setStreamPerfEnabled = (enabled: boolean): void => {
         }
 
         window.localStorage.removeItem(STREAM_PERF_STORAGE_KEY);
-        delete window.__openjuniorStreamPerfState;
-        delete window.__openjuniorVsCodeStreamPerfState;
+        delete window.__glenkerStreamPerfState;
+        delete window.__glenkerVsCodeStreamPerfState;
     } catch {
         // ignore storage failures in debug helper
     }
@@ -152,16 +152,16 @@ export const resetStreamPerf = (): void => {
     }
 
     if (streamPerfEnabled()) {
-        window.__openjuniorStreamPerfState = {
+        window.__glenkerStreamPerfState = {
             counters: new Map<string, PerfCounter>(),
             startedAt: Date.now(),
             lastUpdatedAt: Date.now(),
         };
     }
 
-    if (window.__openjuniorVsCodeStreamPerfState) {
-        window.__openjuniorVsCodeStreamPerfState = {
-            ...window.__openjuniorVsCodeStreamPerfState,
+    if (window.__glenkerVsCodeStreamPerfState) {
+        window.__glenkerVsCodeStreamPerfState = {
+            ...window.__glenkerVsCodeStreamPerfState,
             counters: new Map<string, PerfCounter>(),
             startedAt: Date.now(),
             lastUpdatedAt: Date.now(),
@@ -180,7 +180,7 @@ export const getStreamPerfSnapshot = (): StreamPerfSnapshot => {
         };
     }
 
-    const state = window.__openjuniorStreamPerfState;
+    const state = window.__glenkerStreamPerfState;
     if (!streamPerfEnabled() || !state) {
         return {
             enabled: false,
@@ -211,7 +211,7 @@ export const getVsCodeStreamPerfSnapshot = (): StreamPerfSnapshot => {
         };
     }
 
-    const state = window.__openjuniorVsCodeStreamPerfState;
+    const state = window.__glenkerVsCodeStreamPerfState;
     if (!streamPerfEnabled() || !state) {
         return {
             enabled: false,

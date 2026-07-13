@@ -11,12 +11,12 @@ import {
   writeConfig,
 } from './shared.js';
 
-const OPENJUNIOR_CONFIG_DIR = path.join(os.homedir(), '.config', 'openjunior');
-const MCP_SEED_STATE_FILE = path.join(OPENJUNIOR_CONFIG_DIR, 'mcp-seed.json');
+const GLENKER_CONFIG_DIR = path.join(os.homedir(), '.config', 'glenker');
+const MCP_SEED_STATE_FILE = path.join(GLENKER_CONFIG_DIR, 'mcp-seed.json');
 
-function ensureOpenJuniorConfigDir() {
-  if (!fs.existsSync(OPENJUNIOR_CONFIG_DIR)) {
-    fs.mkdirSync(OPENJUNIOR_CONFIG_DIR, { recursive: true });
+function ensureGlenkerConfigDir() {
+  if (!fs.existsSync(GLENKER_CONFIG_DIR)) {
+    fs.mkdirSync(GLENKER_CONFIG_DIR, { recursive: true });
   }
 }
 
@@ -29,7 +29,7 @@ function hasMcpSeedFlag() {
 }
 
 function writeMcpSeedFlag() {
-  ensureOpenJuniorConfigDir();
+  ensureGlenkerConfigDir();
   fs.writeFileSync(MCP_SEED_STATE_FILE, JSON.stringify({ seeded: true }), 'utf-8');
 }
 

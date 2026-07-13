@@ -1,5 +1,5 @@
-import type { ToolsAPI } from '@openjunior/ui/lib/api/types';
-import { runtimeFetch } from '@openjunior/ui/lib/runtime-fetch';
+import type { ToolsAPI } from '@glenker/ui/lib/api/types';
+import { runtimeFetch } from '@glenker/ui/lib/runtime-fetch';
 
 export const createWebToolsAPI = (): ToolsAPI => ({
   async getAvailableTools(): Promise<string[]> {

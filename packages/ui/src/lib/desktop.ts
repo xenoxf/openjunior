@@ -172,7 +172,7 @@ export type DesktopSettings = {
   // Message limit — controls fetch, trim, and Load More chunk size (default: 200)
   messageLimit?: number;
 
-  // User-added skills catalogs (persisted to ~/.config/openjunior/settings.json)
+  // User-added skills catalogs (persisted to ~/.config/glenker/settings.json)
   skillCatalogs?: SkillCatalogConfig[];
   // Opt-in to send anonymous usage reports for update checks (default: true)
   reportUsage?: boolean;
@@ -213,12 +213,12 @@ type ElectronRuntimeGlobal = {
 
 const getElectronRuntime = (): ElectronRuntimeGlobal | null => {
   if (typeof window === 'undefined') return null;
-  return (window as unknown as { __OPENJUNIOR_ELECTRON__?: ElectronRuntimeGlobal }).__OPENJUNIOR_ELECTRON__ ?? null;
+  return (window as unknown as { __GLENKER_ELECTRON__?: ElectronRuntimeGlobal }).__GLENKER_ELECTRON__ ?? null;
 };
 
 const getDesktopBridge = (): DesktopBridgeGlobal | null => {
   if (typeof window === 'undefined') return null;
-  return (window as unknown as { __OPENJUNIOR_DESKTOP__?: DesktopBridgeGlobal }).__OPENJUNIOR_DESKTOP__ ?? null;
+  return (window as unknown as { __GLENKER_DESKTOP__?: DesktopBridgeGlobal }).__GLENKER_DESKTOP__ ?? null;
 };
 
 export const isElectronShell = (): boolean => getElectronRuntime()?.runtime === 'electron';
@@ -317,7 +317,7 @@ export const isDesktopLocalOriginActive = (): boolean => {
     return true;
   }
 
-  const local = typeof window.__OPENJUNIOR_LOCAL_ORIGIN__ === 'string' ? window.__OPENJUNIOR_LOCAL_ORIGIN__ : '';
+  const local = typeof window.__GLENKER_LOCAL_ORIGIN__ === 'string' ? window.__GLENKER_LOCAL_ORIGIN__ : '';
   const localUrl = parseUrl(local);
   const runtimeApiUrl = parseUrl(getRuntimeApiBaseUrl());
 
@@ -406,7 +406,7 @@ export const isWebRuntime = (): boolean => {
 
 export const getDesktopHomeDirectory = async (): Promise<string | null> => {
   if (typeof window !== 'undefined') {
-    const embedded = window.__OPENJUNIOR_HOME__;
+    const embedded = window.__GLENKER_HOME__;
     if (embedded && embedded.length > 0) {
       return embedded;
     }
@@ -536,7 +536,7 @@ export const sendAssistantCompletionNotification = async (
         payload: {
           title: payload?.title,
           body: payload?.body,
-          tag: 'openjunior-agent-complete',
+          tag: 'glenker-agent-complete',
         },
       });
       return true;
@@ -577,7 +577,7 @@ export const downloadDesktopUpdate = async (
 
   try {
     if (typeof onProgress === 'function' && bridge?.listen) {
-      unlisten = await bridge.listen('openjunior:update-progress', (evt) => {
+      unlisten = await bridge.listen('glenker:update-progress', (evt) => {
         const payload = evt?.payload;
         if (!payload || typeof payload !== 'object') return;
         const data = payload as { event?: unknown; data?: unknown };

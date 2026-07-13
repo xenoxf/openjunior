@@ -54,44 +54,44 @@ describe('tts routes', () => {
 });
 
 describe('normalizeCustomOpenAIBaseURL', () => {
-  const originalRuntime = process.env.OPENJUNIOR_RUNTIME;
-  const originalAllowRemote = process.env.OPENJUNIOR_ALLOW_REMOTE_OPENAI_COMPAT_URLS;
+  const originalRuntime = process.env.GLENKER_RUNTIME;
+  const originalAllowRemote = process.env.GLENKER_ALLOW_REMOTE_OPENAI_COMPAT_URLS;
 
   afterEach(() => {
     // Restore env vars after each test
     if (originalRuntime === undefined) {
-      delete process.env.OPENJUNIOR_RUNTIME;
+      delete process.env.GLENKER_RUNTIME;
     } else {
-      process.env.OPENJUNIOR_RUNTIME = originalRuntime;
+      process.env.GLENKER_RUNTIME = originalRuntime;
     }
     if (originalAllowRemote === undefined) {
-      delete process.env.OPENJUNIOR_ALLOW_REMOTE_OPENAI_COMPAT_URLS;
+      delete process.env.GLENKER_ALLOW_REMOTE_OPENAI_COMPAT_URLS;
     } else {
-      process.env.OPENJUNIOR_ALLOW_REMOTE_OPENAI_COMPAT_URLS = originalAllowRemote;
+      process.env.GLENKER_ALLOW_REMOTE_OPENAI_COMPAT_URLS = originalAllowRemote;
     }
   });
 
-  it('rejects remote URLs when OPENJUNIOR_RUNTIME is not set (web)', () => {
-    delete process.env.OPENJUNIOR_RUNTIME;
-    delete process.env.OPENJUNIOR_ALLOW_REMOTE_OPENAI_COMPAT_URLS;
+  it('rejects remote URLs when GLENKER_RUNTIME is not set (web)', () => {
+    delete process.env.GLENKER_RUNTIME;
+    delete process.env.GLENKER_ALLOW_REMOTE_OPENAI_COMPAT_URLS;
 
     const result = normalizeCustomOpenAIBaseURL('https://my-tts-server.example.com/v1');
     expect(result.error).toMatch(/Remote custom server URLs are disabled/);
     expect(result.value).toBeUndefined();
   });
 
-  it('allows remote URLs when OPENJUNIOR_RUNTIME is desktop', () => {
-    process.env.OPENJUNIOR_RUNTIME = 'desktop';
-    delete process.env.OPENJUNIOR_ALLOW_REMOTE_OPENAI_COMPAT_URLS;
+  it('allows remote URLs when GLENKER_RUNTIME is desktop', () => {
+    process.env.GLENKER_RUNTIME = 'desktop';
+    delete process.env.GLENKER_ALLOW_REMOTE_OPENAI_COMPAT_URLS;
 
     const result = normalizeCustomOpenAIBaseURL('https://my-tts-server.example.com/v1');
     expect(result.error).toBeUndefined();
     expect(result.value).toBe('https://my-tts-server.example.com/v1');
   });
 
-  it('allows remote URLs when OPENJUNIOR_ALLOW_REMOTE_OPENAI_COMPAT_URLS is true', () => {
-    delete process.env.OPENJUNIOR_RUNTIME;
-    process.env.OPENJUNIOR_ALLOW_REMOTE_OPENAI_COMPAT_URLS = 'true';
+  it('allows remote URLs when GLENKER_ALLOW_REMOTE_OPENAI_COMPAT_URLS is true', () => {
+    delete process.env.GLENKER_RUNTIME;
+    process.env.GLENKER_ALLOW_REMOTE_OPENAI_COMPAT_URLS = 'true';
 
     const result = normalizeCustomOpenAIBaseURL('https://my-tts-server.example.com/v1');
     expect(result.error).toBeUndefined();
@@ -99,8 +99,8 @@ describe('normalizeCustomOpenAIBaseURL', () => {
   });
 
   it('allows localhost URLs regardless of runtime', () => {
-    delete process.env.OPENJUNIOR_RUNTIME;
-    delete process.env.OPENJUNIOR_ALLOW_REMOTE_OPENAI_COMPAT_URLS;
+    delete process.env.GLENKER_RUNTIME;
+    delete process.env.GLENKER_ALLOW_REMOTE_OPENAI_COMPAT_URLS;
 
     const result = normalizeCustomOpenAIBaseURL('http://localhost:8880/v1');
     expect(result.error).toBeUndefined();
@@ -108,15 +108,15 @@ describe('normalizeCustomOpenAIBaseURL', () => {
   });
 
   it('strips query strings and trailing slashes', () => {
-    process.env.OPENJUNIOR_RUNTIME = 'desktop';
+    process.env.GLENKER_RUNTIME = 'desktop';
 
     const result = normalizeCustomOpenAIBaseURL('https://my-server.com/v1/?key=123');
     expect(result.value).toBe('https://my-server.com/v1');
   });
 
   it('denies remote URLs on desktop when env var is explicitly false', () => {
-    process.env.OPENJUNIOR_RUNTIME = 'desktop';
-    process.env.OPENJUNIOR_ALLOW_REMOTE_OPENAI_COMPAT_URLS = 'false';
+    process.env.GLENKER_RUNTIME = 'desktop';
+    process.env.GLENKER_ALLOW_REMOTE_OPENAI_COMPAT_URLS = 'false';
 
     const result = normalizeCustomOpenAIBaseURL('https://my-tts-server.example.com/v1');
     expect(result.error).toMatch(/Remote custom server URLs are disabled/);

@@ -1,4 +1,4 @@
-import type { DirectoryPermissionRequest, PermissionsAPI, StartAccessingResult } from '@openjunior/ui/lib/api/types';
+import type { DirectoryPermissionRequest, PermissionsAPI, StartAccessingResult } from '@glenker/ui/lib/api/types';
 
 export const createWebPermissionsAPI = (): PermissionsAPI => ({
   async requestDirectoryAccess(request: DirectoryPermissionRequest) {

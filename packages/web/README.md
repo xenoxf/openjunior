@@ -1,101 +1,101 @@
-# <picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/btriapitsyn/openjunior/raw/HEAD/docs/references/badges/openjunior-logo-dark.svg"><img src="https://github.com/btriapitsyn/openjunior/raw/HEAD/docs/references/badges/openjunior-logo-light.svg" width="32" height="32" align="absmiddle" /></picture> @openjunior/web
+# <picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/btriapitsyn/glenker/raw/HEAD/docs/references/badges/glenker-logo-dark.svg"><img src="https://github.com/btriapitsyn/glenker/raw/HEAD/docs/references/badges/glenker-logo-light.svg" width="32" height="32" align="absmiddle" /></picture> @glenker/web
 
-[![GitHub stars](https://img.shields.io/github/stars/btriapitsyn/openjunior?style=flat&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0iI2YxZWNlYyIgdmlld0JveD0iMCAwIDI1NiAyNTYiPjxwYXRoIGQ9Ik0yMjkuMDYsMTA4Ljc5bC00OC43LDQyLDE0Ljg4LDYyLjc5YTguNCw4LjQsMCwwLDEtMTIuNTIsOS4xN0wxMjgsMTg5LjA5LDczLjI4LDIyMi43NGE4LjQsOC40LDAsMCwxLTEyLjUyLTkuMTdsMTQuODgtNjIuNzktNDguNy00MkE4LjQ2LDguNDYsMCwwLDEsMzEuNzMsOTRMOTUuNjQsODguOGwyNC42Mi01OS42YTguMzYsOC4zNiwwLDAsMSwxNS40OCwwbDI0LjYyLDU5LjZMMjI0LjI3LDk0QTguNDYsOC40NiwwLDAsMSwyMjkuMDYsMTA4Ljc5WiIgb3BhY2l0eT0iMC4yIj48L3BhdGg%2BPHBhdGggZD0iTTIzOS4xOCw5Ny4yNkExNi4zOCwxNi4zOCwwLDAsMCwyMjQuOTIsODZsLTU5LTQuNzZMMTQzLjE0LDI2LjE1YTE2LjM2LDE2LjM2LDAsMCwwLTMwLjI3LDBMOTAuMTEsODEuMjMsMzEuMDgsODZhMTYuNDYsMTYuNDYsMCwwLDAtOS4zNywyOC44Nmw0NSwzOC44M0w1MywyMTEuNzVhMTYuMzgsMTYuMzgsMCwwLDAsMjQuNSwxNy44MkwxMjgsMTk4LjQ5bDUwLjUzLDMxLjA4QTE2LjQsMTYuNCwwLDAsMCwyMDMsMjExLjc1bC0xMy43Ni01OC4wNyw0NS0zOC44M0ExNi40MywxNi40MywwLDAsMCwyMzkuMTgsOTcuMjZabS0xNS4zNCw1LjQ3LTQ4LjcsNDJhOCw4LDAsMCwwLTIuNTYsNy45MWwxNC44OCw2Mi44YS4zNy4zNywwLDAsMS0uMTcuNDhjLS4xOC4xNC0uMjMuMTEtLjM4LDBsLTU0LjcyLTMzLjY1YTgsOCwwLDAsMC04LjM4LDBMNjkuMDksMjE1Ljk0Yy0uMTUuMDktLjE5LjEyLS4zOCwwYS4zNy4zNywwLDAsMS0uMTctLjQ4bDE0Ljg4LTYyLjhhOCw4LDAsMCwwLTIuNTYtNy45MWwtNDguNy00MmMtLjEyLS4xLS4yMy0uMTktLjEzLS41cy4xOC0uMjcuMzMtLjI5bDYzLjkyLTUuMTZBOCw4LDAsMCwwLDEwMyw5MS44NmwyNC42Mi01OS42MWMuMDgtLjE3LjExLS4yNS4zNS0uMjVzLjI3LjA4LjM1LjI1TDE1Myw5MS44NmE4LDgsMCwwLDAsNi43NSw0LjkybDYzLjkyLDUuMTZjLjE1LDAsLjI0LDAsLjMzLjI5UzIyNCwxMDIuNjMsMjIzLjg0LDEwMi43M1oiPjwvcGF0aD48L3N2Zz4%3D&logoColor=FFFCF0&labelColor=100F0F&color=66800B)](https://github.com/btriapitsyn/openjunior/stargazers)
-[![GitHub release](https://img.shields.io/github/v/release/btriapitsyn/openjunior?style=flat&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0iI2YxZWNlYyIgdmlld0JveD0iMCAwIDI1NiAyNTYiPjxwYXRoIGQ9Ik0xMjgsMTI5LjA5VjIzMmE4LDgsMCwwLDEtMy44NC0xbC04OC00OC4xOGE4LDgsMCwwLDEtNC4xNi03VjgwLjE4YTgsOCwwLDAsMSwuNy0zLjI1WiIgb3BhY2l0eT0iMC4yIj48L3BhdGg%2BPHBhdGggZD0iTTIyMy42OCw2Ni4xNSwxMzUuNjgsMThhMTUuODgsMTUuODgsMCwwLDAtMTUuMzYsMGwtODgsNDguMTdhMTYsMTYsMCwwLDAtOC4zMiwxNHY5NS42NGExNiwxNiwwLDAsMCw4LjMyLDE0bDg4LDQ4LjE3YTE1Ljg4LDE1Ljg4LDAsMCwwLDE1LjM2LDBsODgtNDguMTdhMTYsMTYsMCwwLDAsOC4zMi0xNFY4MC4xOEExNiwxNiwwLDAsMCwyMjMuNjgsNjYuMTVaTTEyOCwzMmw4MC4zNCw0NC0yOS43NywxNi4zLTgwLjM1LTQ0Wk0xMjgsMTIwLDQ3LjY2LDc2bDMzLjktMTguNTYsODAuMzQsNDRaTTQwLDkwbDgwLDQzLjc4djg1Ljc5TDQwLDE3NS44MlptMTc2LDg1Ljc4aDBsLTgwLDQzLjc5VjEzMy44MmwzMi0xNy41MVYxNTJhOCw4LDAsMCwwLDE2LDBWMTA3LjU1TDIxNiw5MHY4NS43N1oiPjwvcGF0aD48L3N2Zz4%3D&logoColor=FFFCF0&labelColor=100F0F&color=205EA6)](https://github.com/btriapitsyn/openjunior/releases/latest)
+[![GitHub stars](https://img.shields.io/github/stars/btriapitsyn/glenker?style=flat&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0iI2YxZWNlYyIgdmlld0JveD0iMCAwIDI1NiAyNTYiPjxwYXRoIGQ9Ik0yMjkuMDYsMTA4Ljc5bC00OC43LDQyLDE0Ljg4LDYyLjc5YTguNCw4LjQsMCwwLDEtMTIuNTIsOS4xN0wxMjgsMTg5LjA5LDczLjI4LDIyMi43NGE4LjQsOC40LDAsMCwxLTEyLjUyLTkuMTdsMTQuODgtNjIuNzktNDguNy00MkE4LjQ2LDguNDYsMCwwLDEsMzEuNzMsOTRMOTUuNjQsODguOGwyNC42Mi01OS42YTguMzYsOC4zNiwwLDAsMSwxNS40OCwwbDI0LjYyLDU5LjZMMjI0LjI3LDk0QTguNDYsOC40NiwwLDAsMSwyMjkuMDYsMTA4Ljc5WiIgb3BhY2l0eT0iMC4yIj48L3BhdGg%2BPHBhdGggZD0iTTIzOS4xOCw5Ny4yNkExNi4zOCwxNi4zOCwwLDAsMCwyMjQuOTIsODZsLTU5LTQuNzZMMTQzLjE0LDI2LjE1YTE2LjM2LDE2LjM2LDAsMCwwLTMwLjI3LDBMOTAuMTEsODEuMjMsMzEuMDgsODZhMTYuNDYsMTYuNDYsMCwwLDAtOS4zNywyOC44Nmw0NSwzOC44M0w1MywyMTEuNzVhMTYuMzgsMTYuMzgsMCwwLDAsMjQuNSwxNy44MkwxMjgsMTk4LjQ5bDUwLjUzLDMxLjA4QTE2LjQsMTYuNCwwLDAsMCwyMDMsMjExLjc1bC0xMy43Ni01OC4wNyw0NS0zOC44M0ExNi40MywxNi40MywwLDAsMCwyMzkuMTgsOTcuMjZabS0xNS4zNCw1LjQ3LTQ4LjcsNDJhOCw4LDAsMCwwLTIuNTYsNy45MWwxNC44OCw2Mi44YS4zNy4zNywwLDAsMS0uMTcuNDhjLS4xOC4xNC0uMjMuMTEtLjM4LDBsLTU0LjcyLTMzLjY1YTgsOCwwLDAsMC04LjM4LDBMNjkuMDksMjE1Ljk0Yy0uMTUuMDktLjE5LjEyLS4zOCwwYS4zNy4zNywwLDAsMS0uMTctLjQ4bDE0Ljg4LTYyLjhhOCw4LDAsMCwwLTIuNTYtNy45MWwtNDguNy00MmMtLjEyLS4xLS4yMy0uMTktLjEzLS41cy4xOC0uMjcuMzMtLjI5bDYzLjkyLTUuMTZBOCw4LDAsMCwwLDEwMyw5MS44NmwyNC42Mi01OS42MWMuMDgtLjE3LjExLS4yNS4zNS0uMjVzLjI3LjA4LjM1LjI1TDE1Myw5MS44NmE4LDgsMCwwLDAsNi43NSw0LjkybDYzLjkyLDUuMTZjLjE1LDAsLjI0LDAsLjMzLjI5UzIyNCwxMDIuNjMsMjIzLjg0LDEwMi43M1oiPjwvcGF0aD48L3N2Zz4%3D&logoColor=FFFCF0&labelColor=100F0F&color=66800B)](https://github.com/btriapitsyn/glenker/stargazers)
+[![GitHub release](https://img.shields.io/github/v/release/btriapitsyn/glenker?style=flat&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0iI2YxZWNlYyIgdmlld0JveD0iMCAwIDI1NiAyNTYiPjxwYXRoIGQ9Ik0xMjgsMTI5LjA5VjIzMmE4LDgsMCwwLDEtMy44NC0xbC04OC00OC4xOGE4LDgsMCwwLDEtNC4xNi03VjgwLjE4YTgsOCwwLDAsMSwuNy0zLjI1WiIgb3BhY2l0eT0iMC4yIj48L3BhdGg%2BPHBhdGggZD0iTTIyMy42OCw2Ni4xNSwxMzUuNjgsMThhMTUuODgsMTUuODgsMCwwLDAtMTUuMzYsMGwtODgsNDguMTdhMTYsMTYsMCwwLDAtOC4zMiwxNHY5NS42NGExNiwxNiwwLDAsMCw4LjMyLDE0bDg4LDQ4LjE3YTE1Ljg4LDE1Ljg4LDAsMCwwLDE1LjM2LDBsODgtNDguMTdhMTYsMTYsMCwwLDAsOC4zMi0xNFY4MC4xOEExNiwxNiwwLDAsMCwyMjMuNjgsNjYuMTVaTTEyOCwzMmw4MC4zNCw0NC0yOS43NywxNi4zLTgwLjM1LTQ0Wk0xMjgsMTIwLDQ3LjY2LDc2bDMzLjktMTguNTYsODAuMzQsNDRaTTQwLDkwbDgwLDQzLjc4djg1Ljc5TDQwLDE3NS44MlptMTc2LDg1Ljc4aDBsLTgwLDQzLjc5VjEzMy44MmwzMi0xNy41MVYxNTJhOCw4LDAsMCwwLDE2LDBWMTA3LjU1TDIxNiw5MHY4NS43N1oiPjwvcGF0aD48L3N2Zz4%3D&logoColor=FFFCF0&labelColor=100F0F&color=205EA6)](https://github.com/btriapitsyn/glenker/releases/latest)
 [![Discord](https://img.shields.io/badge/Discord-join.svg?style=flat&labelColor=100F0F&color=8B7EC8&logo=discord&logoColor=FFFCF0)](https://discord.gg/ZYRSdnwwKA)
 
 Run [OpenCode](https://opencode.ai) in your browser. Install the CLI, open `localhost:3000`, done. Works on desktop browsers, tablets, and phones as a PWA.
 
-Full project overview, screenshots, and all features: [github.com/btriapitsyn/openjunior](https://github.com/btriapitsyn/openjunior)
+Full project overview, screenshots, and all features: [github.com/btriapitsyn/glenker](https://github.com/btriapitsyn/glenker)
 
 ## Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/btriapitsyn/openjunior/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/btriapitsyn/glenker/main/scripts/install.sh | bash
 ```
 
-Or install manually: `bun add -g @openjunior/web` (or npm, pnpm, yarn).
+Or install manually: `bun add -g @glenker/web` (or npm, pnpm, yarn).
 
 > **Prerequisites:** [OpenCode CLI](https://opencode.ai) installed, Node.js 22+.
 
 ## Usage
 
 ```bash
-openjunior                          # Start on port 3000
-openjunior --port 8080              # Custom port
-openjunior --lan --port 3000        # Listen on LAN (0.0.0.0)
-openjunior --ui-password secret     # Password-protect UI
-openjunior startup enable           # Start at login as a native service
-OPENJUNIOR_UI_PASSWORD=secret openjunior startup enable # Save service password env
-openjunior startup status           # Show startup service status
-openjunior startup disable          # Remove startup service
-openjunior tunnel help              # Tunnel lifecycle commands
-openjunior tunnel providers         # Show provider capabilities
-openjunior tunnel profile add --provider cloudflare --mode managed-remote --name prod-main --hostname app.example.com --token <token>
-openjunior tunnel start --profile prod-main
-openjunior tunnel start --provider cloudflare --mode quick --qr
-openjunior tunnel start --provider cloudflare --mode managed-local --config ~/.cloudflared/config.yml
-openjunior tunnel status --all      # Show tunnel state across instances
-openjunior tunnel stop --port 3000  # Stop tunnel only (server stays running)
-openjunior connect-url --port 3000  # Add this server to OpenJunior Desktop
-openjunior connect-url --server http://host:3000 --qr
-openjunior connect-url --port 3000 --qr
-openjunior logs                     # Follow latest instance logs
-OPENCODE_PORT=4096 OPENCODE_SKIP_START=true openjunior                    # Connect to external OpenCode server
-OPENCODE_HOST=https://myhost:4096 OPENCODE_SKIP_START=true openjunior  # Connect via custom host/HTTPS
-openjunior stop                     # Stop server
-openjunior update                   # Update to latest version
+glenker                          # Start on port 3000
+glenker --port 8080              # Custom port
+glenker --lan --port 3000        # Listen on LAN (0.0.0.0)
+glenker --ui-password secret     # Password-protect UI
+glenker startup enable           # Start at login as a native service
+GLENKER_UI_PASSWORD=secret glenker startup enable # Save service password env
+glenker startup status           # Show startup service status
+glenker startup disable          # Remove startup service
+glenker tunnel help              # Tunnel lifecycle commands
+glenker tunnel providers         # Show provider capabilities
+glenker tunnel profile add --provider cloudflare --mode managed-remote --name prod-main --hostname app.example.com --token <token>
+glenker tunnel start --profile prod-main
+glenker tunnel start --provider cloudflare --mode quick --qr
+glenker tunnel start --provider cloudflare --mode managed-local --config ~/.cloudflared/config.yml
+glenker tunnel status --all      # Show tunnel state across instances
+glenker tunnel stop --port 3000  # Stop tunnel only (server stays running)
+glenker connect-url --port 3000  # Add this server to Glenker Desktop
+glenker connect-url --server http://host:3000 --qr
+glenker connect-url --port 3000 --qr
+glenker logs                     # Follow latest instance logs
+OPENCODE_PORT=4096 OPENCODE_SKIP_START=true glenker                    # Connect to external OpenCode server
+OPENCODE_HOST=https://myhost:4096 OPENCODE_SKIP_START=true glenker  # Connect via custom host/HTTPS
+glenker stop                     # Stop server
+glenker update                   # Update to latest version
 ```
 
-`startup enable` snapshots your current environment into the native service so startup behaves like you launched `openjunior` from the same shell. This preserves provider tokens, PATH, SSH agent settings, and other CLI auth/config env vars. Use `--no-env-snapshot` for a minimal service env.
+`startup enable` snapshots your current environment into the native service so startup behaves like you launched `glenker` from the same shell. This preserves provider tokens, PATH, SSH agent settings, and other CLI auth/config env vars. Use `--no-env-snapshot` for a minimal service env.
 
 ### Tunnel behavior notes
 
-- One active tunnel per running OpenJunior instance (port).
+- One active tunnel per running Glenker instance (port).
 - Starting a different tunnel mode/provider on the same instance replaces the active tunnel.
 - Replacing or stopping a tunnel revokes existing connect links and invalidates remote tunnel sessions.
 - Connect links are one-time tokens; generating a new link revokes the previous unused link.
 
-### Connect other OpenJunior apps
+### Connect other Glenker apps
 
-Use `connect-url` when a web/API server should be added to OpenJunior Desktop or another OpenJunior app. If no server is running on the selected port, OpenJunior starts one first.
+Use `connect-url` when a web/API server should be added to Glenker Desktop or another Glenker app. If no server is running on the selected port, Glenker starts one first.
 
 ```bash
-openjunior connect-url --port 3000
-openjunior connect-url --port 3000 --qr
-openjunior connect-url --port 3000 --json
-openjunior connect-url --port 3000 --name "Workstation"
-openjunior connect-url --port 3000 --lan --server http://workstation.local:3000 --qr
+glenker connect-url --port 3000
+glenker connect-url --port 3000 --qr
+glenker connect-url --port 3000 --json
+glenker connect-url --port 3000 --name "Workstation"
+glenker connect-url --port 3000 --lan --server http://workstation.local:3000 --qr
 ```
 
 ### Headless/API-only server for Desktop
 
-Use this on a remote machine when you want OpenJunior running as a web/API server, then connect to it from OpenJunior Desktop on another machine:
+Use this on a remote machine when you want Glenker running as a web/API server, then connect to it from Glenker Desktop on another machine:
 
 ```bash
-openjunior connect-url --port 3000 --api-only --lan --server http://workstation.local:3000 --qr --ui-password your-password
+glenker connect-url --port 3000 --api-only --lan --server http://workstation.local:3000 --qr --ui-password your-password
 ```
 
 `--api-only` starts API routes without serving browser UI assets. `--lan` binds the server so other machines can reach it. `--server` is the address saved into the Desktop connection link. `--ui-password` protects browser access if UI routes are enabled elsewhere; the generated client token is what Desktop uses for API access.
 
-This creates a remote client token and prints an `openjunior://connect?...` link. The link contains the server URL, token, label, and payload version. In OpenJunior Desktop, paste it in **Settings -> Remote Instances -> Direct Instances -> Import Link** to add that server as an Instance.
+This creates a remote client token and prints an `glenker://connect?...` link. The link contains the server URL, token, label, and payload version. In Glenker Desktop, paste it in **Settings -> Remote Instances -> Direct Instances -> Import Link** to add that server as an Instance.
 
 If the server was started with `--lan` or `--host 0.0.0.0`, `connect-url` automatically advertises a detected LAN IP instead of `127.0.0.1`. Use `--server <url>` when you want to advertise a specific DNS name, Tailscale address, reverse proxy URL, or HTTPS endpoint.
 
 If you are exposing the server beyond localhost, start it with a password:
 
 ```bash
-openjunior serve --lan --port 3000 --ui-password your-password
+glenker serve --lan --port 3000 --ui-password your-password
 ```
 
-Generating a client token does not automatically password-protect the hosted browser UI. `--ui-password` protects browser access; the client token lets another OpenJunior app connect to this server.
+Generating a client token does not automatically password-protect the hosted browser UI. `--ui-password` protects browser access; the client token lets another Glenker app connect to this server.
 
 <details>
 <summary>Connect to external OpenCode server</summary>
 
 ```bash
-OPENCODE_PORT=4096 OPENCODE_SKIP_START=true openjunior
-OPENCODE_HOST=https://myhost:4096 OPENCODE_SKIP_START=true openjunior
+OPENCODE_PORT=4096 OPENCODE_SKIP_START=true glenker
+OPENCODE_HOST=https://myhost:4096 OPENCODE_SKIP_START=true glenker
 ```
 
 | Variable | Description |
@@ -103,11 +103,11 @@ OPENCODE_HOST=https://myhost:4096 OPENCODE_SKIP_START=true openjunior
 | `OPENCODE_HOST` | Full base URL of external server (overrides `OPENCODE_PORT`) |
 | `OPENCODE_PORT` | Port of external server |
 | `OPENCODE_SKIP_START` | Skip starting embedded OpenCode server |
-| `OPENJUNIOR_OPENCODE_HOSTNAME` | Bind hostname for managed OpenCode server (default: `127.0.0.1`, use `0.0.0.0` for LAN/remote access — trusted networks only) |
-| `OPENJUNIOR_HOST` | Bind hostname for the OpenJunior web server (default: `127.0.0.1`; use `0.0.0.0` for LAN/remote access — trusted networks only) |
-| `OPENJUNIOR_VERBOSE_REQUEST_LOGS` | Set to `true` to log every HTTP request; disabled by default to keep user logs small |
-| `OPENJUNIOR_SKIP_API_COMPRESSION` | Set to `true` to disable gzip compression for `/api/*` responses |
-| `OPENJUNIOR_COMPRESS_API` | Set to `true` to force `/api/*` compression, or `false` to disable it. Desktop runtime disables API compression by default to reduce local sidecar CPU use |
+| `GLENKER_OPENCODE_HOSTNAME` | Bind hostname for managed OpenCode server (default: `127.0.0.1`, use `0.0.0.0` for LAN/remote access — trusted networks only) |
+| `GLENKER_HOST` | Bind hostname for the Glenker web server (default: `127.0.0.1`; use `0.0.0.0` for LAN/remote access — trusted networks only) |
+| `GLENKER_VERBOSE_REQUEST_LOGS` | Set to `true` to log every HTTP request; disabled by default to keep user logs small |
+| `GLENKER_SKIP_API_COMPRESSION` | Set to `true` to disable gzip compression for `/api/*` responses |
+| `GLENKER_COMPRESS_API` | Set to `true` to force `/api/*` compression, or `false` to disable it. Desktop runtime disables API compression by default to reduce local sidecar CPU use |
 
 </details>
 
@@ -115,7 +115,7 @@ OPENCODE_HOST=https://myhost:4096 OPENCODE_SKIP_START=true openjunior
 <summary>Bind managed OpenCode to LAN / Tailscale</summary>
 
 ```bash
-OPENJUNIOR_OPENCODE_HOSTNAME=0.0.0.0 openjunior --port 3000
+GLENKER_OPENCODE_HOSTNAME=0.0.0.0 glenker --port 3000
 ```
 
 **Security note:** binding to `0.0.0.0` exposes the server on all network interfaces — use only on trusted networks and protect with firewall rules or `--ui-password`.
@@ -126,32 +126,32 @@ OPENJUNIOR_OPENCODE_HOSTNAME=0.0.0.0 openjunior --port 3000
 ```yaml
 environment:
   UI_PASSWORD: your_secure_password
-  OPENJUNIOR_TUNNEL_MODE: quick # quick | managed-remote | managed-local
-  OPENJUNIOR_TUNNEL_PROVIDER: cloudflare
+  GLENKER_TUNNEL_MODE: quick # quick | managed-remote | managed-local
+  GLENKER_TUNNEL_PROVIDER: cloudflare
 ```
 
 For `managed-remote` mode, also set:
 
 ```yaml
 environment:
-  OPENJUNIOR_TUNNEL_MODE: managed-remote
-  OPENJUNIOR_TUNNEL_HOSTNAME: app.example.com
-  OPENJUNIOR_TUNNEL_TOKEN: <token>
+  GLENKER_TUNNEL_MODE: managed-remote
+  GLENKER_TUNNEL_HOSTNAME: app.example.com
+  GLENKER_TUNNEL_TOKEN: <token>
 ```
 
 For `managed-local` mode, you can set:
 
 ```yaml
 environment:
-  OPENJUNIOR_TUNNEL_MODE: managed-local
-  OPENJUNIOR_TUNNEL_CONFIG: /home/openjunior/.cloudflared/config.yml
+  GLENKER_TUNNEL_MODE: managed-local
+  GLENKER_TUNNEL_CONFIG: /home/glenker/.cloudflared/config.yml
 ```
 
-Managed-local path note: `OPENJUNIOR_TUNNEL_CONFIG` must use a container path under `/home/openjunior/...`. If the config file references `credentials-file`, ensure that JSON path is also mounted and reachable inside the container.
+Managed-local path note: `GLENKER_TUNNEL_CONFIG` must use a container path under `/home/glenker/...`. If the config file references `credentials-file`, ensure that JSON path is also mounted and reachable inside the container.
 
 **Data directory:** mount `data/` for persistent storage. Ensure permissions:
 ```bash
-mkdir -p data/openjunior data/opencode/share data/opencode/config data/ssh
+mkdir -p data/glenker data/opencode/share data/opencode/config data/ssh
 chown -R 1000:1000 data/
 ```
 
@@ -161,8 +161,8 @@ chown -R 1000:1000 data/
 <summary>Background & daemon mode</summary>
 
 ```bash
-openjunior             # Runs in background by default
-openjunior stop        # Stop background server
+glenker             # Runs in background by default
+glenker stop        # Stop background server
 ```
 
 </details>
@@ -195,15 +195,15 @@ WantedBy=default.target
 > Without `SSH_AUTH_SOCK`, git operations over SSH (push, pull, clone) will fail.
 > `%t` expands to `$XDG_RUNTIME_DIR` (e.g. `/run/user/1000`), where most SSH agents write their socket.
 
-**`~/.config/systemd/user/openjunior.service`**
+**`~/.config/systemd/user/glenker.service`**
 ```ini
 [Unit]
-Description=OpenJunior Web Server
+Description=Glenker Web Server
 After=opencode.service
 
 [Service]
 Type=simple
-ExecStart=openjunior serve --port 3000 --host 0.0.0.0 --ui-password your-password --foreground
+ExecStart=glenker serve --port 3000 --host 0.0.0.0 --ui-password your-password --foreground
 Environment="OPENCODE_HOST=http://localhost:4095"
 Environment="OPENCODE_SKIP_START=true"
 Restart=on-failure
@@ -215,10 +215,10 @@ WantedBy=default.target
 
 ```bash
 systemctl --user daemon-reload
-systemctl --user enable --now opencode openjunior
+systemctl --user enable --now opencode glenker
 ```
 
-`--host 0.0.0.0` is required to listen on all interfaces (the default is `127.0.0.1`). Use `--host <ip>` or `OPENJUNIOR_HOST=<ip>` to bind to a specific interface instead.
+`--host 0.0.0.0` is required to listen on all interfaces (the default is `127.0.0.1`). Use `--host <ip>` or `GLENKER_HOST=<ip>` to bind to a specific interface instead.
 
 </details>
 

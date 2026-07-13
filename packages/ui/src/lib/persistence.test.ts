@@ -2,7 +2,7 @@ import { afterAll, beforeEach, describe, expect, test } from 'bun:test';
 
 import { applyPersistedHomeDirectoryToWindow } from './persistence';
 
-type TestWindow = { __OPENJUNIOR_HOME__?: string };
+type TestWindow = { __GLENKER_HOME__?: string };
 
 let createdWindow = false;
 
@@ -20,28 +20,28 @@ const getWindow = (): TestWindow => {
 
 describe('applyPersistedHomeDirectoryToWindow', () => {
   beforeEach(() => {
-    delete getWindow().__OPENJUNIOR_HOME__;
+    delete getWindow().__GLENKER_HOME__;
   });
 
   afterAll(() => {
     if (createdWindow) {
       delete (globalThis as { window?: unknown }).window;
     } else {
-      delete getWindow().__OPENJUNIOR_HOME__;
+      delete getWindow().__GLENKER_HOME__;
     }
   });
 
   test('does not overwrite an injected desktop home directory', () => {
-    getWindow().__OPENJUNIOR_HOME__ = '/Users/example';
+    getWindow().__GLENKER_HOME__ = '/Users/example';
 
     applyPersistedHomeDirectoryToWindow('/Users/example/projects/app');
 
-    expect(getWindow().__OPENJUNIOR_HOME__).toBe('/Users/example');
+    expect(getWindow().__GLENKER_HOME__).toBe('/Users/example');
   });
 
   test('uses persisted home when no runtime home was injected', () => {
     applyPersistedHomeDirectoryToWindow('/Users/example/projects/app');
 
-    expect(getWindow().__OPENJUNIOR_HOME__).toBe('/Users/example/projects/app');
+    expect(getWindow().__GLENKER_HOME__).toBe('/Users/example/projects/app');
   });
 });

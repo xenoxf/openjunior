@@ -3,8 +3,8 @@ import type {
   FileSearchQuery,
   FileSearchResult,
   FilesAPI,
-} from '@openjunior/ui/lib/api/types';
-import { runtimeFetch } from '@openjunior/ui/lib/runtime-fetch';
+} from '@glenker/ui/lib/api/types';
+import { runtimeFetch } from '@glenker/ui/lib/runtime-fetch';
 
 const normalizePath = (path: string): string => path.replace(/\\/g, '/');
 

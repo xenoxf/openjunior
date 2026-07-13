@@ -18,7 +18,7 @@ const toNotificationPayload = (value: unknown): NotificationPayload | null => {
   const properties = record.properties && typeof record.properties === 'object'
     ? record.properties as Record<string, unknown>
     : null;
-  if (record.type !== 'openjunior:notification' || !properties) return null;
+  if (record.type !== 'glenker:notification' || !properties) return null;
   return {
     title: typeof properties.title === 'string' ? properties.title : undefined,
     body: typeof properties.body === 'string' ? properties.body : undefined,

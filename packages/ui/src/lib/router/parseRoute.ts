@@ -83,7 +83,7 @@ function parseSettingsPath(params: URLSearchParams): string | null {
   }
 
   // Handle common aliases
-  if (normalized === 'openjunior' || normalized === 'general' || normalized === 'preferences') {
+  if (normalized === 'glenker' || normalized === 'general' || normalized === 'preferences') {
     return 'home';
   }
 

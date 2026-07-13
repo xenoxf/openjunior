@@ -59,7 +59,7 @@ describe('session folders routes', () => {
     registerSessionFoldersRoutes(app, {
       fsPromises,
       path,
-      openjuniorDataDir: '/tmp/openjunior-test',
+      glenkerDataDir: '/tmp/glenker-test',
     });
 
     const handler = getRoute('POST', '/api/session-folders');
@@ -88,7 +88,7 @@ describe('session folders routes', () => {
     registerSessionFoldersRoutes(app, {
       fsPromises,
       path,
-      openjuniorDataDir: '/tmp/openjunior-test',
+      glenkerDataDir: '/tmp/glenker-test',
     });
 
     const handler = getRoute('POST', '/api/session-folders');

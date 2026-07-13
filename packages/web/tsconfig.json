@@ -17,8 +17,8 @@
     "paths": {
       "@/*": ["../ui/src/*", "./src/*"],
       "@web/*": ["./src/*"],
-      "@openjunior/ui/*": ["../ui/src/*"],
-      "@openjunior/web/*": ["./src/*"]
+      "@glenker/ui/*": ["../ui/src/*"],
+      "@glenker/web/*": ["./src/*"]
     }
   },
   "include": ["src", "../ui/src", "../ui/src/types/**/*"]

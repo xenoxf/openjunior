@@ -299,11 +299,11 @@ export interface SessionStore {
     getAgentModelVariantForSession: (sessionId: string, agentName: string, providerId: string, modelId: string) => string | undefined;
 
 
-    isOpenJuniorCreatedSession: (sessionId: string) => boolean;
+    isGlenkerCreatedSession: (sessionId: string) => boolean;
 
-    markSessionAsOpenJuniorCreated: (sessionId: string) => void;
+    markSessionAsGlenkerCreated: (sessionId: string) => void;
 
-    initializeNewOpenJuniorSession: (sessionId: string, agents: Array<{ name: string; [key: string]: unknown }>) => void;
+    initializeNewGlenkerSession: (sessionId: string, agents: Array<{ name: string; [key: string]: unknown }>) => void;
 
     setWorktreeMetadata: (sessionId: string, metadata: import('@/types/worktree').WorktreeMetadata | null) => void;
     getWorktreeMetadata: (sessionId: string) => import('@/types/worktree').WorktreeMetadata | undefined;

@@ -1,12 +1,12 @@
 # Scheduled Tasks module
 
-Server-owned scheduled task runtime and routes for OpenJunior-only automation.
+Server-owned scheduled task runtime and routes for Glenker-only automation.
 
 ## Scope
 
 - Per-project scheduled task persistence is owned by `packages/web/server/lib/projects/project-config.js`.
 - Runtime orchestration and execution is owned by this module.
-- This module is OpenJunior feature logic; it is intentionally separate from OpenCode proxy/runtime internals.
+- This module is Glenker feature logic; it is intentionally separate from OpenCode proxy/runtime internals.
 
 ## Files
 
@@ -15,12 +15,12 @@ Server-owned scheduled task runtime and routes for OpenJunior-only automation.
   - Timer scheduling and queueing
   - Concurrency controls
   - Session create + prompt_async execution
-  - Emits OpenJunior task-run events
+  - Emits Glenker task-run events
 
 - `packages/web/server/lib/scheduled-tasks/routes.js`
   - Scheduled task CRUD endpoints
   - Manual run endpoint
-  - OpenJunior events SSE stream endpoint
+  - Glenker events SSE stream endpoint
 
 ## Public exports (runtime.js)
 
@@ -40,5 +40,5 @@ Server-owned scheduled task runtime and routes for OpenJunior-only automation.
   - `PUT /api/projects/:projectId/scheduled-tasks`
   - `DELETE /api/projects/:projectId/scheduled-tasks/:taskId`
   - `POST /api/projects/:projectId/scheduled-tasks/:taskId/run`
-  - `GET /api/openjunior/scheduled-tasks/status`
-  - `GET /api/openjunior/events`
+  - `GET /api/glenker/scheduled-tasks/status`
+  - `GET /api/glenker/events`

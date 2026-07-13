@@ -1,7 +1,7 @@
 import type {
-  OpenJuniorProjectAction,
-  OpenJuniorProjectActionPlatform,
-} from '@/lib/openjuniorConfig';
+  GlenkerProjectAction,
+  GlenkerProjectActionPlatform,
+} from '@/lib/glenkerConfig';
 import type {
   DesktopSshInstance,
   DesktopSshPortForward,
@@ -57,7 +57,7 @@ export const PROJECT_ACTION_ICON_MAP = Object.fromEntries(
   PROJECT_ACTION_ICONS.map((entry) => [entry.key, entry.Icon])
 ) as Record<ProjectActionIconKey, IconName>;
 
-export const PROJECT_ACTIONS_UPDATED_EVENT = 'openjunior:project-actions-updated';
+export const PROJECT_ACTIONS_UPDATED_EVENT = 'glenker:project-actions-updated';
 
 export const normalizeProjectActionDirectory = (value: string): string => {
   const trimmed = (value || '').trim().replace(/\\/g, '/');
@@ -70,7 +70,7 @@ export const normalizeProjectActionDirectory = (value: string): string => {
   return trimmed.length > 1 ? trimmed.replace(/\/+$/, '') : trimmed;
 };
 
-export const getCurrentProjectActionPlatform = (): OpenJuniorProjectActionPlatform => {
+export const getCurrentProjectActionPlatform = (): GlenkerProjectActionPlatform => {
   if (typeof navigator === 'undefined') {
     return 'macos';
   }
@@ -85,8 +85,8 @@ export const getCurrentProjectActionPlatform = (): OpenJuniorProjectActionPlatfo
 };
 
 export const isProjectActionEnabledOnPlatform = (
-  action: OpenJuniorProjectAction,
-  platform: OpenJuniorProjectActionPlatform
+  action: GlenkerProjectAction,
+  platform: GlenkerProjectActionPlatform
 ): boolean => {
   if (!Array.isArray(action.platforms) || action.platforms.length === 0) {
     return true;

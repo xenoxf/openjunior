@@ -206,7 +206,7 @@ export const useInlineCommentDraftStore = create<InlineCommentDraftStore>()(
         },
       }),
       {
-        name: 'openjunior-inline-comment-drafts',
+        name: 'glenker-inline-comment-drafts',
         storage: createJSONStorage(() => getSafeStorage()),
         version: 1,
         migrate: (persistedState: unknown) => {

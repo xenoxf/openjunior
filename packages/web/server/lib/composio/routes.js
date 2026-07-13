@@ -213,7 +213,16 @@ export function registerComposioRoutes(app, composioApiKey, composioUserId) {
       if (!effectiveUserId) {
         return res.status(400).json({ ok: false, error: 'userId is required. Set COMPOSIO_USER_ID in .env or send userId in body.' });
       }
-      const connectionRequest = await authorizeToolkit(apiKey, effectiveUserId, req.params.slug);
+      // Derive the callback origin from the incoming request so the OAuth
+      // redirect_uri is always reachable, in dev (Vite proxy) and in
+      // production/Electron (Express serves both UI and API). Honors proxy
+      // headers when run behind a TLS-terminating reverse proxy.
+      const scheme = req.get('x-forwarded-proto') || req.protocol || 'http';
+      const host = req.get('x-forwarded-host') || req.get('host');
+      const requestOrigin = `${scheme}://${host}`;
+      const redirectUri = `${requestOrigin}/api/composio/callback`;
+      console.log('[Composio:routes]   -> derived redirectUri:', redirectUri);
+      const connectionRequest = await authorizeToolkit(apiKey, effectiveUserId, req.params.slug, redirectUri);
       console.log('[Composio:routes]   -> redirectUrl present:', !!connectionRequest?.redirectUrl);
       console.log('[Composio:routes]   -> connectionId:', connectionRequest?.id);
       res.json({
@@ -223,10 +232,72 @@ export function registerComposioRoutes(app, composioApiKey, composioUserId) {
         status: connectionRequest.status,
       });
     } catch (err) {
-      console.error('[Composio:routes] POST /api/composio/apps/:slug/connect ERROR:', err.message);
-      res.status(500).json({ ok: false, error: err.message });
+      const msg = err.message;
+      if (msg.includes('No auth config found')) {
+        const authScheme = req.body.authScheme || 'OAUTH2';
+        console.log('[Composio:routes] POST /api/composio/apps/:slug/connect -> requires custom auth, scheme:', authScheme);
+        return res.status(400).json({
+          ok: false,
+          requiresCustomAuth: true,
+          authScheme,
+          error: msg,
+        });
+      }
+      console.error('[Composio:routes] POST /api/composio/apps/:slug/connect ERROR:', msg);
+      res.status(500).json({ ok: false, error: msg });
     }
   });
+
+  // OAuth callback endpoint - Composio redirects the popup here after authorization
+  app.get('/api/composio/callback', async (req, res) => {
+    console.log('[Composio:routes] GET /api/composio/callback', req.query);
+    try {
+      const { connected_account_id, error, error_description } = req.query;
+
+      if (error) {
+        console.log('[Composio:routes]   -> OAuth error:', error, error_description);
+        return res.send(popupClosePage({ status: 'error', error: error_description || error }));
+      }
+
+      if (!connected_account_id) {
+        console.log('[Composio:routes]   -> No connected_account_id in callback');
+        return res.send(popupClosePage({ status: 'error', error: 'no_connection_id' }));
+      }
+
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        return res.send(popupClosePage({ status: 'error', error: 'server_not_configured' }));
+      }
+
+      const account = await getConnectedAccount(apiKey, connected_account_id);
+      const isConnected = account?.status === 'connected' || account?.status === 'active';
+
+      if (isConnected) {
+        console.log('[Composio:routes] OAuth success for connection:', connected_account_id);
+        res.send(popupClosePage({ status: 'connected', connectionId: connected_account_id }));
+      } else {
+        console.log('[Composio:routes] OAuth pending for connection:', connected_account_id, 'status:', account?.status);
+        res.send(popupClosePage({ status: 'ok', connectionId: connected_account_id }));
+      }
+    } catch (err) {
+      console.error('[Composio:routes] GET /api/composio/callback ERROR:', err.message);
+      res.send(popupClosePage({ status: 'error', error: err.message }));
+    }
+  });
+
+  function popupClosePage(data) {
+    return `
+<!DOCTYPE html>
+<html><body>
+<script>
+try {
+  window.opener.postMessage({ source: 'composio-callback', ${Object.keys(data).map((k) => `${k}: ${JSON.stringify(data[k])}`).join(', ')} }, '*');
+} catch(e) { console.error(e); }
+setTimeout(function () { window.close(); }, 150);
+<\/script>
+<p>Authorization complete. You can close this window.</p>
+</body></html>`;
+  }
 
   app.post('/api/composio/apps/:slug/connect-custom', express.json(), async (req, res) => {
     console.log('[Composio:routes] POST /api/composio/apps/:slug/connect-custom', req.params.slug);
@@ -243,9 +314,18 @@ export function registerComposioRoutes(app, composioApiKey, composioUserId) {
       if (!credentials) {
         return res.status(400).json({ ok: false, error: 'credentials are required' });
       }
-      const result = await connectWithCredentials(apiKey, effectiveUserId, req.params.slug, credentials, authScheme || 'API_KEY');
-      console.log('[Composio:routes]   -> result id:', result.id, 'status:', result.status);
-      res.json({ ok: true, connectionId: result.id, status: result.status });
+      const scheme = req.get('x-forwarded-proto') || req.protocol || 'http';
+      const host = req.get('x-forwarded-host') || req.get('host');
+      const requestOrigin = `${scheme}://${host}`;
+      const redirectUri = `${requestOrigin}/api/composio/callback`;
+      const result = await connectWithCredentials(apiKey, effectiveUserId, req.params.slug, credentials, authScheme || 'API_KEY', redirectUri);
+      console.log('[Composio:routes]   -> result id:', result.id, 'status:', result.status, 'hasRedirect:', !!result.redirectUrl);
+      res.json({
+        ok: true,
+        connectionId: result.id,
+        status: result.status,
+        ...(result.redirectUrl ? { redirectUrl: result.redirectUrl } : {}),
+      });
     } catch (err) {
       console.error('[Composio:routes] POST /api/composio/apps/:slug/connect-custom ERROR:', err.message);
       res.status(500).json({ ok: false, error: err.message });

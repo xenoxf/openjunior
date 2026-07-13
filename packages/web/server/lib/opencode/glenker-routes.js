@@ -1,11 +1,11 @@
-export const registerOpenJuniorRoutes = (app, dependencies) => {
+export const registerGlenkerRoutes = (app, dependencies) => {
   const {
     fs,
     path,
     process,
     server,
     __dirname,
-    openjuniorDataDir,
+    glenkerDataDir,
     modelsDevApiUrl,
     modelsMetadataCacheTtl,
     readSettingsFromDiskMigrated,
@@ -16,7 +16,7 @@ export const registerOpenJuniorRoutes = (app, dependencies) => {
   let cachedModelsMetadata = null;
   let cachedModelsMetadataTimestamp = 0;
 
-  app.get('/api/openjunior/update-check', async (req, res) => {
+  app.get('/api/glenker/update-check', async (req, res) => {
     try {
       const { checkForUpdates } = await import('../package-manager.js');
       const parseString = (value) => (typeof value === 'string' && value.trim().length > 0 ? value.trim() : undefined);
@@ -54,7 +54,7 @@ export const registerOpenJuniorRoutes = (app, dependencies) => {
     }
   });
 
-  app.post('/api/openjunior/update-install', async (_req, res) => {
+  app.post('/api/glenker/update-install', async (_req, res) => {
     try {
       const { spawn: spawnChild } = await import('child_process');
       const {
@@ -103,7 +103,7 @@ export const registerOpenJuniorRoutes = (app, dependencies) => {
       }
 
       const currentPort = server.address()?.port || 3000;
-      const instanceFilePath = path.join(openjuniorDataDir, 'run', `openjunior-${currentPort}.json`);
+      const instanceFilePath = path.join(glenkerDataDir, 'run', `glenker-${currentPort}.json`);
       let storedOptions = { port: currentPort, daemon: true };
       try {
         const content = await fs.promises.readFile(instanceFilePath, 'utf8');
@@ -129,7 +129,7 @@ export const registerOpenJuniorRoutes = (app, dependencies) => {
         String(storedOptions.port),
       ];
       let restartCmdPrimary = restartParts.join(' ');
-      let restartCmdFallback = `openjunior serve --port ${storedOptions.port}`;
+      let restartCmdFallback = `glenker serve --port ${storedOptions.port}`;
       if (storedOptions.host) {
         if (isWindows) {
           const escapedHost = storedOptions.host.replace(/"/g, '""');
@@ -157,10 +157,10 @@ export const registerOpenJuniorRoutes = (app, dependencies) => {
         restartCmdFallback += ' --api-only';
       }
       const restartCmd = isForegroundService ? '' : `(${restartCmdPrimary}) || (${restartCmdFallback})`;
-      const updateLogPath = path.join(openjuniorDataDir, 'update-install.log');
+      const updateLogPath = path.join(glenkerDataDir, 'update-install.log');
       const logPreamble = [
         '',
-        `=== OpenJunior update ${new Date().toISOString()} ===`,
+        `=== Glenker update ${new Date().toISOString()} ===`,
         `currentVersion=${updateInfo.currentVersion || 'unknown'}`,
         `targetVersion=${updateInfo.version || 'unknown'}`,
         `packageManager=${pm}`,
@@ -197,8 +197,8 @@ export const registerOpenJuniorRoutes = (app, dependencies) => {
             timeout /t 2 /nobreak >nul
             ${updateCmd}
             if %ERRORLEVEL% EQU 0 (
-              echo Update successful, restarting OpenJunior...
-              ${restartCmd || 'echo Service manager will restart OpenJunior.'}
+              echo Update successful, restarting Glenker...
+              ${restartCmd || 'echo Service manager will restart Glenker.'}
             ) else (
               echo Update failed
               exit /b 1
@@ -209,8 +209,8 @@ export const registerOpenJuniorRoutes = (app, dependencies) => {
             sleep 2
             ${updateCmd}
             if [ $? -eq 0 ]; then
-              echo "Update successful, restarting OpenJunior..."
-              ${restartCmd || 'echo "Service manager will restart OpenJunior."'}
+              echo "Update successful, restarting Glenker..."
+              ${restartCmd || 'echo "Service manager will restart Glenker."'}
             else
               echo "Update failed"
               exit 1
@@ -253,7 +253,7 @@ export const registerOpenJuniorRoutes = (app, dependencies) => {
     }
   });
 
-  app.get('/api/openjunior/models-metadata', async (_req, res) => {
+  app.get('/api/glenker/models-metadata', async (_req, res) => {
     const now = Date.now();
 
     if (cachedModelsMetadata && now - cachedModelsMetadataTimestamp < modelsMetadataCacheTtl) {

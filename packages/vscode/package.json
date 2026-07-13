@@ -1,13 +1,13 @@
 {
-  "name": "openjunior",
-  "displayName": "OpenJunior",
+  "name": "glenker",
+  "displayName": "Glenker",
   "description": "%extension.description%",
   "version": "1.16.0",
   "publisher": "fedaykindev",
   "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/btriapitsyn/openjunior.git"
+    "url": "https://github.com/btriapitsyn/glenker.git"
   },
   "qna": "https://discord.gg/ZYRSdnwwKA",
   "license": "MIT",
@@ -29,39 +29,39 @@
     "groq",
     "assistant",
     "opencode",
-    "openjunior"
+    "glenker"
   ],
   "icon": "assets/app-icon.png",
   "main": "./dist/extension.js",
   "l10n": "./l10n",
   "activationEvents": [
-    "onCommand:openjunior.openSidebar",
-    "onCommand:openjunior.attachExplorerToChat",
-    "onView:openjunior.chatView"
+    "onCommand:glenker.openSidebar",
+    "onCommand:glenker.attachExplorerToChat",
+    "onView:glenker.chatView"
   ],
   "contributes": {
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "openjunior",
-          "title": "OpenJunior",
+          "id": "glenker",
+          "title": "Glenker",
           "icon": "assets/icon.svg"
         }
       ]
     },
     "views": {
-      "openjunior": [
+      "glenker": [
         {
           "type": "webview",
-          "id": "openjunior.chatView",
+          "id": "glenker.chatView",
           "name": "%views.chat.name%"
         }
       ]
     },
     "commands": [
       {
-        "command": "openjunior.openSidebar",
-        "category": "OpenJunior",
+        "command": "glenker.openSidebar",
+        "category": "Glenker",
         "title": "%command.openSidebar.title%",
         "icon": {
           "light": "assets/icon.svg",
@@ -69,35 +69,35 @@
         }
       },
       {
-        "command": "openjunior.focusChat",
-        "category": "OpenJunior",
+        "command": "glenker.focusChat",
+        "category": "Glenker",
         "title": "%command.focusChat.title%"
       },
       {
-        "command": "openjunior.restartApi",
-        "category": "OpenJunior",
+        "command": "glenker.restartApi",
+        "category": "Glenker",
         "title": "%command.restartApi.title%"
       },
       {
-        "command": "openjunior.showOpenCodeStatus",
-        "category": "OpenJunior",
+        "command": "glenker.showOpenCodeStatus",
+        "category": "Glenker",
         "title": "%command.showOpenCodeStatus.title%"
       },
       {
-        "command": "openjunior.openAgentManager",
-        "category": "OpenJunior",
+        "command": "glenker.openAgentManager",
+        "category": "Glenker",
         "title": "%command.openAgentManager.title%",
         "icon": "$(circuit-board)"
       },
       {
-        "command": "openjunior.openActiveSessionInEditor",
-        "category": "OpenJunior",
+        "command": "glenker.openActiveSessionInEditor",
+        "category": "Glenker",
         "title": "%command.openActiveSessionInEditor.title%",
         "icon": "$(link-external)"
       },
       {
-        "command": "openjunior.openNewSessionInEditor",
-        "category": "OpenJunior",
+        "command": "glenker.openNewSessionInEditor",
+        "category": "Glenker",
         "title": "%command.openNewSessionInEditor.title%",
         "icon": {
           "light": "assets/icon.svg",
@@ -105,113 +105,113 @@
         }
       },
       {
-        "command": "openjunior.openCurrentOrNewSessionInEditor",
-        "category": "OpenJunior",
+        "command": "glenker.openCurrentOrNewSessionInEditor",
+        "category": "Glenker",
         "title": "%command.openCurrentOrNewSessionInEditor.title%",
         "icon": "$(link-external)"
       },
       {
-        "command": "openjunior.addToContext",
-        "category": "OpenJunior",
+        "command": "glenker.addToContext",
+        "category": "Glenker",
         "title": "%command.addToContext.title%"
       },
       {
-        "command": "openjunior.explain",
-        "category": "OpenJunior",
+        "command": "glenker.explain",
+        "category": "Glenker",
         "title": "%command.explain.title%"
       },
       {
-        "command": "openjunior.improveCode",
-        "category": "OpenJunior",
+        "command": "glenker.improveCode",
+        "category": "Glenker",
         "title": "%command.improveCode.title%"
       },
       {
-        "command": "openjunior.newSession",
-        "category": "OpenJunior",
+        "command": "glenker.newSession",
+        "category": "Glenker",
         "title": "%command.newSession.title%",
         "icon": "$(add)"
       },
       {
-        "command": "openjunior.showSettings",
-        "category": "OpenJunior",
+        "command": "glenker.showSettings",
+        "category": "Glenker",
         "title": "%command.showSettings.title%",
         "icon": "$(settings-gear)"
       },
       {
-        "command": "openjunior.attachExplorerToChat",
-        "category": "OpenJunior",
+        "command": "glenker.attachExplorerToChat",
+        "category": "Glenker",
         "title": "%command.attachExplorerToChat.title%"
       }
     ],
     "submenus": [
       {
-        "id": "openjunior.submenu",
-        "label": "OpenJunior"
+        "id": "glenker.submenu",
+        "label": "Glenker"
       }
     ],
     "menus": {
       "editor/context": [
         {
-          "submenu": "openjunior.submenu",
+          "submenu": "glenker.submenu",
           "group": "navigation"
         }
       ],
       "explorer/context": [
         {
-          "command": "openjunior.attachExplorerToChat",
+          "command": "glenker.attachExplorerToChat",
           "when": "resourceScheme == file && explorerResourceIsFolder == false",
           "group": "navigation@50"
         }
       ],
       "editor/title": [
         {
-          "command": "openjunior.openNewSessionInEditor",
+          "command": "glenker.openNewSessionInEditor",
           "group": "navigation@1"
         }
       ],
       "view/title": [
         {
-          "command": "openjunior.newSession",
-          "when": "view == openjunior.chatView",
+          "command": "glenker.newSession",
+          "when": "view == glenker.chatView",
           "group": "navigation@1"
         },
         {
-          "command": "openjunior.openCurrentOrNewSessionInEditor",
-          "when": "view == openjunior.chatView",
+          "command": "glenker.openCurrentOrNewSessionInEditor",
+          "when": "view == glenker.chatView",
           "group": "navigation@2"
         },
         {
-          "command": "openjunior.openAgentManager",
-          "when": "view == openjunior.chatView",
+          "command": "glenker.openAgentManager",
+          "when": "view == glenker.chatView",
           "group": "navigation@3"
         },
         {
-          "command": "openjunior.showSettings",
-          "when": "view == openjunior.chatView",
+          "command": "glenker.showSettings",
+          "when": "view == glenker.chatView",
           "group": "navigation@4"
         }
       ],
-      "openjunior.submenu": [
+      "glenker.submenu": [
         {
-          "command": "openjunior.explain"
+          "command": "glenker.explain"
         },
         {
-          "command": "openjunior.improveCode"
+          "command": "glenker.improveCode"
         },
         {
-          "command": "openjunior.addToContext"
+          "command": "glenker.addToContext"
         }
       ]
     },
     "configuration": {
-      "title": "OpenJunior",
+      "title": "Glenker",
       "properties": {
-        "openjunior.apiUrl": {
+        "glenker.apiUrl": {
           "type": "string",
           "default": "",
           "description": "%configuration.apiUrl.description%"
         },
-        "openjunior.opencodeBinary": {
+        "glenker.opencodeBinary": {
           "type": "string",
           "default": "",
           "description": "%configuration.opencodeBinary.description%"
@@ -243,7 +243,7 @@
     "vite": "^7.1.2"
   },
   "dependencies": {
-    "@openjunior/ui": "workspace:*",
+    "@glenker/ui": "workspace:*",
     "@opencode-ai/sdk": "^1.17.9",
     "adm-zip": "^0.5.16",
     "jsonc-parser": "^3.3.1",

@@ -1,7 +1,7 @@
-const DB_NAME = 'openjunior-message-cursors';
+const DB_NAME = 'glenker-message-cursors';
 const STORE_NAME = 'cursors';
 const DB_VERSION = 1;
-const FALLBACK_KEY = 'openjunior.messageCursors';
+const FALLBACK_KEY = 'glenker.messageCursors';
 
 type CursorRecord = {
   messageId: string;

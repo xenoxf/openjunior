@@ -21,7 +21,7 @@ import { markStartupTrace, measureStartupTrace } from "@/lib/startupTrace";
 import { getSyncConfig, subscribeToSyncConfigChanges } from "@/sync/sync-refs";
 
 const MODELS_DEV_API_URL = "https://models.dev/api.json";
-const MODELS_DEV_PROXY_URL = "/api/openjunior/models-metadata";
+const MODELS_DEV_PROXY_URL = "/api/glenker/models-metadata";
 const STT_SILENCE_THRESHOLD_DB_MIN = -100;
 const STT_SILENCE_THRESHOLD_DB_MAX = 0;
 const STT_SILENCE_HOLD_MS_MIN = 250;
@@ -47,7 +47,7 @@ const normalizeSttSilenceHoldMs = (value: unknown): number | undefined => {
     return Math.max(STT_SILENCE_HOLD_MS_MIN, Math.min(STT_SILENCE_HOLD_MS_MAX, Math.round(value)));
 };
 
-interface OpenJuniorDefaults {
+interface GlenkerDefaults {
     defaultModel?: string;
     defaultVariant?: string;
     defaultAgent?: string;
@@ -65,10 +65,10 @@ interface OpenJuniorDefaults {
     sttSilenceHoldMs?: number;
 }
 
-const fetchOpenJuniorDefaults = async (): Promise<OpenJuniorDefaults> => {
+const fetchGlenkerDefaults = async (): Promise<GlenkerDefaults> => {
     markStartupTrace('config.defaults:start');
     const started = typeof performance !== 'undefined' ? performance.now() : Date.now();
-    const finish = (source: string, result: OpenJuniorDefaults) => {
+    const finish = (source: string, result: GlenkerDefaults) => {
         const ended = typeof performance !== 'undefined' ? performance.now() : Date.now();
         markStartupTrace('config.defaults:end', {
             source,
@@ -962,7 +962,7 @@ interface ConfigStore {
     lastDisconnectReason: string | null;
     isInitialized: boolean;
     modelsMetadata: Map<string, ModelMetadata>;
-    // OpenJunior settings-based defaults (take precedence over agent preferences)
+    // Glenker settings-based defaults (take precedence over agent preferences)
     settingsDefaultModel: string | undefined; // format: "provider/model"
     settingsDefaultVariant: string | undefined;
     settingsDefaultAgent: string | undefined;
@@ -1136,7 +1136,7 @@ export const useConfigStore = create<ConfigStore>()(
                 openaiCompatibleTtsModel: 'kokoro',
                 sttProvider: (() => {
                     if (typeof window !== 'undefined') {
-                        const electron = (window as unknown as { __OPENJUNIOR_ELECTRON__?: { runtime?: string } }).__OPENJUNIOR_ELECTRON__;
+                        const electron = (window as unknown as { __GLENKER_ELECTRON__?: { runtime?: string } }).__GLENKER_ELECTRON__;
                         if (electron?.runtime === 'electron') return 'wasm' as const;
                     }
                     return 'browser' as const;
@@ -1750,7 +1750,7 @@ export const useConfigStore = create<ConfigStore>()(
 
                     for (let attempt = 0; attempt < 3; attempt++) {
                         try {
-                            // Fetch agents and OpenJunior settings in parallel. OpenCode config
+                            // Fetch agents and Glenker settings in parallel. OpenCode config
                             // comes from sync state if it is already available; it must not block
                             // the agent refresh path.
                             const configDirectoryPath = fromDirectoryKey(directoryKey);
@@ -1759,13 +1759,13 @@ export const useConfigStore = create<ConfigStore>()(
                             if (initialSyncedOpencodeConfig) {
                                 markStartupTrace('loadAgents:syncConfigHit', { directoryKey, source });
                             }
-                            const [agents, openChamberDefaults] = await Promise.all([
+                            const [agents, glenkerDefaults] = await Promise.all([
                                 measureStartupTrace(
                                     'loadAgents:api',
                                     () => opencodeClient.listAgents(configDirectoryPath),
                                     { directoryKey, source, requestedDirectory, effectiveDirectory, attempt: attempt + 1 },
                                 ),
-                                fetchOpenJuniorDefaults(),
+                                fetchGlenkerDefaults(),
                             ]);
 
                             const safeAgents = Array.isArray(agents) ? agents : [];
@@ -1792,7 +1792,7 @@ export const useConfigStore = create<ConfigStore>()(
 
                             const existingZenModel = normalizeOptionalString(get().settingsZenModel);
 
-                            const defaultZenModel = normalizeOptionalString(openChamberDefaults.zenModel);
+                            const defaultZenModel = normalizeOptionalString(glenkerDefaults.zenModel);
 
                             const resolvedExistingGitSelection = resolveGitGenerationModelSelection({
                                 providers,
@@ -1835,20 +1835,20 @@ export const useConfigStore = create<ConfigStore>()(
                                 };
 
                                 const nextState: Partial<ConfigStore> = {
-                                    settingsDefaultModel: openChamberDefaults.defaultModel,
-                                    settingsDefaultVariant: openChamberDefaults.defaultVariant,
-                                    settingsDefaultAgent: openChamberDefaults.defaultAgent,
-                                    settingsAutoCreateWorktree: openChamberDefaults.autoCreateWorktree ?? false,
-                                    settingsGitmojiEnabled: openChamberDefaults.gitmojiEnabled ?? false,
-                                    settingsDefaultFileViewerPreview: openChamberDefaults.defaultFileViewerPreview ?? false,
+                                    settingsDefaultModel: glenkerDefaults.defaultModel,
+                                    settingsDefaultVariant: glenkerDefaults.defaultVariant,
+                                    settingsDefaultAgent: glenkerDefaults.defaultAgent,
+                                    settingsAutoCreateWorktree: glenkerDefaults.autoCreateWorktree ?? false,
+                                    settingsGitmojiEnabled: glenkerDefaults.gitmojiEnabled ?? false,
+                                    settingsDefaultFileViewerPreview: glenkerDefaults.defaultFileViewerPreview ?? false,
                                     settingsZenModel: resolvedZenModel,
-                                    settingsMessageStreamTransport: openChamberDefaults.messageStreamTransport ?? state.settingsMessageStreamTransport ?? 'auto',
-                                    sttProvider: openChamberDefaults.sttProvider ?? state.sttProvider,
-                                    sttServerUrl: openChamberDefaults.sttServerUrl ?? state.sttServerUrl,
-                                    sttModel: openChamberDefaults.sttModel ?? state.sttModel,
-                                    sttLanguage: openChamberDefaults.sttLanguage ?? state.sttLanguage,
-                                    sttSilenceThresholdDb: openChamberDefaults.sttSilenceThresholdDb ?? state.sttSilenceThresholdDb,
-                                    sttSilenceHoldMs: openChamberDefaults.sttSilenceHoldMs ?? state.sttSilenceHoldMs,
+                                    settingsMessageStreamTransport: glenkerDefaults.messageStreamTransport ?? state.settingsMessageStreamTransport ?? 'auto',
+                                    sttProvider: glenkerDefaults.sttProvider ?? state.sttProvider,
+                                    sttServerUrl: glenkerDefaults.sttServerUrl ?? state.sttServerUrl,
+                                    sttModel: glenkerDefaults.sttModel ?? state.sttModel,
+                                    sttLanguage: glenkerDefaults.sttLanguage ?? state.sttLanguage,
+                                    sttSilenceThresholdDb: glenkerDefaults.sttSilenceThresholdDb ?? state.sttSilenceThresholdDb,
+                                    sttSilenceHoldMs: glenkerDefaults.sttSilenceHoldMs ?? state.sttSilenceHoldMs,
                                     directoryScoped: {
                                         ...state.directoryScoped,
                                         [directoryKey]: nextSnapshot,
@@ -1940,23 +1940,23 @@ export const useConfigStore = create<ConfigStore>()(
                                 return provider.models.some((m) => m.id === modelId);
                             };
 
-                            // Detect invalid OpenJunior settings so we can clear them from storage.
+                            // Detect invalid Glenker settings so we can clear them from storage.
                             // This is independent of resolution: even though the cascade below falls
                             // back gracefully, stale settings pointing at removed agents/models/variants
                             // should be cleaned up.
                             const invalidSettings: { defaultModel?: string; defaultVariant?: string; defaultAgent?: string } = {};
-                            if (openChamberDefaults.defaultAgent && !safeAgents.some((agent) => agent.name === openChamberDefaults.defaultAgent)) {
+                            if (glenkerDefaults.defaultAgent && !safeAgents.some((agent) => agent.name === glenkerDefaults.defaultAgent)) {
                                 invalidSettings.defaultAgent = '';
                             }
-                            if (openChamberDefaults.defaultModel) {
-                                const parsed = parseModelString(openChamberDefaults.defaultModel);
+                            if (glenkerDefaults.defaultModel) {
+                                const parsed = parseModelString(glenkerDefaults.defaultModel);
                                 if (!parsed || !validateModel(parsed.providerId, parsed.modelId)) {
                                     invalidSettings.defaultModel = '';
-                                } else if (openChamberDefaults.defaultVariant) {
+                                } else if (glenkerDefaults.defaultVariant) {
                                     const provider = providers.find((p) => p.id === parsed.providerId);
                                     const model = provider?.models.find((m) => m.id === parsed.modelId) as { variants?: Record<string, unknown> } | undefined;
                                     const variants = model?.variants;
-                                    if (!(variants && Object.prototype.hasOwnProperty.call(variants, openChamberDefaults.defaultVariant))) {
+                                    if (!(variants && Object.prototype.hasOwnProperty.call(variants, glenkerDefaults.defaultVariant))) {
                                         invalidSettings.defaultVariant = '';
                                     }
                                 }
@@ -1968,9 +1968,9 @@ export const useConfigStore = create<ConfigStore>()(
                             const resolvedDefault = resolveDefaultAgentModelSelection({
                                 agents: safeAgents,
                                 providers,
-                                settingsDefaultAgent: openChamberDefaults.defaultAgent,
-                                settingsDefaultModel: openChamberDefaults.defaultModel,
-                                settingsDefaultVariant: openChamberDefaults.defaultVariant,
+                                settingsDefaultAgent: glenkerDefaults.defaultAgent,
+                                settingsDefaultModel: glenkerDefaults.defaultModel,
+                                settingsDefaultVariant: glenkerDefaults.defaultVariant,
                                 opencodeDefaultAgent,
                                 opencodeDefaultModel,
                             });
@@ -2188,10 +2188,10 @@ export const useConfigStore = create<ConfigStore>()(
                             selState.saveSessionAgentSelection(currentSessionId, agentName);
                         }
 
-                        if (currentSessionId && useSessionUIStore.getState().isOpenJuniorCreatedSession(currentSessionId)) {
+                        if (currentSessionId && useSessionUIStore.getState().isGlenkerCreatedSession(currentSessionId)) {
                             const existingAgentModel = selState.getAgentModelForSession(currentSessionId, agentName);
                             if (!existingAgentModel) {
-                                useSessionUIStore.getState().initializeNewOpenJuniorSession(currentSessionId, agents);
+                                useSessionUIStore.getState().initializeNewGlenkerSession(currentSessionId, agents);
                             }
                         }
                     }

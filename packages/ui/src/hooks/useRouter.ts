@@ -18,7 +18,7 @@ function isVSCodeContext(): boolean {
 }
 
 /**
- * Hook that provides bidirectional URL routing for OpenJunior.
+ * Hook that provides bidirectional URL routing for Glenker.
  *
  * On mount:
  * - Parses URL parameters and applies them to app state

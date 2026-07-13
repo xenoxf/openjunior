@@ -25,10 +25,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.electron
-    image: openjunior-electron-builder:latest
+    image: glenker-electron-builder:latest
 
   linux-x64:
-    image: openjunior-electron-builder:latest
+    image: glenker-electron-builder:latest
     environment:
       TARGET_PLATFORM: linux
       TARGET_ARCH: x64
@@ -36,7 +36,7 @@ services:
       - ./dist-electron/linux-x64:/app/packages/electron/dist
 
   linux-arm64:
-    image: openjunior-electron-builder:latest
+    image: glenker-electron-builder:latest
     platform: linux/arm64
     environment:
       TARGET_PLATFORM: linux
@@ -45,7 +45,7 @@ services:
       - ./dist-electron/linux-arm64:/app/packages/electron/dist
 
   win-x64:
-    image: openjunior-electron-builder:latest
+    image: glenker-electron-builder:latest
     environment:
       TARGET_PLATFORM: win
       TARGET_ARCH: x64
@@ -53,7 +53,7 @@ services:
       - ./dist-electron/win-x64:/app/packages/electron/dist
 
   win-arm64:
-    image: openjunior-electron-builder:latest
+    image: glenker-electron-builder:latest
     platform: linux/arm64
     environment:
       TARGET_PLATFORM: win

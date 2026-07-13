@@ -13,7 +13,7 @@ export interface TutorialStep {
 export const TUTORIAL_STEPS: TutorialStep[] = [
   {
     id: 'welcome',
-    title: 'Welcome to OpenJunior',
+    title: 'Welcome to Glenker',
     description: 'This tutorial will guide you through the main features. You can skip this anytime.',
     icon: 'sparkling',
     position: 'bottom',
@@ -120,7 +120,7 @@ export const useTutorialStore = create<TutorialState>()(
       }),
     }),
     {
-      name: 'openjunior_tutorial',
+      name: 'glenker_tutorial',
       version: 1,
     }
   )

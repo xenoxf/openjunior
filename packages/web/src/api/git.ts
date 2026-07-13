@@ -1,9 +1,9 @@
-import * as gitApiHttp from '@openjunior/ui/lib/gitApiHttp';
+import * as gitApiHttp from '@glenker/ui/lib/gitApiHttp';
 import type {
   GitAPI,
   CreateGitCommitOptions,
   GitLogOptions,
-} from '@openjunior/ui/lib/api/types';
+} from '@glenker/ui/lib/api/types';
 
 export const createWebGitAPI = (): GitAPI => ({
   checkIsGitRepository: gitApiHttp.checkIsGitRepository,

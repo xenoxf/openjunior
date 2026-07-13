@@ -16,23 +16,23 @@ import {
   discoverUnconfirmedRegistryInstanceOnPort,
   getInstanceFilePath,
   getPidFilePath,
-  isOpenchamberCmdline,
-  isOpenchamberProcessRunning,
+  isGlenkerCmdline,
+  isGlenkerProcessRunning,
   parseArgs,
   resolveServeHost,
 } from './cli.js';
 
-async function withTempOpenJuniorDataDir(fn) {
-  const previous = process.env.OPENJUNIOR_DATA_DIR;
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'openjunior-cli-test-'));
-  process.env.OPENJUNIOR_DATA_DIR = dir;
+async function withTempGlenkerDataDir(fn) {
+  const previous = process.env.GLENKER_DATA_DIR;
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'glenker-cli-test-'));
+  process.env.GLENKER_DATA_DIR = dir;
   try {
     return await fn(dir);
   } finally {
     if (typeof previous === 'string') {
-      process.env.OPENJUNIOR_DATA_DIR = previous;
+      process.env.GLENKER_DATA_DIR = previous;
     } else {
-      delete process.env.OPENJUNIOR_DATA_DIR;
+      delete process.env.GLENKER_DATA_DIR;
     }
     fs.rmSync(dir, { recursive: true, force: true });
   }
@@ -62,7 +62,7 @@ async function captureStdout(fn) {
   }
 }
 
-async function startMockOpenJuniorServer(options = {}) {
+async function startMockGlenkerServer(options = {}) {
   const runtime = options.runtime || 'web';
   const pid = Number.isFinite(options.pid) ? options.pid : null;
   let shutdownRequested = false;
@@ -150,11 +150,11 @@ async function waitForTcpPort(port, timeoutMs = 3000) {
   return false;
 }
 
-function spawnOpenJuniorLikeIdleProcess() {
-  return spawn(process.execPath, ['-e', 'setInterval(() => {}, 1000)', 'openjunior-idle'], { stdio: 'ignore' });
+function spawnGlenkerLikeIdleProcess() {
+  return spawn(process.execPath, ['-e', 'setInterval(() => {}, 1000)', 'glenker-idle'], { stdio: 'ignore' });
 }
 
-function spawnOpenJuniorLikeHungServer(port) {
+function spawnGlenkerLikeHungServer(port) {
   const script = `
     const net = require('net');
     const sockets = new Set();
@@ -165,7 +165,7 @@ function spawnOpenJuniorLikeHungServer(port) {
     server.listen(${port}, '127.0.0.1');
     setInterval(() => {}, 1000);
   `;
-  return spawn(process.execPath, ['-e', script, 'openjunior-hung-server'], { stdio: 'ignore' });
+  return spawn(process.execPath, ['-e', script, 'glenker-hung-server'], { stdio: 'ignore' });
 }
 
 describe('cli args', () => {
@@ -175,10 +175,10 @@ describe('cli args', () => {
   });
 
   it('parses explicit connect-url server overrides', () => {
-    const parsed = parseArgs(['connect-url', '--server', 'https://openjunior.example.com', '--port', '3002']);
+    const parsed = parseArgs(['connect-url', '--server', 'https://glenker.example.com', '--port', '3002']);
 
     expect(parsed.command).toBe('connect-url');
-    expect(parsed.options.server).toBe('https://openjunior.example.com');
+    expect(parsed.options.server).toBe('https://glenker.example.com');
     expect(parsed.options.port).toBe(3002);
   });
 
@@ -254,56 +254,56 @@ describe('network-exposed auth validation', () => {
   });
 
   it('allows explicit unsafe LAN override from process env only', () => {
-    const previous = process.env.OPENJUNIOR_ALLOW_UNAUTHENTICATED_LAN;
-    process.env.OPENJUNIOR_ALLOW_UNAUTHENTICATED_LAN = 'true';
+    const previous = process.env.GLENKER_ALLOW_UNAUTHENTICATED_LAN;
+    process.env.GLENKER_ALLOW_UNAUTHENTICATED_LAN = 'true';
     try {
       expect(() => assertAuthenticatedNetworkExposure({ host: '0.0.0.0' })).not.toThrow();
     } finally {
       if (typeof previous === 'string') {
-        process.env.OPENJUNIOR_ALLOW_UNAUTHENTICATED_LAN = previous;
+        process.env.GLENKER_ALLOW_UNAUTHENTICATED_LAN = previous;
       } else {
-        delete process.env.OPENJUNIOR_ALLOW_UNAUTHENTICATED_LAN;
+        delete process.env.GLENKER_ALLOW_UNAUTHENTICATED_LAN;
       }
     }
   });
 });
 
 describe('serve host resolution', () => {
-  it('uses OPENJUNIOR_HOST when --host is not provided', () => {
-    const previous = process.env.OPENJUNIOR_HOST;
-    process.env.OPENJUNIOR_HOST = '192.0.2.20';
+  it('uses GLENKER_HOST when --host is not provided', () => {
+    const previous = process.env.GLENKER_HOST;
+    process.env.GLENKER_HOST = '192.0.2.20';
     try {
       expect(resolveServeHost(undefined)).toBe('192.0.2.20');
     } finally {
       if (typeof previous === 'string') {
-        process.env.OPENJUNIOR_HOST = previous;
+        process.env.GLENKER_HOST = previous;
       } else {
-        delete process.env.OPENJUNIOR_HOST;
+        delete process.env.GLENKER_HOST;
       }
     }
   });
 
-  it('prefers explicit --host over OPENJUNIOR_HOST', () => {
-    const previous = process.env.OPENJUNIOR_HOST;
-    process.env.OPENJUNIOR_HOST = '192.0.2.20';
+  it('prefers explicit --host over GLENKER_HOST', () => {
+    const previous = process.env.GLENKER_HOST;
+    process.env.GLENKER_HOST = '192.0.2.20';
     try {
       expect(resolveServeHost('192.0.2.21')).toBe('192.0.2.21');
     } finally {
       if (typeof previous === 'string') {
-        process.env.OPENJUNIOR_HOST = previous;
+        process.env.GLENKER_HOST = previous;
       } else {
-        delete process.env.OPENJUNIOR_HOST;
+        delete process.env.GLENKER_HOST;
       }
     }
   });
 });
 
 describe('cli entry detection', () => {
-  const modulePath = '/tmp/openjunior/bin/cli.js';
+  const modulePath = '/tmp/glenker/bin/cli.js';
   const moduleUrl = pathToFileURL(modulePath).href;
 
   it('resolves symlinked entry paths before comparing', () => {
-    const symlinkPath = '/usr/local/bin/openjunior';
+    const symlinkPath = '/usr/local/bin/glenker';
     const realpath = (filePath) => {
       if (filePath === path.resolve(symlinkPath)) {
         return modulePath;
@@ -335,8 +335,8 @@ describe('cli entry detection', () => {
   });
 
   it('accepts wrapper binary name fallback when requested', () => {
-    const wrapperPath = '/home/user/.local/bin/openjunior';
-    expect(isModuleCliExecution(wrapperPath, moduleUrl, undefined, 'openjunior')).toBe(true);
+    const wrapperPath = '/home/user/.local/bin/glenker';
+    expect(isModuleCliExecution(wrapperPath, moduleUrl, undefined, 'glenker')).toBe(true);
   });
 
   it('normalizes direct paths when realpath fails', () => {
@@ -349,36 +349,36 @@ describe('cli entry detection', () => {
   });
 });
 
-describe('isOpenchamberCmdline', () => {
-  it('accepts OpenJunior CLI and daemon cmdlines', () => {
-    expect(isOpenchamberCmdline('node /x/@openjunior/web/bin/cli.js serve')).toBe(true);
-    expect(isOpenchamberCmdline('node /x/@openjunior/web/server/index.js --port 9090')).toBe(true);
-    expect(isOpenchamberCmdline('bun /home/u/projects/openjunior/packages/web/server/index.js --port 3001')).toBe(true);
+describe('isGlenkerCmdline', () => {
+  it('accepts Glenker CLI and daemon cmdlines', () => {
+    expect(isGlenkerCmdline('node /x/@glenker/web/bin/cli.js serve')).toBe(true);
+    expect(isGlenkerCmdline('node /x/@glenker/web/server/index.js --port 9090')).toBe(true);
+    expect(isGlenkerCmdline('bun /home/u/projects/glenker/packages/web/server/index.js --port 3001')).toBe(true);
   });
 
   it('rejects recycled and unrelated processes (issue #1721)', () => {
-    expect(isOpenchamberCmdline('node /home/herjarsa/npm-global/bin/agentmemory')).toBe(false);
-    expect(isOpenchamberCmdline('node /usr/lib/node_modules/npm/bin/npm-cli.js install')).toBe(false);
-    expect(isOpenchamberCmdline('')).toBe(false);
-    expect(isOpenchamberCmdline(null)).toBe(false);
+    expect(isGlenkerCmdline('node /home/herjarsa/npm-global/bin/agentmemory')).toBe(false);
+    expect(isGlenkerCmdline('node /usr/lib/node_modules/npm/bin/npm-cli.js install')).toBe(false);
+    expect(isGlenkerCmdline('')).toBe(false);
+    expect(isGlenkerCmdline(null)).toBe(false);
   });
 });
 
-describe('isOpenchamberProcessRunning', () => {
+describe('isGlenkerProcessRunning', () => {
   it('returns false for a dead PID', () => {
-    expect(isOpenchamberProcessRunning(2147483646)).toBe(false);
+    expect(isGlenkerProcessRunning(2147483646)).toBe(false);
   });
 
   // Identity verification is available on Linux (/proc) and macOS (ps); on those
   // platforms a live but unrelated process (a recycled stale PID) must read as
   // not-running so it can't trip the "already running" guard (issue #1721).
   it.skipIf(process.platform !== 'linux' && process.platform !== 'darwin')(
-    'returns false for a live non-OpenJunior PID',
+    'returns false for a live non-Glenker PID',
     async () => {
       const child = spawn('sleep', ['30'], { stdio: 'ignore' });
       try {
         await new Promise((resolve) => setTimeout(resolve, 150));
-        expect(isOpenchamberProcessRunning(child.pid)).toBe(false);
+        expect(isGlenkerProcessRunning(child.pid)).toBe(false);
       } finally {
         child.kill('SIGKILL');
       }
@@ -388,7 +388,7 @@ describe('isOpenchamberProcessRunning', () => {
 
 describe('lifecycle instance discovery', () => {
   it('keeps pid and instance files when live port probe confirms a cmdline mismatch', async () => {
-    await withTempOpenJuniorDataDir(async () => {
+    await withTempGlenkerDataDir(async () => {
       const port = 45123;
       const pid = 12345;
       const pidFile = await getPidFilePath(port);
@@ -398,7 +398,7 @@ describe('lifecycle instance discovery', () => {
 
       const instances = await discoverRunningInstances({
         fetchImpl: async () => createMockJsonResponse({ runtime: 'web', pid }),
-        getOpenchamberProcessState: () => 'mismatched',
+        getGlenkerProcessState: () => 'mismatched',
       });
 
       expect(instances).toEqual([
@@ -410,7 +410,7 @@ describe('lifecycle instance discovery', () => {
   });
 
   it('removes stale pid and instance files when a cmdline mismatch is not confirmed by live probe', async () => {
-    await withTempOpenJuniorDataDir(async () => {
+    await withTempGlenkerDataDir(async () => {
       const port = 45124;
       const pid = 12346;
       const pidFile = await getPidFilePath(port);
@@ -420,7 +420,7 @@ describe('lifecycle instance discovery', () => {
 
       const instances = await discoverRunningInstances({
         fetchImpl: async () => createMockJsonResponse(null, false),
-        getOpenchamberProcessState: () => 'mismatched',
+        getGlenkerProcessState: () => 'mismatched',
       });
 
       expect(instances).toEqual([]);
@@ -430,7 +430,7 @@ describe('lifecycle instance discovery', () => {
   });
 
   it('preserves matched pid and instance files when the recorded port probe is inconclusive', async () => {
-    await withTempOpenJuniorDataDir(async () => {
+    await withTempGlenkerDataDir(async () => {
       const port = 45126;
       const pid = 12347;
       const pidFile = await getPidFilePath(port);
@@ -440,7 +440,7 @@ describe('lifecycle instance discovery', () => {
 
       const instances = await discoverRunningInstances({
         fetchImpl: async () => createMockJsonResponse(null, false),
-        getOpenchamberProcessState: () => 'matched',
+        getGlenkerProcessState: () => 'matched',
       });
 
       expect(instances).toEqual([]);
@@ -450,7 +450,7 @@ describe('lifecycle instance discovery', () => {
   });
 
   it('preserves unknown-identity pid and instance files when the recorded port probe is inconclusive', async () => {
-    await withTempOpenJuniorDataDir(async () => {
+    await withTempGlenkerDataDir(async () => {
       const port = 45129;
       const pid = 12350;
       const pidFile = await getPidFilePath(port);
@@ -460,7 +460,7 @@ describe('lifecycle instance discovery', () => {
 
       const instances = await discoverRunningInstances({
         fetchImpl: async () => createMockJsonResponse(null, false),
-        getOpenchamberProcessState: () => 'unknown',
+        getGlenkerProcessState: () => 'unknown',
       });
 
       expect(instances).toEqual([]);
@@ -469,8 +469,8 @@ describe('lifecycle instance discovery', () => {
     });
   });
 
-  it('uses the live system-info pid instead of a stale OpenJunior-looking pid-file pid', async () => {
-    await withTempOpenJuniorDataDir(async () => {
+  it('uses the live system-info pid instead of a stale Glenker-looking pid-file pid', async () => {
+    await withTempGlenkerDataDir(async () => {
       const port = 45127;
       const stalePid = 12348;
       const livePid = 54321;
@@ -481,7 +481,7 @@ describe('lifecycle instance discovery', () => {
 
       const instances = await discoverRunningInstances({
         fetchImpl: async () => createMockJsonResponse({ runtime: 'web', pid: livePid }),
-        getOpenchamberProcessState: () => 'matched',
+        getGlenkerProcessState: () => 'matched',
       });
 
       expect(instances).toEqual([
@@ -491,7 +491,7 @@ describe('lifecycle instance discovery', () => {
   });
 
   it('uses the explicit host when probing a pid-file entry without a stored host', async () => {
-    await withTempOpenJuniorDataDir(async () => {
+    await withTempGlenkerDataDir(async () => {
       const port = 45128;
       const pid = 12349;
       const host = '192.0.2.10';
@@ -506,7 +506,7 @@ describe('lifecycle instance discovery', () => {
             urls.push(String(url));
             return createMockJsonResponse({ runtime: 'web', pid });
           },
-          getOpenchamberProcessState: () => 'matched',
+          getGlenkerProcessState: () => 'matched',
         },
       );
 
@@ -518,7 +518,7 @@ describe('lifecycle instance discovery', () => {
   });
 
   it('tries loopback before treating an explicit-host pid-file probe as inconclusive', async () => {
-    await withTempOpenJuniorDataDir(async () => {
+    await withTempGlenkerDataDir(async () => {
       const port = 45130;
       const pid = 12351;
       const host = '192.0.2.11';
@@ -535,7 +535,7 @@ describe('lifecycle instance discovery', () => {
               ? createMockJsonResponse({ runtime: 'web', pid })
               : createMockJsonResponse(null, false);
           },
-          getOpenchamberProcessState: () => 'matched',
+          getGlenkerProcessState: () => 'matched',
         },
       );
 
@@ -548,7 +548,7 @@ describe('lifecycle instance discovery', () => {
   });
 
   it('does not accept a fallback loopback probe with a different pid for a concrete host registry', async () => {
-    await withTempOpenJuniorDataDir(async () => {
+    await withTempGlenkerDataDir(async () => {
       const port = 45131;
       const pid = 12352;
       const otherPid = 54322;
@@ -566,7 +566,7 @@ describe('lifecycle instance discovery', () => {
               ? createMockJsonResponse({ runtime: 'web', pid: otherPid })
               : createMockJsonResponse(null, false);
           },
-          getOpenchamberProcessState: () => 'matched',
+          getGlenkerProcessState: () => 'matched',
         },
       );
 
@@ -576,8 +576,8 @@ describe('lifecycle instance discovery', () => {
     });
   });
 
-  it('discovers an explicit live OpenJunior port without a pid-file registry entry', async () => {
-    await withTempOpenJuniorDataDir(async () => {
+  it('discovers an explicit live Glenker port without a pid-file registry entry', async () => {
+    await withTempGlenkerDataDir(async () => {
       const port = 45125;
       const instances = await discoverLifecycleInstances(
         { explicitPort: true, port },
@@ -591,9 +591,9 @@ describe('lifecycle instance discovery', () => {
   });
 
   it('cleans a matched pid-file entry without stopping it when the recorded port is free', async () => {
-    await withTempOpenJuniorDataDir(async () => {
+    await withTempGlenkerDataDir(async () => {
       const port = await allocateLoopbackPort();
-      const child = spawnOpenJuniorLikeIdleProcess();
+      const child = spawnGlenkerLikeIdleProcess();
       const pidFile = await getPidFilePath(port);
       const instanceFile = await getInstanceFilePath(port);
       try {
@@ -615,9 +615,9 @@ describe('lifecycle instance discovery', () => {
 });
 
 describe('lifecycle commands with unmanaged explicit ports', () => {
-  it('serve refuses to start on a live OpenJunior port without requiring pid files', async () => {
-    await withTempOpenJuniorDataDir(async () => {
-      const server = await startMockOpenJuniorServer();
+  it('serve refuses to start on a live Glenker port without requiring pid files', async () => {
+    await withTempGlenkerDataDir(async () => {
+      const server = await startMockGlenkerServer();
       try {
         await expect(commands.serve({ explicitPort: true, port: server.port, quiet: true })).rejects.toThrow(
           /already running on port/
@@ -629,8 +629,8 @@ describe('lifecycle commands with unmanaged explicit ports', () => {
   });
 
   it('status --port reports a live unmanaged server when the registry is empty', async () => {
-    await withTempOpenJuniorDataDir(async () => {
-      const server = await startMockOpenJuniorServer();
+    await withTempGlenkerDataDir(async () => {
+      const server = await startMockGlenkerServer();
       try {
         const output = await captureStdout(() => commands.status({ explicitPort: true, port: server.port, json: true }));
         const payload = JSON.parse(output);
@@ -646,8 +646,8 @@ describe('lifecycle commands with unmanaged explicit ports', () => {
   });
 
   it('stop --port reaches unmanaged shutdown when the registry is empty', async () => {
-    await withTempOpenJuniorDataDir(async () => {
-      const server = await startMockOpenJuniorServer();
+    await withTempGlenkerDataDir(async () => {
+      const server = await startMockGlenkerServer();
       try {
         await commands.stop({ explicitPort: true, port: server.port, quiet: true, suppressQuietOutput: true });
         expect(server.shutdownRequested).toBe(true);
@@ -658,9 +658,9 @@ describe('lifecycle commands with unmanaged explicit ports', () => {
   });
 
   it('stop --port can recover a matched pid-file instance whose HTTP endpoint is unresponsive', async () => {
-    await withTempOpenJuniorDataDir(async () => {
+    await withTempGlenkerDataDir(async () => {
       const port = await allocateLoopbackPort();
-      const child = spawnOpenJuniorLikeHungServer(port);
+      const child = spawnGlenkerLikeHungServer(port);
       const pidFile = await getPidFilePath(port);
       const instanceFile = await getInstanceFilePath(port);
       try {
@@ -680,8 +680,8 @@ describe('lifecycle commands with unmanaged explicit ports', () => {
   });
 
   it('plain stop ignores a stale CLI registry entry that resolves to desktop runtime', async () => {
-    await withTempOpenJuniorDataDir(async () => {
-      const server = await startMockOpenJuniorServer({ runtime: 'desktop' });
+    await withTempGlenkerDataDir(async () => {
+      const server = await startMockGlenkerServer({ runtime: 'desktop' });
       const child = spawn('sleep', ['30'], { stdio: 'ignore' });
       const pidFile = await getPidFilePath(server.port);
       const instanceFile = await getInstanceFilePath(server.port);
@@ -703,8 +703,8 @@ describe('lifecycle commands with unmanaged explicit ports', () => {
   });
 
   it('restart --port restarts a live unmanaged server through the shared explicit-port discovery path', async () => {
-    await withTempOpenJuniorDataDir(async () => {
-      const server = await startMockOpenJuniorServer();
+    await withTempGlenkerDataDir(async () => {
+      const server = await startMockGlenkerServer();
       const calls = [];
       const host = '127.0.0.1';
       try {

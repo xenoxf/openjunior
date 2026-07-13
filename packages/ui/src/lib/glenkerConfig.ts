@@ -1,7 +1,7 @@
 /**
- * OpenJunior project-level configuration service.
- * Stores per-project settings in ~/.config/openjunior/<projectId>.json.
- * Migrates from legacy <project>/.openjunior/openjunior.json.
+ * Glenker project-level configuration service.
+ * Stores per-project settings in ~/.config/glenker/<projectId>.json.
+ * Migrates from legacy <project>/.glenker/glenker.json.
  */
 
 import type { FilesAPI } from './api/types';
@@ -14,10 +14,10 @@ import { runtimeFetch } from './runtime-fetch';
 
 type ProjectRef = { id: string; path: string };
 
-const CONFIG_FILENAME = 'openjunior.json';
+const CONFIG_FILENAME = 'glenker.json';
 // LEGACY_PROJECT_CONFIG: legacy per-project config root inside repo.
-const LEGACY_CONFIG_DIR = '.openjunior';
-const USER_PROJECTS_DIR_SEGMENTS = ['.config', 'openjunior', 'projects'];
+const LEGACY_CONFIG_DIR = '.glenker';
+const USER_PROJECTS_DIR_SEGMENTS = ['.config', 'glenker', 'projects'];
 
 /**
  * Get the runtime Files API if available (Desktop/VSCode).
@@ -30,73 +30,73 @@ function getRuntimeFilesAPI(): FilesAPI | null {
   return null;
 }
 
-export interface OpenJuniorConfig {
+export interface GlenkerConfig {
   projectPath?: string;
   'setup-worktree'?: string[];
   projectNotes?: string;
-  projectTodos?: OpenJuniorProjectTodoItem[];
-  projectPlanFiles?: OpenJuniorProjectPlanFileLink[];
-  projectActions?: OpenJuniorProjectAction[];
+  projectTodos?: GlenkerProjectTodoItem[];
+  projectPlanFiles?: GlenkerProjectPlanFileLink[];
+  projectActions?: GlenkerProjectAction[];
   projectActionsPrimaryId?: string;
   draftStarters?: DraftStarterRef[];
 }
 
-export type OpenJuniorProjectActionPlatform = 'macos' | 'linux' | 'windows';
+export type GlenkerProjectActionPlatform = 'macos' | 'linux' | 'windows';
 
-export interface OpenJuniorProjectAction {
+export interface GlenkerProjectAction {
   id: string;
   name: string;
   command: string;
   icon?: string | null;
-  platforms?: OpenJuniorProjectActionPlatform[];
+  platforms?: GlenkerProjectActionPlatform[];
   autoOpenUrl?: boolean;
   openUrl?: string;
   desktopOpenSshForward?: string;
 }
 
-export interface OpenJuniorProjectActionsState {
-  actions: OpenJuniorProjectAction[];
+export interface GlenkerProjectActionsState {
+  actions: GlenkerProjectAction[];
   primaryActionId: string | null;
 }
 
-export interface OpenJuniorProjectTodoItem {
+export interface GlenkerProjectTodoItem {
   id: string;
   text: string;
   completed: boolean;
   createdAt: number;
 }
 
-export interface OpenJuniorProjectPlanFileLink {
+export interface GlenkerProjectPlanFileLink {
   id: string;
   path: string;
   createdAt: number;
 }
 
-export interface OpenJuniorProjectPlanFile {
+export interface GlenkerProjectPlanFile {
   title: string;
   body: string;
   raw: string;
   path: string;
 }
 
-export interface OpenJuniorProjectNotesTodos {
+export interface GlenkerProjectNotesTodos {
   notes: string;
-  todos: OpenJuniorProjectTodoItem[];
+  todos: GlenkerProjectTodoItem[];
 }
 
-export interface OpenJuniorProjectContextData extends OpenJuniorProjectNotesTodos {
-  plans: OpenJuniorProjectPlanFileLink[];
+export interface GlenkerProjectContextData extends GlenkerProjectNotesTodos {
+  plans: GlenkerProjectPlanFileLink[];
 }
 
-export const OPENJUNIOR_PROJECT_NOTES_MAX_LENGTH = 3000;
-export const OPENJUNIOR_PROJECT_TODO_TEXT_MAX_LENGTH = 120;
-export const OPENJUNIOR_PROJECT_ACTION_NAME_MAX_LENGTH = 80;
-export const OPENJUNIOR_PROJECT_ACTION_COMMAND_MAX_LENGTH = 4000;
-export const OPENJUNIOR_PROJECT_ACTION_OPEN_URL_MAX_LENGTH = 2000;
-export const OPENJUNIOR_PROJECT_ACTION_DESKTOP_FORWARD_MAX_LENGTH = 300;
-export const OPENJUNIOR_PROJECT_PLAN_TITLE_MAX_LENGTH = 160;
+export const GLENKER_PROJECT_NOTES_MAX_LENGTH = 3000;
+export const GLENKER_PROJECT_TODO_TEXT_MAX_LENGTH = 120;
+export const GLENKER_PROJECT_ACTION_NAME_MAX_LENGTH = 80;
+export const GLENKER_PROJECT_ACTION_COMMAND_MAX_LENGTH = 4000;
+export const GLENKER_PROJECT_ACTION_OPEN_URL_MAX_LENGTH = 2000;
+export const GLENKER_PROJECT_ACTION_DESKTOP_FORWARD_MAX_LENGTH = 300;
+export const GLENKER_PROJECT_PLAN_TITLE_MAX_LENGTH = 160;
 
-const OPENJUNIOR_ACTION_PLATFORM_SET = new Set<OpenJuniorProjectActionPlatform>(['macos', 'linux', 'windows']);
+const GLENKER_ACTION_PLATFORM_SET = new Set<GlenkerProjectActionPlatform>(['macos', 'linux', 'windows']);
 
 const normalize = (value: string): string => {
   if (!value) return '';
@@ -206,7 +206,7 @@ const writeTextFile = async (path: string, content: string): Promise<boolean> =>
 
 const resolveHomeDirectory = async (): Promise<string | null> => {
   // Use server-reported home as the source of truth for user config paths.
-  // In some runtimes, window.__OPENJUNIOR_HOME__ can be workspace/project-root
+  // In some runtimes, window.__GLENKER_HOME__ can be workspace/project-root
   // scoped, which would incorrectly route writes into the project directory.
   try {
     const response = await runtimeFetch(`${getBaseUrl()}/fs/home`, {
@@ -274,15 +274,15 @@ const sanitizeProjectNotes = (value: unknown): string => {
   if (typeof value !== 'string') {
     return '';
   }
-  return trimToMaxLength(value, OPENJUNIOR_PROJECT_NOTES_MAX_LENGTH);
+  return trimToMaxLength(value, GLENKER_PROJECT_NOTES_MAX_LENGTH);
 };
 
-const sanitizeProjectTodoItems = (value: unknown): OpenJuniorProjectTodoItem[] => {
+const sanitizeProjectTodoItems = (value: unknown): GlenkerProjectTodoItem[] => {
   if (!Array.isArray(value)) {
     return [];
   }
 
-  const sanitized: OpenJuniorProjectTodoItem[] = [];
+  const sanitized: GlenkerProjectTodoItem[] = [];
   for (const entry of value) {
     if (!entry || typeof entry !== 'object') {
       continue;
@@ -297,7 +297,7 @@ const sanitizeProjectTodoItems = (value: unknown): OpenJuniorProjectTodoItem[] =
 
     const id = typeof record.id === 'string' ? record.id.trim() : '';
     const textRaw = typeof record.text === 'string' ? record.text : '';
-    const text = trimToMaxLength(textRaw.trim(), OPENJUNIOR_PROJECT_TODO_TEXT_MAX_LENGTH);
+    const text = trimToMaxLength(textRaw.trim(), GLENKER_PROJECT_TODO_TEXT_MAX_LENGTH);
     if (!id || !text) {
       continue;
     }
@@ -320,12 +320,12 @@ const sanitizeProjectTodoItems = (value: unknown): OpenJuniorProjectTodoItem[] =
   return sanitized;
 };
 
-const sanitizeProjectPlanFileLinks = (value: unknown): OpenJuniorProjectPlanFileLink[] => {
+const sanitizeProjectPlanFileLinks = (value: unknown): GlenkerProjectPlanFileLink[] => {
   if (!Array.isArray(value)) {
     return [];
   }
 
-  const sanitized: OpenJuniorProjectPlanFileLink[] = [];
+  const sanitized: GlenkerProjectPlanFileLink[] = [];
   const seenIds = new Set<string>();
 
   for (const entry of value) {
@@ -357,19 +357,19 @@ const sanitizeProjectPlanFileLinks = (value: unknown): OpenJuniorProjectPlanFile
   return sanitized.sort((a, b) => b.createdAt - a.createdAt);
 };
 
-const sanitizeProjectActionPlatforms = (value: unknown): OpenJuniorProjectActionPlatform[] => {
+const sanitizeProjectActionPlatforms = (value: unknown): GlenkerProjectActionPlatform[] => {
   if (!Array.isArray(value)) {
     return [];
   }
 
-  const unique: OpenJuniorProjectActionPlatform[] = [];
-  const seen = new Set<OpenJuniorProjectActionPlatform>();
+  const unique: GlenkerProjectActionPlatform[] = [];
+  const seen = new Set<GlenkerProjectActionPlatform>();
   for (const entry of value) {
     if (typeof entry !== 'string') {
       continue;
     }
-    const normalized = entry.trim().toLowerCase() as OpenJuniorProjectActionPlatform;
-    if (!OPENJUNIOR_ACTION_PLATFORM_SET.has(normalized) || seen.has(normalized)) {
+    const normalized = entry.trim().toLowerCase() as GlenkerProjectActionPlatform;
+    if (!GLENKER_ACTION_PLATFORM_SET.has(normalized) || seen.has(normalized)) {
       continue;
     }
     seen.add(normalized);
@@ -379,12 +379,12 @@ const sanitizeProjectActionPlatforms = (value: unknown): OpenJuniorProjectAction
   return unique;
 };
 
-const sanitizeProjectActions = (value: unknown): OpenJuniorProjectAction[] => {
+const sanitizeProjectActions = (value: unknown): GlenkerProjectAction[] => {
   if (!Array.isArray(value)) {
     return [];
   }
 
-  const sanitized: OpenJuniorProjectAction[] = [];
+  const sanitized: GlenkerProjectAction[] = [];
   const seenIds = new Set<string>();
 
   for (const entry of value) {
@@ -404,8 +404,8 @@ const sanitizeProjectActions = (value: unknown): OpenJuniorProjectAction[] => {
     };
 
     const id = typeof record.id === 'string' ? record.id.trim() : '';
-    const name = trimToMaxLength(typeof record.name === 'string' ? record.name.trim() : '', OPENJUNIOR_PROJECT_ACTION_NAME_MAX_LENGTH);
-    const command = trimToMaxLength(typeof record.command === 'string' ? record.command.trim() : '', OPENJUNIOR_PROJECT_ACTION_COMMAND_MAX_LENGTH);
+    const name = trimToMaxLength(typeof record.name === 'string' ? record.name.trim() : '', GLENKER_PROJECT_ACTION_NAME_MAX_LENGTH);
+    const command = trimToMaxLength(typeof record.command === 'string' ? record.command.trim() : '', GLENKER_PROJECT_ACTION_COMMAND_MAX_LENGTH);
 
     if (!id || !name || !command || seenIds.has(id)) {
       continue;
@@ -416,13 +416,13 @@ const sanitizeProjectActions = (value: unknown): OpenJuniorProjectAction[] => {
     const platforms = sanitizeProjectActionPlatforms(record.platforms);
     const autoOpenUrl = record.autoOpenUrl === true;
     const openUrlRaw = typeof record.openUrl === 'string' ? record.openUrl.trim() : '';
-    const openUrl = trimToMaxLength(openUrlRaw, OPENJUNIOR_PROJECT_ACTION_OPEN_URL_MAX_LENGTH);
+    const openUrl = trimToMaxLength(openUrlRaw, GLENKER_PROJECT_ACTION_OPEN_URL_MAX_LENGTH);
     const desktopOpenSshForwardRaw = typeof record.desktopOpenSshForward === 'string'
       ? record.desktopOpenSshForward.trim()
       : '';
     const desktopOpenSshForward = trimToMaxLength(
       desktopOpenSshForwardRaw,
-      OPENJUNIOR_PROJECT_ACTION_DESKTOP_FORWARD_MAX_LENGTH
+      GLENKER_PROJECT_ACTION_DESKTOP_FORWARD_MAX_LENGTH
     );
 
     sanitized.push({
@@ -443,7 +443,7 @@ const sanitizeProjectActions = (value: unknown): OpenJuniorProjectAction[] => {
 const sanitizeProjectActionsState = (value: {
   actions?: unknown;
   primaryActionId?: unknown;
-} | null | undefined): OpenJuniorProjectActionsState => {
+} | null | undefined): GlenkerProjectActionsState => {
   const actions = sanitizeProjectActions(value?.actions);
   const primaryRaw = typeof value?.primaryActionId === 'string' ? value.primaryActionId.trim() : '';
   const primaryActionId = primaryRaw && actions.some((entry) => entry.id === primaryRaw)
@@ -459,7 +459,7 @@ const sanitizeProjectActionsState = (value: {
 const sanitizeProjectNotesAndTodos = (value: {
   notes?: unknown;
   todos?: unknown;
-} | null | undefined): OpenJuniorProjectNotesTodos => {
+} | null | undefined): GlenkerProjectNotesTodos => {
   return {
     notes: sanitizeProjectNotes(value?.notes),
     todos: sanitizeProjectTodoItems(value?.todos),
@@ -470,7 +470,7 @@ const sanitizeProjectContextData = (value: {
   notes?: unknown;
   todos?: unknown;
   plans?: unknown;
-} | null | undefined): OpenJuniorProjectContextData => {
+} | null | undefined): GlenkerProjectContextData => {
   const notesAndTodos = sanitizeProjectNotesAndTodos(value);
   return {
     ...notesAndTodos,
@@ -492,7 +492,7 @@ const slugifyPlanTitle = (value: string): string => {
 };
 
 const sanitizePlanTitle = (value: string): string => {
-  return trimToMaxLength(value.trim(), OPENJUNIOR_PROJECT_PLAN_TITLE_MAX_LENGTH);
+  return trimToMaxLength(value.trim(), GLENKER_PROJECT_PLAN_TITLE_MAX_LENGTH);
 };
 
 const createProjectPlanId = (): string => {
@@ -551,7 +551,7 @@ export const parseProjectPlanMarkdown = (raw: string): { title: string; body: st
  * Read the config for a project.
  * Returns null if file doesn't exist or is invalid.
  */
-export async function readOpenJuniorConfig(project: ProjectRef): Promise<OpenJuniorConfig | null> {
+export async function readGlenkerConfig(project: ProjectRef): Promise<GlenkerConfig | null> {
   const projectDirectory = typeof project?.path === 'string' ? project.path.trim() : '';
   if (!projectDirectory) {
     return null;
@@ -568,7 +568,7 @@ export async function readOpenJuniorConfig(project: ProjectRef): Promise<OpenJun
     return text;
   };
 
-  const parseConfig = (text: string | null): OpenJuniorConfig | null => {
+  const parseConfig = (text: string | null): GlenkerConfig | null => {
     if (typeof text !== 'string') {
       return null;
     }
@@ -581,7 +581,7 @@ export async function readOpenJuniorConfig(project: ProjectRef): Promise<OpenJun
       if (!parsed || typeof parsed !== 'object') {
         return null;
       }
-      return parsed as OpenJuniorConfig;
+      return parsed as GlenkerConfig;
     } catch {
       return null;
     }
@@ -595,8 +595,8 @@ export async function readOpenJuniorConfig(project: ProjectRef): Promise<OpenJun
     }
   }
 
-  // 2) Migrate legacy <project>/.openjunior/openjunior.json.
-  // LEGACY_PROJECT_CONFIG: migrate project-local openjunior.json -> ~/.config/openjunior/projects/<projectId>.json
+  // 2) Migrate legacy <project>/.glenker/glenker.json.
+  // LEGACY_PROJECT_CONFIG: migrate project-local glenker.json -> ~/.config/glenker/projects/<projectId>.json
   const legacyPath = getLegacyConfigPath(projectDirectory);
   const legacyConfig = parseConfig(await readText(legacyPath));
   if (!legacyConfig) {
@@ -605,9 +605,9 @@ export async function readOpenJuniorConfig(project: ProjectRef): Promise<OpenJun
 
   // Best-effort write + delete legacy.
   try {
-    const wrote = await writeOpenJuniorConfig(project, legacyConfig);
+    const wrote = await writeGlenkerConfig(project, legacyConfig);
     if (wrote) {
-      await deleteLegacyOpenJuniorConfig(projectDirectory);
+      await deleteLegacyGlenkerConfig(projectDirectory);
     }
   } catch {
     // Ignore migration failures; still return legacy content.
@@ -623,9 +623,9 @@ export async function readOpenJuniorConfig(project: ProjectRef): Promise<OpenJun
  * dedicated route and never round-trips them through this config write path to
  * avoid a read-then-write race clobbering a concurrent server update.
  */
-export async function writeOpenJuniorConfig(
+export async function writeGlenkerConfig(
   project: ProjectRef,
-  config: OpenJuniorConfig
+  config: GlenkerConfig
 ): Promise<boolean> {
   const projectDirectory = typeof project?.path === 'string' ? project.path.trim() : '';
   if (!projectDirectory) {
@@ -669,7 +669,7 @@ export async function writeOpenJuniorConfig(
     }, null, 2);
     return await writeTextFile(configPath, content);
   } catch (error) {
-    console.error('Failed to write openjunior config:', error);
+    console.error('Failed to write glenker config:', error);
     return false;
   }
 }
@@ -677,42 +677,42 @@ export async function writeOpenJuniorConfig(
 /**
  * Update specific keys in the config, preserving other values.
  */
-export async function updateOpenJuniorConfig(
+export async function updateGlenkerConfig(
   project: ProjectRef,
-  updates: Partial<OpenJuniorConfig>
+  updates: Partial<GlenkerConfig>
 ): Promise<boolean> {
-  const existing = await readOpenJuniorConfig(project) || {};
+  const existing = await readGlenkerConfig(project) || {};
   const merged = { ...existing, ...updates };
-  return writeOpenJuniorConfig(project, merged);
+  return writeGlenkerConfig(project, merged);
 }
 
 /**
  * Get worktree setup commands from config.
  */
 export async function getWorktreeSetupCommands(project: ProjectRef): Promise<string[]> {
-  const config = await readOpenJuniorConfig(project);
+  const config = await readGlenkerConfig(project);
   return config?.['setup-worktree'] ?? [];
 }
 
 export async function saveWorktreeSetupCommands(project: ProjectRef, commands: string[]): Promise<boolean> {
   const filtered = commands.filter((cmd) => cmd.trim().length > 0);
-  return updateOpenJuniorConfig(project, { 'setup-worktree': filtered });
+  return updateGlenkerConfig(project, { 'setup-worktree': filtered });
 }
 
 /**
  * Get this project's pinned draft welcome starters.
  */
 export async function getProjectDraftStarters(project: ProjectRef): Promise<DraftStarterRef[]> {
-  const config = await readOpenJuniorConfig(project);
+  const config = await readGlenkerConfig(project);
   return sanitizeStarterRefs(config?.draftStarters);
 }
 
 export async function saveProjectDraftStarters(project: ProjectRef, starters: DraftStarterRef[]): Promise<boolean> {
-  return updateOpenJuniorConfig(project, { draftStarters: sanitizeStarterRefs(starters) });
+  return updateGlenkerConfig(project, { draftStarters: sanitizeStarterRefs(starters) });
 }
 
-export async function getProjectNotesAndTodos(project: ProjectRef): Promise<OpenJuniorProjectNotesTodos> {
-  const config = await readOpenJuniorConfig(project);
+export async function getProjectNotesAndTodos(project: ProjectRef): Promise<GlenkerProjectNotesTodos> {
+  const config = await readGlenkerConfig(project);
   return sanitizeProjectNotesAndTodos({
     notes: config?.projectNotes,
     todos: config?.projectTodos,
@@ -721,21 +721,21 @@ export async function getProjectNotesAndTodos(project: ProjectRef): Promise<Open
 
 export async function saveProjectNotesAndTodos(
   project: ProjectRef,
-  value: OpenJuniorProjectNotesTodos
+  value: GlenkerProjectNotesTodos
 ): Promise<boolean> {
   const sanitized = sanitizeProjectNotesAndTodos({
     notes: value.notes,
     todos: value.todos,
   });
 
-  return updateOpenJuniorConfig(project, {
+  return updateGlenkerConfig(project, {
     projectNotes: sanitized.notes,
     projectTodos: sanitized.todos,
   });
 }
 
-export async function getProjectContextData(project: ProjectRef): Promise<OpenJuniorProjectContextData> {
-  const config = await readOpenJuniorConfig(project);
+export async function getProjectContextData(project: ProjectRef): Promise<GlenkerProjectContextData> {
+  const config = await readGlenkerConfig(project);
   return sanitizeProjectContextData({
     notes: config?.projectNotes,
     todos: config?.projectTodos,
@@ -743,22 +743,22 @@ export async function getProjectContextData(project: ProjectRef): Promise<OpenJu
   });
 }
 
-export async function getProjectPlanFiles(project: ProjectRef): Promise<OpenJuniorProjectPlanFileLink[]> {
-  const config = await readOpenJuniorConfig(project);
+export async function getProjectPlanFiles(project: ProjectRef): Promise<GlenkerProjectPlanFileLink[]> {
+  const config = await readGlenkerConfig(project);
   return sanitizeProjectPlanFileLinks(config?.projectPlanFiles);
 }
 
 export async function saveProjectPlanFiles(
   project: ProjectRef,
-  value: OpenJuniorProjectPlanFileLink[]
+  value: GlenkerProjectPlanFileLink[]
 ): Promise<boolean> {
   const sanitized = sanitizeProjectPlanFileLinks(value);
-  return updateOpenJuniorConfig(project, {
+  return updateGlenkerConfig(project, {
     projectPlanFiles: sanitized,
   });
 }
 
-export async function readProjectPlanFile(path: string): Promise<OpenJuniorProjectPlanFile | null> {
+export async function readProjectPlanFile(path: string): Promise<GlenkerProjectPlanFile | null> {
   const trimmedPath = typeof path === 'string' ? path.trim() : '';
   if (!trimmedPath) {
     return null;
@@ -825,7 +825,7 @@ export async function importProjectPlanFileFromContent(
   project: ProjectRef,
   content: string,
   fallbackTitle?: string
-): Promise<OpenJuniorProjectPlanFileLink | null> {
+): Promise<GlenkerProjectPlanFileLink | null> {
   const raw = typeof content === 'string' ? content : '';
   if (!raw.trim()) {
     return null;
@@ -839,7 +839,7 @@ export async function importProjectPlanFileFromContent(
 export async function createProjectPlanFile(
   project: ProjectRef,
   value: { title: string; body: string }
-): Promise<OpenJuniorProjectPlanFileLink | null> {
+): Promise<GlenkerProjectPlanFileLink | null> {
   const plansDirectory = await getProjectPlansDirectory(project);
   if (!plansDirectory) {
     return null;
@@ -876,8 +876,8 @@ export async function createProjectPlanFile(
   return nextEntry;
 }
 
-export async function getProjectActionsState(project: ProjectRef): Promise<OpenJuniorProjectActionsState> {
-  const config = await readOpenJuniorConfig(project);
+export async function getProjectActionsState(project: ProjectRef): Promise<GlenkerProjectActionsState> {
+  const config = await readGlenkerConfig(project);
   return sanitizeProjectActionsState({
     actions: config?.projectActions,
     primaryActionId: config?.projectActionsPrimaryId,
@@ -886,14 +886,14 @@ export async function getProjectActionsState(project: ProjectRef): Promise<OpenJ
 
 export async function saveProjectActionsState(
   project: ProjectRef,
-  value: OpenJuniorProjectActionsState
+  value: GlenkerProjectActionsState
 ): Promise<boolean> {
   const sanitized = sanitizeProjectActionsState({
     actions: value.actions,
     primaryActionId: value.primaryActionId,
   });
 
-  return updateOpenJuniorConfig(project, {
+  return updateGlenkerConfig(project, {
     projectActions: sanitized.actions,
     projectActionsPrimaryId: sanitized.primaryActionId ?? undefined,
   });
@@ -918,7 +918,7 @@ export function substituteCommandVariables(
     .replace(/\$\{ROOT_WORKTREE_PATH\}/g, variables.rootWorktreePath);
 }
 
-async function deleteLegacyOpenJuniorConfig(projectDirectory: string): Promise<void> {
+async function deleteLegacyGlenkerConfig(projectDirectory: string): Promise<void> {
   const legacyPath = getLegacyConfigPath(projectDirectory);
   const runtimeFiles = getRuntimeFilesAPI();
 

@@ -10,7 +10,7 @@ import { useI18n } from '@/lib/i18n';
 import { useUIStore } from '@/stores/useUIStore';
 import { isVSCodeRuntime } from '@/lib/desktop';
 
-type CommandSource = 'openjunior' | 'opencode' | 'skill';
+type CommandSource = 'glenker' | 'opencode' | 'skill';
 
 export interface CommandInfo {
   id: string;
@@ -20,7 +20,7 @@ export interface CommandInfo {
   agent?: string;
   model?: string;
   isBuiltIn?: boolean;
-  isOpenJunior?: boolean;
+  isGlenker?: boolean;
   isSkill?: boolean;
   scope?: string;
 }
@@ -136,52 +136,52 @@ export const CommandAutocomplete = React.forwardRef<CommandAutocompleteHandle, C
 
         const builtInCommands: CommandInfo[] = [
           ...(hasSession && !hasMessagesInCurrentSession
-            ? [{ id: 'openjunior:init', name: 'init', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.initDescription'), isBuiltIn: true }]
+            ? [{ id: 'glenker:init', name: 'init', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.initDescription'), isBuiltIn: true }]
             : []
           ),
           ...(hasSession  // Show when session exists, not when hasMessages
             ? [
-                { id: 'openjunior:undo', name: 'undo', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.undoDescription'), isBuiltIn: true },
-                { id: 'openjunior:redo', name: 'redo', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.redoDescription'), isBuiltIn: true },
-                { id: 'openjunior:timeline', name: 'timeline', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.timelineDescription'), isBuiltIn: true },
+                { id: 'glenker:undo', name: 'undo', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.undoDescription'), isBuiltIn: true },
+                { id: 'glenker:redo', name: 'redo', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.redoDescription'), isBuiltIn: true },
+                { id: 'glenker:timeline', name: 'timeline', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.timelineDescription'), isBuiltIn: true },
               ]
             : []
           ),
-          { id: 'openjunior:compact', name: 'compact', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.compactDescription'), isBuiltIn: true },
+          { id: 'glenker:compact', name: 'compact', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.compactDescription'), isBuiltIn: true },
           ...(hasSession
-            ? [{ id: 'openjunior:summary', name: 'summary', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.summaryDescription'), isOpenJunior: true }]
+            ? [{ id: 'glenker:summary', name: 'summary', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.summaryDescription'), isGlenker: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:workspace-review', name: 'workspace-review', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.workspaceReviewDescription'), isOpenJunior: true }]
+            ? [{ id: 'glenker:workspace-review', name: 'workspace-review', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.workspaceReviewDescription'), isGlenker: true }]
             : []
           ),
           ...(canUseReviewHandoffFlow
-            ? [{ id: 'openjunior:handoff-review', name: 'handoff-review', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.handoffReviewDescription'), isOpenJunior: true }]
+            ? [{ id: 'glenker:handoff-review', name: 'handoff-review', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.handoffReviewDescription'), isGlenker: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:plan-feature', name: 'plan-feature', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.featurePlanDescription'), isOpenJunior: true }]
+            ? [{ id: 'glenker:plan-feature', name: 'plan-feature', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.featurePlanDescription'), isGlenker: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:catch-up', name: 'catch-up', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.catchUpDescription'), isOpenJunior: true }]
+            ? [{ id: 'glenker:catch-up', name: 'catch-up', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.catchUpDescription'), isGlenker: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:debug', name: 'debug', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.debugDescription'), isOpenJunior: true }]
+            ? [{ id: 'glenker:debug', name: 'debug', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.debugDescription'), isGlenker: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:weigh', name: 'weigh', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.weighDescription'), isOpenJunior: true }]
+            ? [{ id: 'glenker:weigh', name: 'weigh', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.weighDescription'), isGlenker: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:explore', name: 'explore', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.exploreDescription'), isOpenJunior: true }]
+            ? [{ id: 'glenker:explore', name: 'explore', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.exploreDescription'), isGlenker: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:goal', name: 'goal', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.goalDescription'), isOpenJunior: true }]
+            ? [{ id: 'glenker:goal', name: 'goal', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.goalDescription'), isGlenker: true }]
             : []
           ),
         ];
@@ -209,52 +209,52 @@ export const CommandAutocomplete = React.forwardRef<CommandAutocompleteHandle, C
         const allowInitCommand = !hasMessagesInCurrentSession;
         const builtInCommands: CommandInfo[] = [
           ...(hasSession && !hasMessagesInCurrentSession
-            ? [{ id: 'openjunior:init', name: 'init', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.initDescription'), isBuiltIn: true }]
+            ? [{ id: 'glenker:init', name: 'init', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.initDescription'), isBuiltIn: true }]
             : []
           ),
           ...(hasSession  // Show when session exists, not when hasMessages
             ? [
-                { id: 'openjunior:undo', name: 'undo', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.undoDescription'), isBuiltIn: true },
-                { id: 'openjunior:redo', name: 'redo', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.redoDescription'), isBuiltIn: true },
-                { id: 'openjunior:timeline', name: 'timeline', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.timelineDescription'), isBuiltIn: true },
+                { id: 'glenker:undo', name: 'undo', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.undoDescription'), isBuiltIn: true },
+                { id: 'glenker:redo', name: 'redo', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.redoDescription'), isBuiltIn: true },
+                { id: 'glenker:timeline', name: 'timeline', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.timelineDescription'), isBuiltIn: true },
               ]
             : []
           ),
-          { id: 'openjunior:compact', name: 'compact', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.compactDescription'), isBuiltIn: true },
+          { id: 'glenker:compact', name: 'compact', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.compactDescription'), isBuiltIn: true },
           ...(hasSession
-            ? [{ id: 'openjunior:summary', name: 'summary', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.summaryDescription'), isOpenJunior: true }]
+            ? [{ id: 'glenker:summary', name: 'summary', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.summaryDescription'), isGlenker: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:workspace-review', name: 'workspace-review', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.workspaceReviewDescription'), isOpenJunior: true }]
+            ? [{ id: 'glenker:workspace-review', name: 'workspace-review', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.workspaceReviewDescription'), isGlenker: true }]
             : []
           ),
           ...(canUseReviewHandoffFlow
-            ? [{ id: 'openjunior:handoff-review', name: 'handoff-review', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.handoffReviewDescription'), isOpenJunior: true }]
+            ? [{ id: 'glenker:handoff-review', name: 'handoff-review', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.handoffReviewDescription'), isGlenker: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:plan-feature', name: 'plan-feature', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.featurePlanDescription'), isOpenJunior: true }]
+            ? [{ id: 'glenker:plan-feature', name: 'plan-feature', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.featurePlanDescription'), isGlenker: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:catch-up', name: 'catch-up', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.catchUpDescription'), isOpenJunior: true }]
+            ? [{ id: 'glenker:catch-up', name: 'catch-up', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.catchUpDescription'), isGlenker: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:debug', name: 'debug', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.debugDescription'), isOpenJunior: true }]
+            ? [{ id: 'glenker:debug', name: 'debug', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.debugDescription'), isGlenker: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:weigh', name: 'weigh', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.weighDescription'), isOpenJunior: true }]
+            ? [{ id: 'glenker:weigh', name: 'weigh', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.weighDescription'), isGlenker: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:explore', name: 'explore', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.exploreDescription'), isOpenJunior: true }]
+            ? [{ id: 'glenker:explore', name: 'explore', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.exploreDescription'), isGlenker: true }]
             : []
           ),
           ...(canStartSessionCommand
-            ? [{ id: 'openjunior:goal', name: 'goal', source: 'openjunior' as const, description: t('chat.commandAutocomplete.command.goalDescription'), isOpenJunior: true }]
+            ? [{ id: 'glenker:goal', name: 'goal', source: 'glenker' as const, description: t('chat.commandAutocomplete.command.goalDescription'), isGlenker: true }]
             : []
           ),
         ];
@@ -365,7 +365,7 @@ export const CommandAutocomplete = React.forwardRef<CommandAutocompleteHandle, C
           <div>
             {commands.map((command, index) => {
               const isSystem = command.isBuiltIn;
-              const isOpenJuniorBadge = command.isOpenJunior;
+              const isGlenkerBadge = command.isGlenker;
               return (
                 <div
                   key={command.id}
@@ -437,9 +437,9 @@ export const CommandAutocomplete = React.forwardRef<CommandAutocompleteHandle, C
                           {t('chat.commandAutocomplete.badge.command')}
                         </span>
                       )}
-                      {isOpenJuniorBadge ? (
+                      {isGlenkerBadge ? (
                         <span className={NEUTRAL_BADGE_CLASS}>
-                          OpenJunior
+                          Glenker
                         </span>
                       ) : isSystem ? (
                         <span className={NEUTRAL_BADGE_CLASS}>

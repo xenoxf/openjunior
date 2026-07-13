@@ -16,7 +16,7 @@ describe('listGlobalSessionPages', () => {
                 title: 'Alpha',
                 time: { created: 1, updated: 2 },
                 metadata: {
-                  openjunior: {
+                  glenker: {
                     kind: 'review',
                     originalSessionID: 'ses_original',
                   },
@@ -46,7 +46,7 @@ describe('listGlobalSessionPages', () => {
     }
 
     expect(session.metadata).toEqual({
-      openjunior: {
+      glenker: {
         kind: 'review',
         originalSessionID: 'ses_original',
       },
