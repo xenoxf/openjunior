@@ -142,7 +142,7 @@ describe("createEventPipeline", () => {
     })).toEqual(["updated:a", "delta:b", "updated:ab", "delta:c"])
   })
 
-  test("normalizes openjunior session status events", async () => {
+  test("normalizes glenker session status events", async () => {
     let resolveStreamFinished!: () => void
     const streamFinished = new Promise<void>((resolve) => {
       resolveStreamFinished = resolve
@@ -154,7 +154,7 @@ describe("createEventPipeline", () => {
     const pipeline = createEventPipeline({
       sdk: createSdk([
         {
-          type: "openjunior:session-status",
+          type: "glenker:session-status",
           properties: {
             sessionID: "ses_1",
             status: "idle",

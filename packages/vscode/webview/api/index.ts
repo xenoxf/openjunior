@@ -1,4 +1,4 @@
-import type { RuntimeAPIs, TerminalAPI } from '@openjunior/ui/lib/api/types';
+import type { RuntimeAPIs, TerminalAPI } from '@glenker/ui/lib/api/types';
 import { createVSCodeFilesAPI } from './files';
 import { createVSCodeSettingsAPI } from './settings';
 import { createVSCodePermissionsAPI } from './permissions';

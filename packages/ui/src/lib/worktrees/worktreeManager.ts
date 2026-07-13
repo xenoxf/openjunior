@@ -1,4 +1,4 @@
-import { substituteCommandVariables } from '@/lib/openjuniorConfig';
+import { substituteCommandVariables } from '@/lib/glenkerConfig';
 import type { WorktreeMetadata } from '@/types/worktree';
 import {
   deleteRemoteBranch,

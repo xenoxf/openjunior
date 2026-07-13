@@ -1,5 +1,5 @@
-import type { ToolsAPI } from '@openjunior/ui/lib/api/types';
-import { opencodeClient } from '@openjunior/ui/lib/opencode/client';
+import type { ToolsAPI } from '@glenker/ui/lib/api/types';
+import { opencodeClient } from '@glenker/ui/lib/opencode/client';
 
 export const createVSCodeToolsAPI = (): ToolsAPI => ({
   async getAvailableTools(): Promise<string[]> {

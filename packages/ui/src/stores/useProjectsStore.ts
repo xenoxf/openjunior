@@ -70,7 +70,7 @@ const ACTIVE_PROJECT_STORAGE_KEY = 'activeProjectId';
 
 const getLocalRuntimeOrigin = (): string => {
   if (typeof window === 'undefined') return '';
-  const value = (window as typeof window & { __OPENJUNIOR_LOCAL_ORIGIN__?: string }).__OPENJUNIOR_LOCAL_ORIGIN__;
+  const value = (window as typeof window & { __GLENKER_LOCAL_ORIGIN__?: string }).__GLENKER_LOCAL_ORIGIN__;
   return typeof value === 'string' ? value.trim().replace(/\/+$/, '') : '';
 };
 
@@ -442,7 +442,7 @@ const createVSCodeWorkspaceProjects = (
   const activeProjectId = activeProject?.id ?? projects[0]?.id ?? null;
 
   if (streamDebugEnabled()) {
-    console.log('[OpenJunior][VSCode][projects] Using workspace projects', projects);
+    console.log('[Glenker][VSCode][projects] Using workspace projects', projects);
   }
 
   return { projects, activeProjectId, activeProject: activeProject ?? projects[0] ?? null };
@@ -934,7 +934,7 @@ export const useProjectsStore = create<ProjectsStore>()(
 );
 
 if (typeof window !== 'undefined') {
-  window.addEventListener('openjunior:settings-synced', (event: Event) => {
+  window.addEventListener('glenker:settings-synced', (event: Event) => {
     const detail = (event as CustomEvent<DesktopSettings>).detail;
     if (detail && typeof detail === 'object') {
       useProjectsStore.getState().synchronizeFromSettings(detail);

@@ -1,5 +1,5 @@
-export const SKILL_LINK_PREFIX = '#openjunior-skill:';
-export const AGENT_LINK_PREFIX = '#openjunior-agent:';
+export const SKILL_LINK_PREFIX = '#glenker-skill:';
+export const AGENT_LINK_PREFIX = '#glenker-agent:';
 
 export const buildAgentMentionUrl = (name: string): string => {
     const encoded = encodeURIComponent(name);

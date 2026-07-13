@@ -32,14 +32,14 @@ describe('event stream protocol helpers', () => {
 
   it('derives directory from payload properties when not wrapped', () => {
     const envelope = parseSseEventEnvelope(
-      'data: {"type":"openjunior:notification","properties":{"directory":"/tmp/project"}}\n'
+      'data: {"type":"glenker:notification","properties":{"directory":"/tmp/project"}}\n'
     );
 
     expect(envelope).toEqual({
       eventId: null,
       directory: '/tmp/project',
       payload: {
-        type: 'openjunior:notification',
+        type: 'glenker:notification',
         properties: { directory: '/tmp/project' },
       },
     });
@@ -167,14 +167,14 @@ describe('event stream protocol helpers', () => {
 
     const sent = sendMessageStreamWsEvent(
       socket,
-      { type: 'openjunior:heartbeat', timestamp: 1 },
+      { type: 'glenker:heartbeat', timestamp: 1 },
       { eventId: 'evt-2', directory: '/tmp/project' }
     );
 
     expect(sent).toBe(true);
     expect(JSON.parse(rawPayload)).toEqual({
       type: 'event',
-      payload: { type: 'openjunior:heartbeat', timestamp: 1 },
+      payload: { type: 'glenker:heartbeat', timestamp: 1 },
       eventId: 'evt-2',
       directory: '/tmp/project',
     });

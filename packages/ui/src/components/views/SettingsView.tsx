@@ -33,9 +33,9 @@ import { McpPage } from '@/components/sections/mcp/McpPage';
 import { McpSidebar } from '@/components/sections/mcp/McpSidebar';
 import { SkillsPage, SkillsSidebar } from '@/components/sections/skills';
 import { PluginsPage, PluginsSidebar } from '@/components/sections/plugins';
-import type { OpenJuniorSection } from '@/components/sections/openjunior/types';
-import { OpenJuniorPage } from '@/components/sections/openjunior/OpenJuniorPage';
-import { AboutSettings } from '@/components/sections/openjunior/AboutSettings';
+import type { GlenkerSection } from '@/components/sections/glenker/types';
+import { GlenkerPage } from '@/components/sections/glenker/GlenkerPage';
+import { AboutSettings } from '@/components/sections/glenker/AboutSettings';
 import { useDeviceInfo } from '@/lib/device';
 import { isDesktopLocalOriginActive, isDesktopShell, isVSCodeRuntime, isWebRuntime } from '@/lib/desktop';
 import { useI18n } from '@/lib/i18n';
@@ -56,7 +56,7 @@ import { buildSettingsSearchResults, type SettingsSearchResult } from '@/lib/set
 const SETTINGS_NAV_MIN_WIDTH = 176;
 const SETTINGS_NAV_MAX_WIDTH = 280;
 const SETTINGS_NAV_RESIZE_STEP = 8;
-const SETTINGS_DETAIL_HISTORY_KEY = '__openjuniorSettingsDetail';
+const SETTINGS_DETAIL_HISTORY_KEY = '__glenkerSettingsDetail';
 
 function clampSettingsNavWidth(width: number): number {
   return Math.min(SETTINGS_NAV_MAX_WIDTH, Math.max(SETTINGS_NAV_MIN_WIDTH, width));
@@ -497,7 +497,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
 
   // Nav is always open (collapsed state removed)
 
-  const openChamberSectionBySlug: Partial<Record<SettingsPageSlug, OpenJuniorSection>> = React.useMemo(() => ({
+  const glenkerSectionBySlug: Partial<Record<SettingsPageSlug, GlenkerSection>> = React.useMemo(() => ({
     appearance: 'visual',
     chat: 'chat',
     shortcuts: 'shortcuts',
@@ -650,7 +650,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
     }
     if (result.id === 'plugins.create' && typeof window !== 'undefined') {
       window.setTimeout(() => {
-        window.dispatchEvent(new CustomEvent('openjunior:settings-open-plugin-add'));
+        window.dispatchEvent(new CustomEvent('glenker:settings-open-plugin-add'));
       }, 50);
     }
   }, [isMobile, openPage, prepareSettingsSearchTarget]);
@@ -814,13 +814,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onClose, forceMobile
       case 'notifications':
       case 'voice':
       case 'tunnel': {
-        const section = openChamberSectionBySlug[slug] ?? 'visual';
-        return <OpenJuniorPage section={section} />;
+        const section = glenkerSectionBySlug[slug] ?? 'visual';
+        return <GlenkerPage section={section} />;
       }
       default:
         return <SettingsHome onOpen={openPage} />;
     }
-  }, [openChamberSectionBySlug, openPage, renderUnavailable, runtimeCtx]);
+  }, [glenkerSectionBySlug, openPage, renderUnavailable, runtimeCtx]);
 
   // Mobile: if opened via deep-link / palette to a non-home page, jump into it once.
   React.useEffect(() => {

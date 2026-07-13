@@ -1,5 +1,5 @@
 import React from 'react';
-import { OpenJuniorVisualSettings } from './OpenJuniorVisualSettings';
+import { GlenkerVisualSettings } from './GlenkerVisualSettings';
 import { AboutSettings } from './AboutSettings';
 import { SessionRetentionSettings } from './SessionRetentionSettings';
 import { PasskeySettings } from './PasskeySettings';
@@ -16,7 +16,7 @@ import { ScrollableOverlay } from '@/components/ui/ScrollableOverlay';
 import { useDeviceInfo } from '@/lib/device';
 import { isDesktopLocalOriginActive, isDesktopShell, isVSCodeRuntime, isWebRuntime } from '@/lib/desktop';
 import { subscribeRuntimeEndpointChanged } from '@/lib/runtime-switch';
-import type { OpenJuniorSection } from './types';
+import type { GlenkerSection } from './types';
 
 const useRuntimeEndpointEpoch = (): number => {
     const [epoch, setEpoch] = React.useState(0);
@@ -28,12 +28,12 @@ const useRuntimeEndpointEpoch = (): number => {
     return epoch;
 };
 
-interface OpenJuniorPageProps {
+interface GlenkerPageProps {
     /** Which section to display. If undefined, shows all sections (mobile/legacy behavior) */
-    section?: OpenJuniorSection;
+    section?: GlenkerSection;
 }
 
-export const OpenJuniorPage: React.FC<OpenJuniorPageProps> = ({ section }) => {
+export const GlenkerPage: React.FC<GlenkerPageProps> = ({ section }) => {
     const { isMobile } = useDeviceInfo();
     const runtimeEndpointEpoch = useRuntimeEndpointEpoch();
     const showAbout = isMobile && isWebRuntime();
@@ -48,8 +48,8 @@ export const OpenJuniorPage: React.FC<OpenJuniorPageProps> = ({ section }) => {
                 outerClassName="h-full"
                 className="w-full"
             >
-                <div className="openjunior-page-body mx-auto max-w-3xl space-y-3 p-3 sm:space-y-6 sm:p-6 sm:pt-8">
-                    <OpenJuniorVisualSettings />
+                <div className="glenker-page-body mx-auto max-w-3xl space-y-3 p-3 sm:space-y-6 sm:p-6 sm:pt-8">
+                    <GlenkerVisualSettings />
                     <div className="border-t border-border/40 pt-6">
                         <DefaultsSettings />
                     </div>
@@ -110,7 +110,7 @@ export const OpenJuniorPage: React.FC<OpenJuniorPageProps> = ({ section }) => {
             outerClassName="h-full"
             className="w-full"
         >
-            <div className="openjunior-page-body mx-auto max-w-3xl space-y-6 p-3 sm:p-6 sm:pt-8">
+            <div className="glenker-page-body mx-auto max-w-3xl space-y-6 p-3 sm:p-6 sm:pt-8">
                 {renderSectionContent()}
             </div>
         </ScrollableOverlay>
@@ -124,7 +124,7 @@ const ShortcutsSectionContent: React.FC = () => {
 // Visual section: Theme Mode, Font Size, Spacing, Input Bar Offset (mobile), Nav Rail
 const VisualSectionContent: React.FC = () => {
     const isVSCode = isVSCodeRuntime();
-    return <OpenJuniorVisualSettings visibleSettings={[
+    return <GlenkerVisualSettings visibleSettings={[
         'theme',
         'pwaInstallName',
         'pwaOrientation',
@@ -144,7 +144,7 @@ const VisualSectionContent: React.FC = () => {
 
 // Chat section: User message rendering, Diff layout, Mobile status bar, Show reasoning traces, Queue mode, Persist draft
 const ChatSectionContent: React.FC = () => {
-    return <OpenJuniorVisualSettings visibleSettings={['chatRenderMode', 'messageTransport', 'activityRenderMode', 'userMessageRendering', 'mermaidRendering', 'reasoning', 'showToolFileIcons', 'showTurnChangedFiles', 'expandedTools', 'collapsibleUserMessages', 'stickyUserHeader', 'wideChatLayout', 'splitAssistantMessageActions', 'diffLayout', 'dotfiles', 'fileViewerPreview', 'queueMode', 'persistDraft', 'inputSpellcheck']} />;
+    return <GlenkerVisualSettings visibleSettings={['chatRenderMode', 'messageTransport', 'activityRenderMode', 'userMessageRendering', 'mermaidRendering', 'reasoning', 'showToolFileIcons', 'showTurnChangedFiles', 'expandedTools', 'collapsibleUserMessages', 'stickyUserHeader', 'wideChatLayout', 'splitAssistantMessageActions', 'diffLayout', 'dotfiles', 'fileViewerPreview', 'queueMode', 'persistDraft', 'inputSpellcheck']} />;
 };
 
 // Sessions section: Default model & agent, Session retention

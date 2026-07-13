@@ -421,7 +421,7 @@ export function GitHubIssuePickerDialog({
       void sessionActions.updateSessionTitle(sessionId, sessionTitle).catch(() => undefined);
 
       try {
-        useSessionUIStore.getState().initializeNewOpenJuniorSession(sessionId, useConfigStore.getState().agents);
+        useSessionUIStore.getState().initializeNewGlenkerSession(sessionId, useConfigStore.getState().agents);
       } catch {
         // ignore
       }

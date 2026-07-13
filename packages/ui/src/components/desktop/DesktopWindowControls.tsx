@@ -32,10 +32,10 @@ export const DesktopWindowControls = React.memo(function DesktopWindowControls({
       setIsMaximized(Boolean(detail?.maximized));
     };
 
-    window.addEventListener('openjunior:window-maximized-changed', handleMaximizedChange);
+    window.addEventListener('glenker:window-maximized-changed', handleMaximizedChange);
     return () => {
       disposed = true;
-      window.removeEventListener('openjunior:window-maximized-changed', handleMaximizedChange);
+      window.removeEventListener('glenker:window-maximized-changed', handleMaximizedChange);
     };
   }, [visible]);
 

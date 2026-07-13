@@ -16,7 +16,7 @@ const RIGHT_FACE_CELL_OPACITIES = [
   0.45, 0.25, 0.4, 0.2,
 ];
 
-interface OpenJuniorLogoProps {
+interface GlenkerLogoProps {
   className?: string;
   width?: number;
   height?: number;
@@ -78,7 +78,7 @@ const generateFaceGrid = (
   return cells;
 };
 
-export const OpenJuniorLogo: React.FC<OpenJuniorLogoProps> = ({
+export const GlenkerLogo: React.FC<GlenkerLogoProps> = ({
   className = '',
   width = 70,
   height = 70,
@@ -192,7 +192,7 @@ export const OpenJuniorLogo: React.FC<OpenJuniorLogoProps> = ({
       xmlns="http://www.w3.org/2000/svg"
       className={className}
       role="img"
-      aria-label={t('openChamberLogo.aria.logo')}
+      aria-label={t('glenkerLogo.aria.logo')}
     >
       {isAnimated ? (
         <style>{`@keyframes oc-logo-glow{0%,100%{filter:drop-shadow(0 0 0 transparent)}50%{filter:drop-shadow(0 0 4px var(--oc-glow-color))}}.oc-logo-glow{animation:oc-logo-glow 1.8s ease-in-out infinite}@media (prefers-reduced-motion:reduce){.oc-logo-glow{animation:none}}`}</style>

@@ -4,8 +4,8 @@ import type {
   RemoteClientPurgeRevokedResult,
   RemoteClientRecord,
   RemoteClientRevokeResult,
-} from '@openjunior/ui/lib/api/types';
-import { runtimeFetch } from '@openjunior/ui/lib/runtime-fetch';
+} from '@glenker/ui/lib/api/types';
+import { runtimeFetch } from '@glenker/ui/lib/runtime-fetch';
 
 const jsonOrNull = async <T>(response: Response): Promise<T | null> => {
   return (await response.json().catch(() => null)) as T | null;

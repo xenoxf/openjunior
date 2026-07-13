@@ -186,7 +186,7 @@ export const useKeyboardShortcuts = () => {
       if (eventMatchesShortcut(e, combo('cycle_theme'))) {
         e.preventDefault();
         if (readEmbeddedThemeSearchParams() !== null && window.parent && window.parent !== window) {
-          window.parent.postMessage({ type: 'openjunior:cycle-theme-request' }, window.location.origin);
+          window.parent.postMessage({ type: 'glenker:cycle-theme-request' }, window.location.origin);
           return;
         }
         const modes: Array<'light' | 'dark' | 'system'> = ['light', 'dark', 'system'];

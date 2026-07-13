@@ -29,7 +29,7 @@ const tempDirs = [];
 
 /** Create a temp dir and register it for afterEach cleanup. */
 const createTempDir = () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'openjunior-git-service-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'glenker-git-service-'));
   tempDirs.push(dir);
   return dir;
 };

@@ -21,7 +21,7 @@ function writeSnippet(relativePath, content) {
 
 describe('snippets', () => {
   beforeEach(() => {
-    projectDir = fs.mkdtempSync(path.join(os.tmpdir(), 'openjunior-snippets-'));
+    projectDir = fs.mkdtempSync(path.join(os.tmpdir(), 'glenker-snippets-'));
   });
 
   afterEach(() => {

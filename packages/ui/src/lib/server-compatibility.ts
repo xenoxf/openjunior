@@ -1,6 +1,6 @@
 import { runtimeFetch } from './runtime-fetch';
 
-export const OPENJUNIOR_CLIENT_API_VERSION = 1;
+export const GLENKER_CLIENT_API_VERSION = 1;
 
 export const REQUIRED_SERVER_CAPABILITIES = [
   'api.health.v1',
@@ -21,7 +21,7 @@ export type ServerCompatibilityStatus =
 
 export interface ServerCompatibilityPayload {
   status?: unknown;
-  openjuniorVersion?: unknown;
+  glenkerVersion?: unknown;
   runtime?: unknown;
   compatibility?: {
     apiVersion?: unknown;
@@ -32,7 +32,7 @@ export interface ServerCompatibilityPayload {
 
 export interface ServerCompatibilityResult {
   status: ServerCompatibilityStatus;
-  openjuniorVersion: string | null;
+  glenkerVersion: string | null;
   runtime: string | null;
   apiVersion: number | null;
   minClientApiVersion: number | null;
@@ -62,16 +62,16 @@ export const evaluateServerCompatibility = (
     requiredCapabilities?: readonly string[];
   } = {},
 ): ServerCompatibilityResult => {
-  const clientApiVersion = options.clientApiVersion ?? OPENJUNIOR_CLIENT_API_VERSION;
+  const clientApiVersion = options.clientApiVersion ?? GLENKER_CLIENT_API_VERSION;
   const requiredCapabilities = [...(options.requiredCapabilities ?? REQUIRED_SERVER_CAPABILITIES)];
   const compatibility = payload?.compatibility ?? null;
   const apiVersion = parsePositiveInteger(compatibility?.apiVersion);
   const minClientApiVersion = parsePositiveInteger(compatibility?.minClientApiVersion);
-  const openjuniorVersion = parseString(payload?.openjuniorVersion);
+  const glenkerVersion = parseString(payload?.glenkerVersion);
   const runtime = parseString(payload?.runtime);
 
   const base = {
-    openjuniorVersion,
+    glenkerVersion,
     runtime,
     apiVersion,
     minClientApiVersion,
@@ -83,7 +83,7 @@ export const evaluateServerCompatibility = (
     return {
       ...base,
       status: 'invalid-response',
-      message: 'Server did not return OpenJunior compatibility metadata.',
+      message: 'Server did not return Glenker compatibility metadata.',
     };
   }
 
@@ -131,7 +131,7 @@ export const checkServerCompatibility = async (): Promise<ServerCompatibilityRes
   } catch (error) {
     return {
       status: 'unreachable',
-      openjuniorVersion: null,
+      glenkerVersion: null,
       runtime: null,
       apiVersion: null,
       minClientApiVersion: null,
@@ -144,7 +144,7 @@ export const checkServerCompatibility = async (): Promise<ServerCompatibilityRes
   if (response.status === 401 || response.status === 403) {
     return {
       status: 'auth-required',
-      openjuniorVersion: null,
+      glenkerVersion: null,
       runtime: null,
       apiVersion: null,
       minClientApiVersion: null,

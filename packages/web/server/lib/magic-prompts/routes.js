@@ -4,13 +4,13 @@ export const registerMagicPromptRoutes = (app, dependencies) => {
   const {
     fsPromises,
     path,
-    openjuniorDataDir,
+    glenkerDataDir,
   } = dependencies;
 
   const runtime = createMagicPromptRuntime({
     fsPromises,
     path,
-    filePath: path.join(openjuniorDataDir, 'magic-prompts.json'),
+    filePath: path.join(glenkerDataDir, 'magic-prompts.json'),
   });
 
   app.get('/api/magic-prompts', async (_req, res) => {

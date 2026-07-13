@@ -17,7 +17,7 @@ export function createComposioClient(apiKey) {
   if (!apiKey || typeof apiKey !== 'string' || apiKey.trim().length === 0) {
     console.error('[Composio:service] FATAL: No valid Composio API key provided.');
     console.error('[Composio:service] The API key MUST be configured in Settings > Connectors.');
-    console.error('[Composio:service] It is stored in ~/.config/openjunior/settings.json as composioApiKey.');
+    console.error('[Composio:service] It is stored in ~/.config/glenker/settings.json as composioApiKey.');
     throw new Error(
       'Composio API key is not configured. '
       + 'Go to Settings > Connectors > Composio and enter your API key.'
@@ -142,8 +142,8 @@ async function resolveAuthConfigId(apiKey, toolkitSlug) {
   let configs = await listAuthConfigs(apiKey, { toolkit: toolkitSlug });
   let found = findAuthConfigForToolkit(configs, toolkitSlug);
 
-  if (!found && configs.length > 0) {
-    console.log('[Composio:service]   -> SDK filter may have been ignored, scanning all configs...');
+  if (!found) {
+    console.log('[Composio:service]   -> scanning all auth configs as fallback...');
     const allConfigs = await listAuthConfigs(apiKey, {});
     found = findAuthConfigForToolkit(allConfigs, toolkitSlug);
   }
@@ -159,14 +159,17 @@ async function resolveAuthConfigId(apiKey, toolkitSlug) {
     console.log('[Composio:service]   -> created auth config:', created?.id);
     return created?.id || null;
   } catch (err) {
-    console.error('[Composio:service]   -> failed to create auth config:', err.message);
+    console.error('[Composio:service]   -> failed to create managed auth config:', err.message);
+    console.error('[Composio:service]   -> This toolkit may require a custom OAuth app. Create one at https://app.composio.dev/auth-configs');
+    console.error('[Composio:service]   -> For Notion: You need to create a Notion integration at https://www.notion.so/my-integrations and add credentials to Composio');
     return null;
   }
 }
 
-export async function authorizeToolkit(apiKey, userId, toolkitSlug) {
+export async function authorizeToolkit(apiKey, userId, toolkitSlug, redirectUri) {
   console.log('[Composio:service] authorizeToolkit() called');
   console.log('[Composio:service]   -> userId:', userId, 'toolkitSlug:', toolkitSlug);
+  console.log('[Composio:service]   -> redirectUri:', redirectUri);
 
   // 1) Find or create an auth config for the requested toolkit
   console.log('[Composio:service]   -> resolving auth config for toolkit...');
@@ -174,9 +177,15 @@ export async function authorizeToolkit(apiKey, userId, toolkitSlug) {
   console.log('[Composio:service]   -> authConfigId:', authConfigId);
 
   if (!authConfigId) {
+    const notionHint = toolkitSlug.toLowerCase() === 'notion' 
+      ? '\n\nFor Notion: You must create a Notion integration at https://www.notion.so/my-integrations\n'
+        + 'Then add the Client ID and Client Secret to a custom auth config at https://app.composio.dev/auth-configs\n'
+        + 'Set redirect URI to: ' + effectiveRedirectUri
+      : '';
+    
     throw new Error(
       `No auth config found for toolkit "${toolkitSlug}" and could not create one automatically. `
-      + `Create it manually at https://app.composio.dev/auth-configs`
+      + `Create it manually at https://app.composio.dev/auth-configs` + notionHint
     );
   }
 
@@ -188,20 +197,31 @@ export async function authorizeToolkit(apiKey, userId, toolkitSlug) {
     Accept: 'application/json',
   };
 
-  console.log('[Composio:service]   -> calling /api/v3/connected_accounts/link...');
-  const linkRes = await fetch(`${COMPOSIO_BASE}/api/v3/connected_accounts/link`, {
+  // Build redirect URI. Prefer the explicitly provided value (derived from the
+  // incoming request host so it works in dev AND production/Electron without env
+  // config). Fall back to FRONTEND_URL, then to localhost:5173 for safety.
+  const effectiveRedirectUri = redirectUri
+    || process.env.FRONTEND_URL && `${process.env.FRONTEND_URL.replace(/\/$/, '')}/api/composio/callback`
+    || 'http://localhost:5173/api/composio/callback';
+
+  console.log('[Composio:service]   -> calling /api/v3/connected_accounts/link with redirect_uri:', effectiveRedirectUri);
+  const res = await fetch(`${COMPOSIO_BASE}/api/v3/connected_accounts/link`, {
     method: 'POST',
     headers,
-    body: JSON.stringify({ auth_config_id: authConfigId, user_id: userId }),
+    body: JSON.stringify({ 
+      auth_config_id: authConfigId, 
+      user_id: userId,
+      redirect_uri: effectiveRedirectUri,
+    }),
   });
 
-  if (!linkRes.ok) {
-    const errBody = await linkRes.json().catch(() => ({}));
-    console.error('[Composio:service]   -> link request failed:', linkRes.status, errBody);
-    throw new Error(errBody?.error?.message || errBody?.message || `Link request failed with status ${linkRes.status}`);
+  if (!res.ok) {
+    const errBody = await res.json().catch(() => ({}));
+    console.error('[Composio:service]   -> link request failed:', res.status, errBody);
+    throw new Error(errBody?.error?.message || errBody?.message || `Link request failed with status ${res.status}`);
   }
 
-  const linkData = await linkRes.json();
+  const linkData = await res.json();
   console.log('[Composio:service]   -> link result keys:', Object.keys(linkData || {}));
   console.log('[Composio:service]   -> redirectUrl present:', !!linkData?.redirectUrl);
 
@@ -212,17 +232,16 @@ export async function authorizeToolkit(apiKey, userId, toolkitSlug) {
   };
 }
 
-export async function connectWithCredentials(apiKey, userId, toolkitSlug, credentials, authScheme) {
+export async function connectWithCredentials(apiKey, userId, toolkitSlug, credentials, authScheme, redirectUri) {
   console.log('[Composio:service] connectWithCredentials() called');
   console.log('[Composio:service]   -> userId:', userId, 'toolkitSlug:', toolkitSlug, 'authScheme:', authScheme);
   console.log('[Composio:service]   -> credentials keys:', Object.keys(credentials || {}));
+  console.log('[Composio:service]   -> redirectUri:', redirectUri);
 
-  // 1) Create auth config with use_custom_auth
   const client = createComposioClient(apiKey);
   let authConfigId;
 
   try {
-    // Try to find existing auth config first
     let configs = await listAuthConfigs(apiKey, { toolkit: toolkitSlug });
     let existing = findAuthConfigForToolkit(configs, toolkitSlug);
     if (existing) {
@@ -244,11 +263,46 @@ export async function connectWithCredentials(apiKey, userId, toolkitSlug, creden
     console.log('[Composio:service]   -> created auth config:', authConfigId);
   }
 
-  // 2) Build ConnectionData dynamically from auth scheme
+  // For OAuth-based schemes, use the link endpoint (returns a redirect URL
+  // for the user to authorize in the browser) instead of initiate.
+  const oauthSchemes = ['OAUTH2', 'OAUTH1', 'DCR_OAUTH', 'S2S_OAUTH2'];
+  if (oauthSchemes.includes(authScheme)) {
+    const COMPOSIO_BASE = 'https://backend.composio.dev';
+    const effectiveRedirectUri = redirectUri
+      || (process.env.FRONTEND_URL && `${process.env.FRONTEND_URL.replace(/\/$/, '')}/api/composio/callback`)
+      || 'http://localhost:5173/api/composio/callback';
+    const headers = {
+      'x-api-key': apiKey,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
+    console.log('[Composio:service]   -> calling /api/v3/connected_accounts/link for OAuth2 custom auth');
+    const res = await fetch(`${COMPOSIO_BASE}/api/v3/connected_accounts/link`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        auth_config_id: authConfigId,
+        user_id: userId,
+        redirect_uri: effectiveRedirectUri,
+      }),
+    });
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      console.error('[Composio:service]   -> OAuth2 custom link request failed:', res.status, errBody);
+      throw new Error(errBody?.error?.message || errBody?.message || `Link request failed with status ${res.status}`);
+    }
+    const linkData = await res.json();
+    console.log('[Composio:service]   -> link result keys:', Object.keys(linkData || {}));
+    return {
+      redirectUrl: linkData.redirect_url || linkData.redirectUrl,
+      id: linkData.connected_account_id || linkData.id,
+      status: linkData.status,
+    };
+  }
+
   const config = buildConnectionData(authScheme, credentials);
   console.log('[Composio:service]   -> built config authScheme:', config.authScheme);
 
-  // 3) Initiate the connected account with user-provided credentials
   const connection = await client.connectedAccounts.initiate(userId, authConfigId, { config });
 
   console.log('[Composio:service]   -> connection id:', connection.id, 'status:', connection.status);

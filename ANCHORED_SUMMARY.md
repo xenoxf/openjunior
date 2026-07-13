@@ -1,7 +1,7 @@
-# OpenJunior Session Summary
+# Glenker Session Summary
 
 ## Objective
-Complete a large set of features/fixes for OpenJunior:
+Complete a large set of features/fixes for Glenker:
 1. Fix Appearance toggle buttons (showTerminalButton, showMiniBrowserButton, showRightSidebarButton)
 2. Create standalone "Integraciones" Composio settings page
 3. Fix Skills card styling to match MCP cards
@@ -44,7 +44,7 @@ Complete a large set of features/fixes for OpenJunior:
 
 ### CommandAutocomplete.tsx
 - `packages/ui/src/components/chat/CommandAutocomplete.tsx`
-- Added `'openjunior:goal'` to `builtInCommands`
+- Added `'glenker:goal'` to `builtInCommands`
 
 ### ChatInput.tsx
 - `packages/ui/src/components/chat/ChatInput.tsx`

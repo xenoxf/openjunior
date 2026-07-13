@@ -2,15 +2,15 @@
  * Sync debug logging — gated behind localStorage flag.
  *
  * Enable in browser console:
- *   localStorage.setItem("openjunior:sync:debug", "1")
+ *   localStorage.setItem("glenker:sync:debug", "1")
  *
  * Disable:
- *   localStorage.removeItem("openjunior:sync:debug")
+ *   localStorage.removeItem("glenker:sync:debug")
  *
  * All checks are early-returns on the hot path — zero cost when disabled.
  */
 
-const FLAG_KEY = "openjunior:sync:debug"
+const FLAG_KEY = "glenker:sync:debug"
 
 let _enabled: boolean | undefined
 

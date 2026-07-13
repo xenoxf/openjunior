@@ -62,8 +62,8 @@ export const SIDEBAR_SECTIONS: SidebarSectionConfig[] = [
     },
     {
         id: 'settings',
-        label: 'OpenJunior',
-        description: 'OpenJunior app settings: themes, fonts, and preferences.',
+        label: 'Glenker',
+        description: 'Glenker app settings: themes, fonts, and preferences.',
         icon: "settings-3",
     },
 ];

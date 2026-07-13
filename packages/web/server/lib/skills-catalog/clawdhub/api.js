@@ -29,7 +29,7 @@ async function rateLimitedFetch(url, options = {}) {
       ...options,
       headers: {
         Accept: 'application/json',
-        'User-Agent': 'OpenJunior/1.0',
+        'User-Agent': 'Glenker/1.0',
         ...options.headers,
       },
     });

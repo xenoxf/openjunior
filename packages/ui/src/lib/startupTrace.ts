@@ -6,8 +6,8 @@ export type StartupTraceEvent = {
 
 declare global {
   interface Window {
-    __OPENJUNIOR_STARTUP_TRACE__?: StartupTraceEvent[];
-    __OPENJUNIOR_STARTUP_TRACE_START__?: number;
+    __GLENKER_STARTUP_TRACE__?: StartupTraceEvent[];
+    __GLENKER_STARTUP_TRACE_START__?: number;
   }
 }
 
@@ -17,7 +17,7 @@ const enabled = () => {
   if (typeof window === 'undefined') return false;
   try {
     const params = new URLSearchParams(window.location.search);
-    return params.get('startupTrace') === '1' || window.localStorage?.getItem('OPENJUNIOR_STARTUP_TRACE') === '1';
+    return params.get('startupTrace') === '1' || window.localStorage?.getItem('GLENKER_STARTUP_TRACE') === '1';
   } catch {
     return false;
   }
@@ -28,23 +28,23 @@ export const startupTraceEnabled = () => enabled();
 export const markStartupTrace = (name: string, data?: Record<string, unknown>) => {
   if (!enabled()) return;
   const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
-  window.__OPENJUNIOR_STARTUP_TRACE_START__ ??= now;
-  window.__OPENJUNIOR_STARTUP_TRACE__ ??= [];
-  window.__OPENJUNIOR_STARTUP_TRACE__.push({
-    t: Math.round(now - window.__OPENJUNIOR_STARTUP_TRACE_START__),
+  window.__GLENKER_STARTUP_TRACE_START__ ??= now;
+  window.__GLENKER_STARTUP_TRACE__ ??= [];
+  window.__GLENKER_STARTUP_TRACE__.push({
+    t: Math.round(now - window.__GLENKER_STARTUP_TRACE_START__),
     name,
     ...(data ? { data } : {}),
   });
-  if (window.__OPENJUNIOR_STARTUP_TRACE__.length > MAX_STARTUP_TRACE_EVENTS) {
-    window.__OPENJUNIOR_STARTUP_TRACE__.splice(
+  if (window.__GLENKER_STARTUP_TRACE__.length > MAX_STARTUP_TRACE_EVENTS) {
+    window.__GLENKER_STARTUP_TRACE__.splice(
       0,
-      window.__OPENJUNIOR_STARTUP_TRACE__.length - MAX_STARTUP_TRACE_EVENTS,
+      window.__GLENKER_STARTUP_TRACE__.length - MAX_STARTUP_TRACE_EVENTS,
     );
   }
 };
 
 export const getStartupTraceSummary = () => {
-  const trace = typeof window !== 'undefined' ? window.__OPENJUNIOR_STARTUP_TRACE__ ?? [] : [];
+  const trace = typeof window !== 'undefined' ? window.__GLENKER_STARTUP_TRACE__ ?? [] : [];
   const readyIndex = trace.findIndex((event) => event.name === 'ModelControls:ready');
   const endIndex = readyIndex >= 0 ? Math.min(trace.length, readyIndex + 8) : trace.length;
   return trace.slice(0, endIndex).filter((event) => (
@@ -63,8 +63,8 @@ export const getStartupTraceSummary = () => {
 };
 
 if (typeof window !== 'undefined') {
-  (window as typeof window & { __OPENJUNIOR_STARTUP_TRACE_SUMMARY__?: typeof getStartupTraceSummary })
-    .__OPENJUNIOR_STARTUP_TRACE_SUMMARY__ = getStartupTraceSummary;
+  (window as typeof window & { __GLENKER_STARTUP_TRACE_SUMMARY__?: typeof getStartupTraceSummary })
+    .__GLENKER_STARTUP_TRACE_SUMMARY__ = getStartupTraceSummary;
 }
 
 export const measureStartupTrace = async <T>(

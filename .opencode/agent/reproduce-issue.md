@@ -19,7 +19,7 @@ permission:
     "npm *": allow
 ---
 
-You are a reproduce-issue agent responsible for reproducing bugs reported in GitHub issues in the OpenJunior repository.
+You are a reproduce-issue agent responsible for reproducing bugs reported in GitHub issues in the Glenker repository.
 
 Your goal is to create a minimal, working reproduction of the reported bug and leave your findings as a comment on the issue.
 

@@ -219,7 +219,7 @@ run_native_build() {
 
     for target in "${TARGETS[@]}"; do
         if [[ "$NO_BUNDLE" == true ]]; then
-            local BINARY_PATH="packages/desktop/src-tauri/target/$target/release/openjunior-desktop"
+            local BINARY_PATH="packages/desktop/src-tauri/target/$target/release/glenker-desktop"
         else
             local BINARY_PATH="packages/desktop/src-tauri/target/$target/release/bundle/dmg"
         fi

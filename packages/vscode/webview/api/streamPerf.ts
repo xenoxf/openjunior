@@ -1,4 +1,4 @@
-const STREAM_PERF_STORAGE_KEY = 'openjunior_stream_perf';
+const STREAM_PERF_STORAGE_KEY = 'glenker_stream_perf';
 
 type PerfCounter = {
   count: number;
@@ -15,7 +15,7 @@ type StreamPerfState = {
 
 declare global {
   interface Window {
-    __openjuniorVsCodeStreamPerfState__?: StreamPerfState;
+    __glenkerVsCodeStreamPerfState__?: StreamPerfState;
   }
 }
 
@@ -39,16 +39,16 @@ const ensurePerfState = (): StreamPerfState | null => {
     return null;
   }
 
-  if (!window.__openjuniorVsCodeStreamPerfState__) {
+  if (!window.__glenkerVsCodeStreamPerfState__) {
     const startedAt = Date.now();
-    window.__openjuniorVsCodeStreamPerfState__ = {
+    window.__glenkerVsCodeStreamPerfState__ = {
       counters: new Map<string, PerfCounter>(),
       startedAt,
       lastUpdatedAt: startedAt,
     };
   }
 
-  return window.__openjuniorVsCodeStreamPerfState__;
+  return window.__glenkerVsCodeStreamPerfState__;
 };
 
 const updateCounter = (metric: string, amount: number): void => {

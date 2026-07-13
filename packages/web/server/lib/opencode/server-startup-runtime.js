@@ -18,8 +18,8 @@ export const createServerStartupRuntime = (dependencies) => {
 
   const resolveBindHost = (host) =>
     host
-    || (typeof process.env.OPENJUNIOR_HOST === 'string' && process.env.OPENJUNIOR_HOST.trim().length > 0
-      ? process.env.OPENJUNIOR_HOST.trim()
+    || (typeof process.env.GLENKER_HOST === 'string' && process.env.GLENKER_HOST.trim().length > 0
+      ? process.env.GLENKER_HOST.trim()
       : '127.0.0.1');
 
   const startListeningAndMaybeTunnel = async ({
@@ -44,12 +44,12 @@ export const createServerStartupRuntime = (dependencies) => {
 
           if (typeof process.send === 'function') {
             if (!process.connected) {
-              throw new Error('OpenJunior startup IPC channel disconnected before ready notification');
+              throw new Error('Glenker startup IPC channel disconnected before ready notification');
             }
 
             await new Promise((resolveReadyNotification, rejectReadyNotification) => {
               try {
-                process.send({ type: 'openjunior:ready', port: activePort }, (error) => {
+                process.send({ type: 'glenker:ready', port: activePort }, (error) => {
                   if (error) {
                     rejectReadyNotification(error);
                     return;
@@ -65,7 +65,7 @@ export const createServerStartupRuntime = (dependencies) => {
           const displayHost = (bindHost === '0.0.0.0' || bindHost === '::' || bindHost === '[::]')
             ? 'localhost'
             : (bindHost.includes(':') ? `[${bindHost}]` : bindHost);
-          console.log(`OpenJunior server listening on ${bindHost}:${activePort}`);
+          console.log(`Glenker server listening on ${bindHost}:${activePort}`);
           console.log(`Health check: http://${displayHost}:${activePort}/health`);
           console.log(`Web interface: http://${displayHost}:${activePort}`);
 

@@ -1,33 +1,33 @@
 services:
-  openjunior:
+  glenker:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: openjunior
+    container_name: glenker
     ports:
       - "3000:3000"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - ./data/openjunior:/home/openjunior/.config/openjunior
-      - ./data/opencode/share:/home/openjunior/.local/share/opencode
-      - ./data/opencode/state:/home/openjunior/.local/state/opencode
-      - ./data/opencode/config:/home/openjunior/.config/opencode
-      - ./data/ssh:/home/openjunior/.ssh
-      - ./workspaces:/home/openjunior/workspaces
+      - ./data/glenker:/home/glenker/.config/glenker
+      - ./data/opencode/share:/home/glenker/.local/share/opencode
+      - ./data/opencode/state:/home/glenker/.local/state/opencode
+      - ./data/opencode/config:/home/glenker/.config/opencode
+      - ./data/ssh:/home/glenker/.ssh
+      - ./workspaces:/home/glenker/workspaces
     environment:
-      # Docker binds OpenJunior to 0.0.0.0 for port mapping, so UI auth is required.
+      # Docker binds Glenker to 0.0.0.0 for port mapping, so UI auth is required.
       # Set this before starting, for example:
-      #   OPENJUNIOR_UI_PASSWORD="$(openssl rand -base64 24)" docker compose up -d
-      OPENJUNIOR_UI_PASSWORD: ${OPENJUNIOR_UI_PASSWORD:?Set OPENJUNIOR_UI_PASSWORD before exposing OpenJunior through Docker}
-    # OPENJUNIOR_HOST: 0.0.0.0  # Bind address (default in Docker entrypoint: 0.0.0.0)
-    # OPENJUNIOR_TUNNEL_PROVIDER: cloudflare
-    # OPENJUNIOR_TUNNEL_MODE: quick  # quick | managed-remote | managed-local
-    # OPENJUNIOR_TUNNEL_HOSTNAME: app.example.com  # required for managed-remote
-    # OPENJUNIOR_TUNNEL_TOKEN: your_cloudflare_token  # required for managed-remote
-    # OPENJUNIOR_TUNNEL_CONFIG: /home/openjunior/.cloudflared/config.yml  # optional for managed-local
+      #   GLENKER_UI_PASSWORD="$(openssl rand -base64 24)" docker compose up -d
+      GLENKER_UI_PASSWORD: ${GLENKER_UI_PASSWORD:?Set GLENKER_UI_PASSWORD before exposing Glenker through Docker}
+    # GLENKER_HOST: 0.0.0.0  # Bind address (default in Docker entrypoint: 0.0.0.0)
+    # GLENKER_TUNNEL_PROVIDER: cloudflare
+    # GLENKER_TUNNEL_MODE: quick  # quick | managed-remote | managed-local
+    # GLENKER_TUNNEL_HOSTNAME: app.example.com  # required for managed-remote
+    # GLENKER_TUNNEL_TOKEN: your_cloudflare_token  # required for managed-remote
+    # GLENKER_TUNNEL_CONFIG: /home/glenker/.cloudflared/config.yml  # optional for managed-local
     # OH_MY_OPENCODE: true # enable oh-my-opencode
     # OPENCODE_HOST: http://172.17.0.1:4096 # Connect to external OpenCode server
     # OPENCODE_SKIP_START: true # skip start opencode
-    # OPENJUNIOR_OPENCODE_HOSTNAME: 0.0.0.0 # Bind OpenCode to all interfaces
+    # GLENKER_OPENCODE_HOSTNAME: 0.0.0.0 # Bind OpenCode to all interfaces
     restart: unless-stopped

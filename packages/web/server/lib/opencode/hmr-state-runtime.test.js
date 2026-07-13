@@ -11,9 +11,9 @@ const createRuntime = (env = {}) => createHmrStateRuntime({
 
 describe('hmr state runtime', () => {
   it('uses configured OpenCode cwd when provided', () => {
-    const runtime = createRuntime({ OPENJUNIOR_OPENCODE_CWD: '/tmp/openjunior-data' });
+    const runtime = createRuntime({ GLENKER_OPENCODE_CWD: '/tmp/glenker-data' });
 
-    expect(runtime.getOrCreateHmrState().openCodeWorkingDirectory).toBe('/tmp/openjunior-data');
+    expect(runtime.getOrCreateHmrState().openCodeWorkingDirectory).toBe('/tmp/glenker-data');
   });
 
   it('falls back to home directory without configured OpenCode cwd', () => {

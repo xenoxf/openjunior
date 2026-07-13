@@ -1,18 +1,18 @@
 #!/usr/bin/env tsx
 
 /*
- * Port OpenCode themes into full OpenJunior theme JSON files.
+ * Port OpenCode themes into full Glenker theme JSON files.
  *
  * Usage:
  *   bun run themes:port:opencode --list
  *   bun run themes:port:opencode github cursor lucent-orng --force
- *   bun run themes:port:opencode aura --out-dir /tmp/openjunior-theme-port-test --force
+ *   bun run themes:port:opencode aura --out-dir /tmp/glenker-theme-port-test --force
  *   bun run themes:port:opencode path/to/theme.json --stdout
  *
  * Expected result:
  *   - resolves theme colors from OpenCode desktop themes, TUI context themes,
- *     or existing OpenJunior theme JSON files
- *   - writes complete OpenJunior light/dark theme JSON output with solid core
+ *     or existing Glenker theme JSON files
+ *   - writes complete Glenker light/dark theme JSON output with solid core
  *     surfaces, interactive colors, syntax colors, and full schema coverage
  *   - produces files ready to register in presets without half-mapped tokens
  */
@@ -61,7 +61,7 @@ interface DesktopTheme {
   dark: ThemeVariant;
 }
 
-interface OpenJuniorTheme {
+interface GlenkerTheme {
   metadata: {
     id: string;
     name: string;
@@ -89,7 +89,7 @@ type ResolvedContextTheme = Record<string, string> & {
   thinkingOpacity?: number;
 };
 
-type ThemeSource = DesktopTheme | ContextThemeJson | OpenJuniorTheme;
+type ThemeSource = DesktopTheme | ContextThemeJson | GlenkerTheme;
 
 type ResolvedTheme = Record<string, ColorValue>;
 
@@ -287,7 +287,7 @@ function isContextTheme(value: ThemeSource): value is ContextThemeJson {
   return Boolean(value && typeof value === 'object' && 'theme' in value && !('light' in value) && !('metadata' in value));
 }
 
-function isOpenJuniorTheme(value: ThemeSource): value is OpenJuniorTheme {
+function isGlenkerTheme(value: ThemeSource): value is GlenkerTheme {
   return Boolean(value && typeof value === 'object' && 'metadata' in value && 'colors' in value);
 }
 
@@ -544,7 +544,7 @@ function syntheticTokensFromContextTheme(resolved: ResolvedContextTheme, mode: C
   };
 }
 
-function syntheticTokensFromOpenJuniorTheme(theme: OpenJuniorTheme): ResolvedTheme {
+function syntheticTokensFromGlenkerTheme(theme: GlenkerTheme): ResolvedTheme {
   const colors = theme.colors as Record<string, any>;
   const primary = colors.primary ?? {};
   const surface = colors.surface ?? {};
@@ -787,7 +787,7 @@ function buildTheme(
   variant: ThemeVariant,
   resolved: ResolvedTheme,
   mode: 'light' | 'dark',
-): OpenJuniorTheme {
+): GlenkerTheme {
   const isDark = mode === 'dark';
   const background = token(resolved, 'background-base', isDark ? '#151313' : '#FFFCF0');
   const foreground = token(resolved, 'text-base', isDark ? '#CECDC3' : '#100F0F');
@@ -1240,7 +1240,7 @@ async function main(): Promise<void> {
   }
 
   const resolveThemeVariant = await loadResolver(args.opencodeRoot);
-  const generated: Array<{ fileName: string; theme: OpenJuniorTheme }> = [];
+  const generated: Array<{ fileName: string; theme: GlenkerTheme }> = [];
 
   for (const spec of args.specs) {
     const themePath = await resolveThemeSpec(spec, args.opencodeRoot);
@@ -1297,7 +1297,7 @@ async function main(): Promise<void> {
       continue;
     }
 
-    if (isOpenJuniorTheme(source)) {
+    if (isGlenkerTheme(source)) {
       const colors = source.colors as Record<string, any>;
       const variant = syntheticVariantFromResolvedTheme({
         neutral: colors.surface?.background ?? '#151313',
@@ -1325,7 +1325,7 @@ async function main(): Promise<void> {
         theme: buildTheme(
           syntheticTheme,
           variant,
-          syntheticTokensFromOpenJuniorTheme(source),
+          syntheticTokensFromGlenkerTheme(source),
           source.metadata.variant,
         ),
       });

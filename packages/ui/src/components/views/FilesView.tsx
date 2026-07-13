@@ -304,7 +304,7 @@ const isFileMissingError = (error: unknown): boolean => {
 };
 
 const MAX_VIEW_CHARS = 200_000;
-const FILE_EDITOR_AUTO_SAVE_KEY = 'openjunior:files:auto-save-enabled';
+const FILE_EDITOR_AUTO_SAVE_KEY = 'glenker:files:auto-save-enabled';
 type FileLineEnding = '\n' | '\r\n';
 
 const detectFileLineEnding = (content: string): FileLineEnding => {
@@ -2348,9 +2348,9 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
     }
   }, [canEdit, textViewMode]);
 
-  const MD_VIEWER_MODE_KEY = 'openjunior:files:md-viewer-mode';
-  const HTML_VIEWER_MODE_KEY = 'openjunior:files:html-viewer-mode';
-  const JSON_VIEWER_MODE_KEY = 'openjunior:files:json-viewer-mode';
+  const MD_VIEWER_MODE_KEY = 'glenker:files:md-viewer-mode';
+  const HTML_VIEWER_MODE_KEY = 'glenker:files:html-viewer-mode';
+  const JSON_VIEWER_MODE_KEY = 'glenker:files:json-viewer-mode';
 
   React.useEffect(() => {
     const selectedPath = selectedFile?.path;
@@ -2582,9 +2582,9 @@ export const FilesView: React.FC<FilesViewProps> = ({ mode = 'full' }) => {
       applyDefaultFileViewerMode(enabled);
     };
 
-    window.addEventListener('openjunior:file-viewer-preview-mode-changed', handleFileViewerModeChanged);
+    window.addEventListener('glenker:file-viewer-preview-mode-changed', handleFileViewerModeChanged);
     return () => {
-      window.removeEventListener('openjunior:file-viewer-preview-mode-changed', handleFileViewerModeChanged);
+      window.removeEventListener('glenker:file-viewer-preview-mode-changed', handleFileViewerModeChanged);
     };
   }, [openPaths]);
 

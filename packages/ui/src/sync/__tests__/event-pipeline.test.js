@@ -139,7 +139,7 @@ describe('createEventPipeline', () => {
       payload: {
         type: 'session.status',
         properties: {
-          directory: 'C:/Users/daveotero/localdev/openjunior',
+          directory: 'C:/Users/daveotero/localdev/glenker',
           sessionID: 'session-1',
           status: { type: 'busy' },
         },
@@ -161,7 +161,7 @@ describe('createEventPipeline', () => {
     await delivered;
 
     expect(received).toHaveLength(1);
-    expect(received[0].directory).toBe('C:/Users/daveotero/localdev/openjunior');
+    expect(received[0].directory).toBe('C:/Users/daveotero/localdev/glenker');
     expect(received[0].payload.type).toBe('session.status');
   });
 

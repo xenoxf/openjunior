@@ -4,10 +4,10 @@ export const registerSessionFoldersRoutes = (app, dependencies) => {
   const {
     fsPromises,
     path,
-    openjuniorDataDir,
+    glenkerDataDir,
   } = dependencies;
 
-  const filePath = path.join(openjuniorDataDir, 'sessions-directories.json');
+  const filePath = path.join(glenkerDataDir, 'sessions-directories.json');
 
   const ensureDir = async () => {
     await fsPromises.mkdir(path.dirname(filePath), { recursive: true });

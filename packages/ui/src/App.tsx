@@ -64,7 +64,7 @@ import { SyncAppEffects } from '@/apps/AppEffects';
 import { useAppFontEffects } from '@/apps/useAppFontEffects';
 import { resetStreamingState } from '@/sync/streaming';
 import { OpenCodeUpdateToast } from '@/components/update/OpenCodeUpdateToast';
-import { OpenJuniorUpdateToast } from '@/components/update/OpenJuniorUpdateToast';
+import { GlenkerUpdateToast } from '@/components/update/GlenkerUpdateToast';
 import { markStartupTrace, startupTraceEnabled } from '@/lib/startupTrace';
 
 // Lazy-loaded heavy views — loaded on demand to reduce initial bundle size.
@@ -204,7 +204,7 @@ const EmbeddedSessionChatContent: React.FC<{
     <>
       <SyncAppEffects embeddedBackgroundWorkEnabled={embeddedBackgroundWorkEnabled} />
       <OpenCodeUpdateToast />
-      <OpenJuniorUpdateToast />
+      <GlenkerUpdateToast />
       <ChatView readOnly={embeddedSessionChat.readOnly} />
       <Toaster />
     </>
@@ -215,7 +215,7 @@ function App({ apis }: AppProps) {
   React.useEffect(() => {
     markStartupTrace('App:mounted');
     if (startupTraceEnabled()) {
-      console.info('[startup-trace] enabled. Run console.table(window.__OPENJUNIOR_STARTUP_TRACE__) after startup.');
+      console.info('[startup-trace] enabled. Run console.table(window.__GLENKER_STARTUP_TRACE__) after startup.');
     }
   }, []);
 
@@ -564,7 +564,7 @@ function App({ apis }: AppProps) {
       }
 
       const data = event.data as { type?: unknown; payload?: EmbeddedVisibilityPayload };
-      if (data?.type !== 'openjunior:embedded-visibility') {
+      if (data?.type !== 'glenker:embedded-visibility') {
         return;
       }
 
@@ -572,16 +572,16 @@ function App({ apis }: AppProps) {
     };
 
     const scopedWindow = window as unknown as {
-      __openjuniorSetEmbeddedVisibility?: (payload?: EmbeddedVisibilityPayload) => void;
+      __glenkerSetEmbeddedVisibility?: (payload?: EmbeddedVisibilityPayload) => void;
     };
 
-    scopedWindow.__openjuniorSetEmbeddedVisibility = applyVisibility;
+    scopedWindow.__glenkerSetEmbeddedVisibility = applyVisibility;
     window.addEventListener('message', handleMessage);
 
     return () => {
       window.removeEventListener('message', handleMessage);
-      if (scopedWindow.__openjuniorSetEmbeddedVisibility === applyVisibility) {
-        delete scopedWindow.__openjuniorSetEmbeddedVisibility;
+      if (scopedWindow.__glenkerSetEmbeddedVisibility === applyVisibility) {
+        delete scopedWindow.__glenkerSetEmbeddedVisibility;
       }
     };
   }, [embeddedSessionChat]);
@@ -635,8 +635,8 @@ function App({ apis }: AppProps) {
       void useSessionUIStore.getState().setCurrentSession(sessionId, directory);
     };
 
-    window.addEventListener('openjunior:open-session', handler as EventListener);
-    return () => window.removeEventListener('openjunior:open-session', handler as EventListener);
+    window.addEventListener('glenker:open-session', handler as EventListener);
+    return () => window.removeEventListener('glenker:open-session', handler as EventListener);
   }, []);
 
   // Open a draft Mini Chat window from the native File menu / tray. Uses a
@@ -653,8 +653,8 @@ function App({ apis }: AppProps) {
         projectId: activeProject?.id ?? null,
       });
     };
-    window.addEventListener('openjunior:open-mini-chat', onOpenMiniChat);
-    return () => window.removeEventListener('openjunior:open-mini-chat', onOpenMiniChat);
+    window.addEventListener('glenker:open-mini-chat', onOpenMiniChat);
+    return () => window.removeEventListener('glenker:open-mini-chat', onOpenMiniChat);
   }, []);
 
   // When the window regains focus, mark the currently-selected session as seen.
@@ -691,8 +691,8 @@ function App({ apis }: AppProps) {
       });
     };
 
-    window.addEventListener('openjunior:open-draft-session', handler as EventListener);
-    return () => window.removeEventListener('openjunior:open-draft-session', handler as EventListener);
+    window.addEventListener('glenker:open-draft-session', handler as EventListener);
+    return () => window.removeEventListener('glenker:open-draft-session', handler as EventListener);
   }, []);
 
   React.useEffect(() => {
@@ -711,8 +711,8 @@ function App({ apis }: AppProps) {
       }
     };
 
-    window.addEventListener('openjunior:open-project', handler as EventListener);
-    return () => window.removeEventListener('openjunior:open-project', handler as EventListener);
+    window.addEventListener('glenker:open-project', handler as EventListener);
+    return () => window.removeEventListener('glenker:open-project', handler as EventListener);
   }, []);
 
   React.useEffect(() => {
@@ -720,8 +720,8 @@ function App({ apis }: AppProps) {
     if (!isInitialized || isSwitchingDirectory) return;
     if (appReadyDispatchedRef.current) return;
     appReadyDispatchedRef.current = true;
-    (window as unknown as { __openjuniorAppReady?: boolean }).__openjuniorAppReady = true;
-    window.dispatchEvent(new Event('openjunior:app-ready'));
+    (window as unknown as { __glenkerAppReady?: boolean }).__glenkerAppReady = true;
+    window.dispatchEvent(new Event('glenker:app-ready'));
   }, [isInitialized, isSwitchingDirectory]);
 
   // useEventStream replaced by SyncProvider + SyncBridge
@@ -781,7 +781,7 @@ function App({ apis }: AppProps) {
   }, [clearError, embeddedSessionChat, error]);
 
   // Poll for the injected boot outcome until it becomes available (desktop only).
-  // The Rust backend sets window.__OPENJUNIOR_DESKTOP_BOOT_OUTCOME__ once the
+  // The Rust backend sets window.__GLENKER_DESKTOP_BOOT_OUTCOME__ once the
   // sidecar reaches a stable state. We poll with exponential backoff to handle
   // potential race conditions during startup and config writes.
   React.useEffect(() => {
@@ -972,7 +972,7 @@ function App({ apis }: AppProps) {
                 <div className={isDesktopRuntime ? 'h-full text-foreground bg-transparent' : 'h-full text-foreground bg-background'}>
                   <SyncAppEffects embeddedBackgroundWorkEnabled={embeddedBackgroundWorkEnabled} />
                   <OpenCodeUpdateToast />
-                  <OpenJuniorUpdateToast />
+                  <GlenkerUpdateToast />
                   {!isBootShell && (
                     <>
                       <InteractiveTutorial />

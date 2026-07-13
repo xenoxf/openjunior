@@ -297,10 +297,10 @@ describe('preview navigation policy', () => {
     expect(classifyPreviewNavigation({
       url: 'http://127.0.0.1:57123/support',
       currentUrl,
-      targetOrigin: 'https://openjunior.dev',
+      targetOrigin: 'https://glenker.dev',
     })).toEqual({
       action: 'proxy',
-      url: 'https://openjunior.dev/support',
+      url: 'https://glenker.dev/support',
     });
   });
 
@@ -321,8 +321,8 @@ describe('preview navigation policy', () => {
 
 describe('proxy target normalization (SSRF guard)', () => {
   it('allows ordinary external hosts when allowExternal is set', () => {
-    expect(normalizeProxyTargetUrl('https://docs.openjunior.dev/security/', { allowExternal: true }))
-      .toEqual({ ok: true, origin: 'https://docs.openjunior.dev' });
+    expect(normalizeProxyTargetUrl('https://docs.glenker.dev/security/', { allowExternal: true }))
+      .toEqual({ ok: true, origin: 'https://docs.glenker.dev' });
   });
 
   it('rejects non-loopback hosts without allowExternal', () => {

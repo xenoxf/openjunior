@@ -12,7 +12,7 @@ if [ ${#TARGETS[@]} -eq 0 ]; then
 fi
 
 echo "=============================================="
-echo " OpenJunior Electron Build (Docker)"
+echo " Glenker Electron Build (Docker)"
 echo "=============================================="
 echo " Targets: ${TARGETS[*]}"
 echo " Dist:    ${DIST_DIR}"

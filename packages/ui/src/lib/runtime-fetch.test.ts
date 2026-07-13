@@ -34,10 +34,10 @@ describe('buildRuntimeFetchUrl', () => {
       configureRuntimeUrlResolver({ apiBaseUrl: 'https://api.example' });
       Object.defineProperty(globalThis, 'window', {
         configurable: true,
-        value: { location: { origin: 'openjunior-ui://app', href: 'openjunior-ui://app/index.html' } },
+        value: { location: { origin: 'glenker-ui://app', href: 'glenker-ui://app/index.html' } },
       });
 
-      expect(buildRuntimeFetchUrl('openjunior-ui://app/api/config/settings')).toBe('https://api.example/api/config/settings');
+      expect(buildRuntimeFetchUrl('glenker-ui://app/api/config/settings')).toBe('https://api.example/api/config/settings');
       expect(buildRuntimeFetchUrl('https://external.example/api/config/settings')).toBe('https://external.example/api/config/settings');
     } finally {
       setRuntimeUrlResolver(previous);

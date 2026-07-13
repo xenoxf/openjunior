@@ -1,5 +1,5 @@
-import type { PushAPI, PushSubscribePayload, PushUnsubscribePayload } from '@openjunior/ui/lib/api/types';
-import { runtimeFetch } from '@openjunior/ui/lib/runtime-fetch';
+import type { PushAPI, PushSubscribePayload, PushUnsubscribePayload } from '@glenker/ui/lib/api/types';
+import { runtimeFetch } from '@glenker/ui/lib/runtime-fetch';
 
 const fetchJson = async <T>(input: string | URL | Request, init?: RequestInit): Promise<T | null> => {
   try {

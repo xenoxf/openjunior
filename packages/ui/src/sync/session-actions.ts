@@ -378,7 +378,7 @@ export async function createSession(
       registerSessionDirectory(session.id, sessionDirectory)
     }
     useSessionUIStore.getState().setCurrentSession(session.id, sessionDirectory)
-    useSessionUIStore.getState().markSessionAsOpenJuniorCreated(session.id)
+    useSessionUIStore.getState().markSessionAsGlenkerCreated(session.id)
     useGlobalSessionsStore.getState().upsertSession(session)
     return session
   } catch (error) {

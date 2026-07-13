@@ -1,17 +1,17 @@
 # Custom Themes
 
-OpenJunior supports user-defined themes. Drop a JSON file into the themes directory and reload — no app restart required.
+Glenker supports user-defined themes. Drop a JSON file into the themes directory and reload — no app restart required.
 
 ## Quick Start
 
 1. Create the themes directory:
    ```bash
-   mkdir -p ~/.config/openjunior/themes
+   mkdir -p ~/.config/glenker/themes
    ```
 
 2. Create a theme JSON file (e.g., `my-theme.json`) with the format below.
 
-3. In OpenJunior: **Settings → Theme → Reload themes**.
+3. In Glenker: **Settings → Theme → Reload themes**.
 
 4. Select your theme from the dropdown.
 
@@ -19,7 +19,7 @@ OpenJunior supports user-defined themes. Drop a JSON file into the themes direct
 
 | Platform | Path |
 |----------|------|
-| macOS/Linux | `~/.config/openjunior/themes/` |
+| macOS/Linux | `~/.config/glenker/themes/` |
 
 ## Theme Format
 
@@ -28,7 +28,7 @@ OpenJunior supports user-defined themes. Drop a JSON file into the themes direct
   "metadata": {
     "id": "my-custom-theme",
     "name": "My Custom Theme",
-    "description": "A custom theme for OpenJunior",
+    "description": "A custom theme for Glenker",
     "version": "1.0.0",
     "variant": "dark",
     "tags": ["dark", "custom"]

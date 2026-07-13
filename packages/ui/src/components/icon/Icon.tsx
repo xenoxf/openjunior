@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils"
 import { iconSpriteData } from "./sprite"
 import type { IconName } from "./icons"
 
-const SPRITE_ID = "openjunior-icon-sprite"
+const SPRITE_ID = "glenker-icon-sprite"
 
 let spriteInjected = false
 

@@ -44,7 +44,7 @@ const getRuntimeGit = () => {
 
 const requestChatForceScrollBottom = (sessionId: string) => {
   if (typeof window === 'undefined') return;
-  window.dispatchEvent(new CustomEvent('openjunior:chat-force-scroll-bottom', {
+  window.dispatchEvent(new CustomEvent('glenker:chat-force-scroll-bottom', {
     detail: { sessionId },
   }));
 };

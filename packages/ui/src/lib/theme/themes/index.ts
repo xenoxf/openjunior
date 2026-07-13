@@ -3,24 +3,24 @@ import { presetThemes } from './presets';
 import { withPrColors } from './prColors';
 import flexokiLightRaw from './flexoki-light.json';
 import flexokiDarkRaw from './flexoki-dark.json';
-import openjuniorLightRaw from './fields-of-the-shire-light.json';
-import openjuniorDarkRaw from './fields-of-the-shire-dark.json';
+import glenkerLightRaw from './fields-of-the-shire-light.json';
+import glenkerDarkRaw from './fields-of-the-shire-dark.json';
 
 export const flexokiLightTheme = withPrColors(flexokiLightRaw as Theme);
 export const flexokiDarkTheme = withPrColors(flexokiDarkRaw as Theme);
-export const openjuniorLightTheme = withPrColors(openjuniorLightRaw as Theme);
-export const openjuniorDarkTheme = withPrColors(openjuniorDarkRaw as Theme);
+export const glenkerLightTheme = withPrColors(glenkerLightRaw as Theme);
+export const glenkerDarkTheme = withPrColors(glenkerDarkRaw as Theme);
 
 export const DEFAULT_LIGHT_THEME_ID = 'flexoki-light' as const;
 export const DEFAULT_DARK_THEME_ID = 'flexoki-dark' as const;
 
 export const themes: Theme[] = [
-  openjuniorLightTheme,
-  openjuniorDarkTheme,
+  glenkerLightTheme,
+  glenkerDarkTheme,
   flexokiLightTheme,
   flexokiDarkTheme,
   ...presetThemes.filter(
-    (theme) => theme.metadata.id !== 'openjunior-light' && theme.metadata.id !== 'openjunior-dark',
+    (theme) => theme.metadata.id !== 'glenker-light' && theme.metadata.id !== 'glenker-dark',
   ),
 ];
 

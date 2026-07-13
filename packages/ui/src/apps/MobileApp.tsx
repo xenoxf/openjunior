@@ -4,9 +4,9 @@ import { Icon } from '@/components/icon/Icon';
 import type { IconName } from '@/components/icon/icons';
 import { McpIcon } from '@/components/icons/McpIcon';
 import { McpDropdownContent } from '@/components/mcp/McpDropdown';
-import { AboutSettings } from '@/components/sections/openjunior/AboutSettings';
+import { AboutSettings } from '@/components/sections/glenker/AboutSettings';
 import { OpenCodeUpdateToast } from '@/components/update/OpenCodeUpdateToast';
-import { OpenJuniorUpdateToast } from '@/components/update/OpenJuniorUpdateToast';
+import { GlenkerUpdateToast } from '@/components/update/GlenkerUpdateToast';
 import { ConfigUpdateOverlay } from '@/components/ui/ConfigUpdateOverlay';
 import { ProviderLogo } from '@/components/ui/ProviderLogo';
 import { ChatView } from '@/components/views/ChatView';
@@ -1202,7 +1202,7 @@ export function MobileApp({ apis }: MobileAppProps) {
             <div className="h-full bg-background text-foreground">
               <SyncAppEffects embeddedBackgroundWorkEnabled={isInitialized} />
               <OpenCodeUpdateToast />
-              <OpenJuniorUpdateToast />
+              <GlenkerUpdateToast />
               <MobileShell />
               <Toaster />
               {isInitialized ? <ConfigUpdateOverlay /> : null}

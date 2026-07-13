@@ -89,7 +89,7 @@ export const IntegrateCommitsSection: React.FC<{
 
   const conflictStorageKey = React.useMemo(() => {
     if (!currentSessionId) return null;
-    return `openjunior.integrate.conflict:${currentSessionId}`;
+    return `glenker.integrate.conflict:${currentSessionId}`;
   }, [currentSessionId]);
 
   React.useEffect(() => {

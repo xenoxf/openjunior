@@ -32,9 +32,9 @@ export const isLoopbackBindHost = (host) => {
 export const isNetworkExposedBindHost = (host) => !isLoopbackBindHost(host);
 
 export const isUnsafeUnauthenticatedLanAllowed = (env = process.env) =>
-  env?.OPENJUNIOR_ALLOW_UNAUTHENTICATED_LAN === 'true';
+  env?.GLENKER_ALLOW_UNAUTHENTICATED_LAN === 'true';
 
 export const getUnauthenticatedLanErrorMessage = (host) =>
-  `OpenJunior refuses to bind to ${host || 'a network-exposed host'} without UI authentication. `
-  + 'Set --ui-password or OPENJUNIOR_UI_PASSWORD before exposing it over LAN, '
-  + 'or set OPENJUNIOR_ALLOW_UNAUTHENTICATED_LAN=true to accept the risk.';
+  `Glenker refuses to bind to ${host || 'a network-exposed host'} without UI authentication. `
+  + 'Set --ui-password or GLENKER_UI_PASSWORD before exposing it over LAN, '
+  + 'or set GLENKER_ALLOW_UNAUTHENTICATED_LAN=true to accept the risk.';

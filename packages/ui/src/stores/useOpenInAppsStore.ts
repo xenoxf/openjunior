@@ -192,11 +192,11 @@ export const useOpenInAppsStore = create<OpenInAppsState>()((set, get) => ({
       applyInstalledApps(detail);
     };
 
-    window.addEventListener('openjunior:settings-synced', settingsHandler);
-    window.addEventListener('openjunior:app-ready', appReadyHandler);
-    window.addEventListener('openjunior:installed-apps-updated', updateHandler);
+    window.addEventListener('glenker:settings-synced', settingsHandler);
+    window.addEventListener('glenker:app-ready', appReadyHandler);
+    window.addEventListener('glenker:installed-apps-updated', updateHandler);
 
-    const appReady = (window as unknown as { __openjuniorAppReady?: boolean }).__openjuniorAppReady;
+    const appReady = (window as unknown as { __glenkerAppReady?: boolean }).__glenkerAppReady;
     if (appReady) {
       void loadInstalledApps();
     }

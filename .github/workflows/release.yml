@@ -69,7 +69,7 @@ jobs:
 
           echo "Tag: $TAG"
           shopt -s nullglob
-          for f in packages/electron/dist/OpenJunior-*; do
+          for f in packages/electron/dist/Glenker-*; do
             name="$(basename "$f")"
             # Skip unpacked dirs, blockmaps, and latest metadata
             if [[ -d "$f" || "$name" == *.blockmap || "$name" == latest*.yml || "$name" == latest*.json ]]; then

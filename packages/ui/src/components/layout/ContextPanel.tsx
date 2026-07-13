@@ -24,7 +24,7 @@ import { refreshRuntimeUrlAuthToken } from '@/lib/runtime-auth';
 import { getRuntimeUrlResolver } from '@/lib/runtime-url';
 import { getRuntimeApiBaseUrl } from '@/lib/runtime-switch';
 import { Icon } from "@/components/icon/Icon";
-import { OpenJuniorLogo } from "@/components/ui/OpenJuniorLogo";
+import { GlenkerLogo } from "@/components/ui/GlenkerLogo";
 import { invokeDesktopCommand } from '@/lib/desktopNative';
 import { getOrCreateEmbeddedSessionChatURL, type EmbeddedSessionChatURLCacheEntry } from './contextPanelEmbeddedChat';
 import {
@@ -250,13 +250,13 @@ const getSessionIDFromDedupeKey = (dedupeKey: string | undefined): string | null
 };
 
 const DESKTOP_BROWSER_INSPECT_SCRIPT = `new Promise((resolve) => {
-  const existing = document.getElementById('__openjunior_desktop_browser_overlay');
+  const existing = document.getElementById('__glenker_desktop_browser_overlay');
   if (existing) existing.remove();
-  if (typeof window.__openjuniorDesktopBrowserCancelInspect === 'function') {
-    try { window.__openjuniorDesktopBrowserCancelInspect(); } catch { /* webview not ready */ }
+  if (typeof window.__glenkerDesktopBrowserCancelInspect === 'function') {
+    try { window.__glenkerDesktopBrowserCancelInspect(); } catch { /* webview not ready */ }
   }
   const overlay = document.createElement('div');
-  overlay.id = '__openjunior_desktop_browser_overlay';
+  overlay.id = '__glenker_desktop_browser_overlay';
   overlay.style.cssText = 'position:fixed;z-index:2147483647;pointer-events:none;border:2px solid #60a5fa;background:rgba(96,165,250,.24);border-radius:3px;display:none;box-sizing:border-box;';
   document.documentElement.appendChild(overlay);
   const cssEscape = (value) => {
@@ -307,8 +307,8 @@ const DESKTOP_BROWSER_INSPECT_SCRIPT = `new Promise((resolve) => {
     window.removeEventListener('mousemove', move, true);
     window.removeEventListener('click', click, true);
     window.removeEventListener('keydown', keydown, true);
-    if (window.__openjuniorDesktopBrowserCancelInspect === cancel) {
-      delete window.__openjuniorDesktopBrowserCancelInspect;
+    if (window.__glenkerDesktopBrowserCancelInspect === cancel) {
+      delete window.__glenkerDesktopBrowserCancelInspect;
     }
   };
   const cancel = () => {
@@ -329,24 +329,24 @@ const DESKTOP_BROWSER_INSPECT_SCRIPT = `new Promise((resolve) => {
     if (event.key !== 'Escape') return;
     cancel();
   };
-  window.__openjuniorDesktopBrowserCancelInspect = cancel;
+  window.__glenkerDesktopBrowserCancelInspect = cancel;
   window.addEventListener('mousemove', move, true);
   window.addEventListener('click', click, true);
   window.addEventListener('keydown', keydown, true);
 });`;
 
 const DESKTOP_BROWSER_CANCEL_INSPECT_SCRIPT = `(() => {
-  if (typeof window.__openjuniorDesktopBrowserCancelInspect === 'function') {
-    window.__openjuniorDesktopBrowserCancelInspect();
+  if (typeof window.__glenkerDesktopBrowserCancelInspect === 'function') {
+    window.__glenkerDesktopBrowserCancelInspect();
     return;
   }
-  const overlay = document.getElementById('__openjunior_desktop_browser_overlay');
+  const overlay = document.getElementById('__glenker_desktop_browser_overlay');
   if (overlay) overlay.remove();
 })()`;
 
 const DESKTOP_BROWSER_SAME_WEBVIEW_NAVIGATION_SCRIPT = `(() => {
-  if (window.__openjuniorSameWebviewNavigationInstalled) return;
-  window.__openjuniorSameWebviewNavigationInstalled = true;
+  if (window.__glenkerSameWebviewNavigationInstalled) return;
+  window.__glenkerSameWebviewNavigationInstalled = true;
 
   const navigate = (rawUrl) => {
     if (typeof rawUrl !== 'string' || rawUrl.length === 0) return false;
@@ -669,7 +669,7 @@ const PreviewPane: React.FC<PreviewPaneProps> = ({ rawUrl, onNavigate }) => {
       return;
     }
     postPreviewBridgeMessage(frameWindow, proxySrc, {
-      source: 'openjunior-preview-parent',
+      source: 'glenker-preview-parent',
       version: 1,
       type: 'set-inspect-mode',
       enabled: inspectMode,
@@ -682,7 +682,7 @@ const PreviewPane: React.FC<PreviewPaneProps> = ({ rawUrl, onNavigate }) => {
       return;
     }
     postPreviewBridgeMessage(frameWindow, proxySrc, {
-      source: 'openjunior-preview-parent',
+      source: 'glenker-preview-parent',
       version: 1,
       type: 'set-color-scheme',
       scheme: previewColorScheme,
@@ -733,7 +733,7 @@ const PreviewPane: React.FC<PreviewPaneProps> = ({ rawUrl, onNavigate }) => {
         return;
       }
       const data = event.data;
-      if (!data || data.source !== 'openjunior-preview-bridge' || data.version !== 1) {
+      if (!data || data.source !== 'glenker-preview-bridge' || data.version !== 1) {
         return;
       }
 
@@ -1216,7 +1216,7 @@ type DesktopBrowserPaneProps = {
 };
 
 const isElectronBrowserRuntime = (): boolean => {
-  return typeof window !== 'undefined' && Boolean(window.__OPENJUNIOR_ELECTRON__);
+  return typeof window !== 'undefined' && Boolean(window.__GLENKER_ELECTRON__);
 };
 
 const IframeBrowserPane: React.FC<DesktopBrowserPaneProps> = ({ initialUrl, directory, tabID }) => {
@@ -1450,7 +1450,7 @@ const IframeBrowserPane: React.FC<DesktopBrowserPaneProps> = ({ initialUrl, dire
     const frameWindow = iframeRef.current?.contentWindow;
     if (!frameWindow) return;
     frameWindow.postMessage({
-      source: 'openjunior-preview-parent',
+      source: 'glenker-preview-parent',
       version: 1,
       type: 'set-inspect-mode',
       enabled,
@@ -1527,7 +1527,7 @@ const IframeBrowserPane: React.FC<DesktopBrowserPaneProps> = ({ initialUrl, dire
     const handler = (event: MessageEvent<PreviewBridgeMessage>) => {
       if (event.source !== iframeRef.current?.contentWindow) return;
       const data = event.data;
-      if (!data || data.source !== 'openjunior-preview-bridge' || data.version !== 1) return;
+      if (!data || data.source !== 'glenker-preview-bridge' || data.version !== 1) return;
 
       if (data.type === 'ready') {
         const frameUrl = typeof data.url === 'string' ? data.url : '';
@@ -1685,7 +1685,7 @@ const IframeBrowserPane: React.FC<DesktopBrowserPaneProps> = ({ initialUrl, dire
           </div>
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-6 bg-background p-6 text-center">
-            <OpenJuniorLogo width={140} height={140} className="opacity-20" />
+            <GlenkerLogo width={140} height={140} className="opacity-20" />
             <span className="typography-ui-header text-muted-foreground">{t('contextPanel.browser.empty')}</span>
             <span className="max-w-sm typography-micro text-muted-foreground">{t('contextPanel.browser.emptyHint')}</span>
             <span className="max-w-md typography-micro leading-relaxed text-status-warning/70">{t('contextPanel.browser.trustNotice')}</span>
@@ -1947,13 +1947,13 @@ const DesktopBrowserPane: React.FC<DesktopBrowserPaneProps> = ({ initialUrl, dir
         <webview
           ref={webviewRef}
           src={normalizeBrowserUrl(initialUrl)}
-          partition="persist:openjunior-browser"
+          partition="persist:glenker-browser"
           allowpopups
           style={{ width: '100%', height: '100%', border: 'none' }}
         />
         {(!currentUrl || currentUrl === 'about:blank') && !isLoading ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-6 bg-background p-6 text-center">
-            <OpenJuniorLogo width={140} height={140} className="opacity-20" />
+            <GlenkerLogo width={140} height={140} className="opacity-20" />
             <span className="typography-ui-header text-muted-foreground">{t('contextPanel.browser.empty')}</span>
           </div>
         ) : null}
@@ -2207,8 +2207,8 @@ export const ContextPanel: React.FC = () => {
       }
 
       const directThemeSync = (frameWindow as unknown as {
-        __openjuniorApplyThemeSync?: (themePayload: typeof payload) => void;
-      }).__openjuniorApplyThemeSync;
+        __glenkerApplyThemeSync?: (themePayload: typeof payload) => void;
+      }).__glenkerApplyThemeSync;
 
       if (typeof directThemeSync === 'function') {
         try {
@@ -2221,7 +2221,7 @@ export const ContextPanel: React.FC = () => {
 
       frameWindow.postMessage(
         {
-          type: 'openjunior:theme-sync',
+          type: 'glenker:theme-sync',
           payload,
         },
         window.location.origin,
@@ -2242,8 +2242,8 @@ export const ContextPanel: React.FC = () => {
 
       const payload = { visible: activeChatTabID === tabID };
       const directVisibilitySync = (frameWindow as unknown as {
-        __openjuniorSetEmbeddedVisibility?: (visibilityPayload: typeof payload) => void;
-      }).__openjuniorSetEmbeddedVisibility;
+        __glenkerSetEmbeddedVisibility?: (visibilityPayload: typeof payload) => void;
+      }).__glenkerSetEmbeddedVisibility;
 
       if (typeof directVisibilitySync === 'function') {
         try {
@@ -2256,7 +2256,7 @@ export const ContextPanel: React.FC = () => {
 
       frameWindow.postMessage(
         {
-          type: 'openjunior:embedded-visibility',
+          type: 'glenker:embedded-visibility',
           payload,
         },
         window.location.origin,
@@ -2281,7 +2281,7 @@ export const ContextPanel: React.FC = () => {
       }
 
       const data = event.data as { type?: unknown };
-      if (data?.type !== 'openjunior:cycle-theme-request') {
+      if (data?.type !== 'glenker:cycle-theme-request') {
         return;
       }
 

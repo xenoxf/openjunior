@@ -20,7 +20,7 @@ async function githubFetch(url) {
   const response = await fetch(url, {
     headers: {
       Accept: 'application/vnd.github.v3+json',
-      'User-Agent': 'OpenJunior/1.0',
+      'User-Agent': 'Glenker/1.0',
     },
     signal: AbortSignal.timeout(15000),
   });

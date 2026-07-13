@@ -40,7 +40,7 @@ export type DesktopSshInstance = {
     args: string[];
   };
   connectionTimeoutSec: number;
-  remoteOpenchamber: {
+  remoteGlenker: {
     mode: DesktopSshRemoteMode;
     keepRunning: boolean;
     preferredPort?: number;
@@ -53,7 +53,7 @@ export type DesktopSshInstance = {
   };
   auth: {
     sshPassword?: DesktopSshStoredSecret;
-    openjuniorPassword?: DesktopSshStoredSecret;
+    glenkerPassword?: DesktopSshStoredSecret;
   };
   portForwards: DesktopSshPortForward[];
 };
@@ -179,10 +179,10 @@ const parseInstance = (value: unknown): DesktopSshInstance | null => {
       }
     : undefined;
 
-  const remoteRaw = isRecord(value.remoteOpenchamber)
-    ? value.remoteOpenchamber
-    : isRecord(value.remote_openjunior)
-      ? value.remote_openjunior
+  const remoteRaw = isRecord(value.remoteGlenker)
+    ? value.remoteGlenker
+    : isRecord(value.remote_glenker)
+      ? value.remote_glenker
       : {};
 
   const localRaw = isRecord(value.localForward)
@@ -225,7 +225,7 @@ const parseInstance = (value: unknown): DesktopSshInstance | null => {
   const preferredLocalPort =
     readNumber(localRaw, 'preferredLocalPort') ?? readNumber(localRaw, 'preferred_local_port');
   const sshPassword = parseStoredSecret(authRaw.sshPassword || authRaw.ssh_password);
-  const openjuniorPassword = parseStoredSecret(authRaw.openjuniorPassword || authRaw.openjunior_password);
+  const glenkerPassword = parseStoredSecret(authRaw.glenkerPassword || authRaw.glenker_password);
 
   return {
     id,
@@ -236,7 +236,7 @@ const parseInstance = (value: unknown): DesktopSshInstance | null => {
       readNumber(value, 'connectionTimeoutSec') ??
       readNumber(value, 'connection_timeout_sec') ??
       60,
-    remoteOpenchamber: {
+    remoteGlenker: {
       mode,
       keepRunning: readBoolean(remoteRaw, 'keepRunning') ?? readBoolean(remoteRaw, 'keep_running') ?? true,
       ...(preferredPort ? { preferredPort } : {}),
@@ -252,7 +252,7 @@ const parseInstance = (value: unknown): DesktopSshInstance | null => {
     },
     auth: {
       ...(sshPassword ? { sshPassword } : {}),
-      ...(openjuniorPassword ? { openjuniorPassword } : {}),
+      ...(glenkerPassword ? { glenkerPassword } : {}),
     },
     portForwards,
   };
@@ -324,7 +324,7 @@ export const createDesktopSshInstance = (id: string, sshCommand: string): Deskto
     id,
     sshCommand,
     connectionTimeoutSec: 60,
-    remoteOpenchamber: {
+    remoteGlenker: {
       mode: 'managed',
       keepRunning: true,
       installMethod: 'bun',
@@ -430,13 +430,13 @@ export const listenDesktopSshStatus = async (
     return async () => {};
   }
 
-  const desktop = (window as unknown as { __OPENJUNIOR_DESKTOP__?: DesktopBridgeGlobal }).__OPENJUNIOR_DESKTOP__;
+  const desktop = (window as unknown as { __GLENKER_DESKTOP__?: DesktopBridgeGlobal }).__GLENKER_DESKTOP__;
   const listen = desktop?.listen;
   if (typeof listen !== 'function') {
     return async () => {};
   }
 
-  const unlisten = await listen('openjunior:ssh-instance-status', (event) => {
+  const unlisten = await listen('glenker:ssh-instance-status', (event) => {
     const status = parseStatus(event?.payload);
     if (!status) return;
     listener(status);

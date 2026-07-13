@@ -50,7 +50,7 @@ const normalizeFsProxyPath = (pathname: string): '/api/fs/stat' | '/api/fs/read'
 export const tryHandleLocalFsProxy = async (method: string, requestPath: string): Promise<ApiProxyResponsePayload | null> => {
   let parsed: URL;
   try {
-    parsed = new URL(requestPath, 'https://openjunior.local');
+    parsed = new URL(requestPath, 'https://glenker.local');
   } catch {
     return buildProxyJsonError(400, 'Invalid request path');
   }

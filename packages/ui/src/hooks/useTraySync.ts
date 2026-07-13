@@ -33,7 +33,7 @@ import type { QuestionRequest } from '@/types/question';
 // Only meaningful on the macOS desktop shell — main.mjs no-ops the command on
 // other platforms, but we still gate here to avoid pointless work.
 
-const TRAY_ACTION_EVENT = 'openjunior:tray-action';
+const TRAY_ACTION_EVENT = 'glenker:tray-action';
 // Event-driven updates do the real work; this is just a slow safety net.
 const POLL_INTERVAL_MS = 5000;
 const FLUSH_DEBOUNCE_MS = 120;
@@ -73,7 +73,7 @@ type TrayUsage = { mode: 'usage' | 'remaining'; groups: TrayUsageGroup[] };
 type TraySnapshot = {
   sessions: TraySession[];
   approvals: TrayApproval[];
-  // Active instance label (e.g. "Local OpenJunior" or a remote host name) so
+  // Active instance label (e.g. "Local Glenker" or a remote host name) so
   // the tray header makes clear which instance/window it reflects.
   instanceName: string;
   // Provider rate-limit usage, only for providers the user enabled for the
@@ -83,7 +83,7 @@ type TraySnapshot = {
 };
 
 // focus-session / new-session are routed natively by the main process through
-// the existing `openjunior:open-session` / `openjunior:open-draft-session`
+// the existing `glenker:open-session` / `glenker:open-draft-session`
 // events (handled in App.tsx). Only respond-permission needs handling here.
 type TrayAction =
   | { type: 'respond-permission'; sessionId: string; id: string; response: 'once' | 'always' | 'reject' };
@@ -97,7 +97,7 @@ type DesktopBridgeGlobal = {
 
 const isMac = (): boolean => {
   if (typeof window === 'undefined') return false;
-  return (window as unknown as { __OPENJUNIOR_PLATFORM__?: string }).__OPENJUNIOR_PLATFORM__ === 'darwin';
+  return (window as unknown as { __GLENKER_PLATFORM__?: string }).__GLENKER_PLATFORM__ === 'darwin';
 };
 
 const permissionLabel = (request: PermissionRequest): string => {
@@ -188,15 +188,15 @@ const buildUsage = (): TrayUsage => {
 };
 
 // Mirrors the header's instance resolution (Header.refreshCurrentInstanceLabel):
-// the local origin shows as "Local OpenJunior"; a remote host shows its
+// the local origin shows as "Local Glenker"; a remote host shows its
 // configured name. Async because the host config is read over IPC.
 const resolveInstanceName = async (): Promise<string> => {
   try {
-    if (isDesktopLocalOriginActive()) return 'Local OpenJunior';
-    const localOrigin = (window as unknown as { __OPENJUNIOR_LOCAL_ORIGIN__?: string }).__OPENJUNIOR_LOCAL_ORIGIN__
+    if (isDesktopLocalOriginActive()) return 'Local Glenker';
+    const localOrigin = (window as unknown as { __GLENKER_LOCAL_ORIGIN__?: string }).__GLENKER_LOCAL_ORIGIN__
       || window.location.origin;
     const runtimeApiBaseUrl = getRuntimeApiBaseUrl();
-    if (runtimeApiBaseUrl && locationMatchesHost(runtimeApiBaseUrl, localOrigin)) return 'Local OpenJunior';
+    if (runtimeApiBaseUrl && locationMatchesHost(runtimeApiBaseUrl, localOrigin)) return 'Local Glenker';
     const cfg = await desktopHostsGet();
     const match = cfg.hosts.find((host) =>
       runtimeApiBaseUrl ? locationMatchesHost(runtimeApiBaseUrl, getDesktopHostApiUrl(host)) : false);
@@ -551,7 +551,7 @@ export const useTraySync = (): void => {
 
   React.useEffect(() => {
     if (!isMac() || typeof window === 'undefined') return;
-    const bridge = (window as unknown as { __OPENJUNIOR_DESKTOP__?: DesktopBridgeGlobal }).__OPENJUNIOR_DESKTOP__;
+    const bridge = (window as unknown as { __GLENKER_DESKTOP__?: DesktopBridgeGlobal }).__GLENKER_DESKTOP__;
     const listen = bridge?.listen;
     if (typeof listen !== 'function') return;
 

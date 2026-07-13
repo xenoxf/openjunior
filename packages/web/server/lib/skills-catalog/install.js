@@ -213,7 +213,7 @@ export async function installSkillsFromRepository({
     };
   }
 
-  const tempBase = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'openjunior-skills-install-'));
+  const tempBase = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'glenker-skills-install-'));
 
   try {
     const cloned = await cloneRepo({ cloneUrl, identity, tempDir: tempBase });

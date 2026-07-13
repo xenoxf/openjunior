@@ -62,7 +62,7 @@ import {
   registerCommonRequestMiddleware,
   registerServerStatusRoutes,
 } from './lib/opencode/core-routes.js';
-import { registerOpenJuniorRoutes } from './lib/opencode/openjunior-routes.js';
+import { registerGlenkerRoutes } from './lib/opencode/glenker-routes.js';
 import { createServerUtilsRuntime } from './lib/opencode/server-utils-runtime.js';
 import { createStaticRoutesRuntime } from './lib/opencode/static-routes-runtime.js';
 import { createSettingsRuntime } from './lib/opencode/settings-runtime.js';
@@ -92,10 +92,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const DEFAULT_PORT = 3000;
-const DESKTOP_NOTIFY_PREFIX = '[OpenJuniorDesktopNotify] ';
+const DESKTOP_NOTIFY_PREFIX = '[GlenkerDesktopNotify] ';
 const uiNotificationClients = new Set();
 const uiNotificationWsClients = new Set();
-const uiOpenJuniorEventClients = new Set();
+const uiGlenkerEventClients = new Set();
 const HEALTH_CHECK_INTERVAL = 15000;
 const SHUTDOWN_TIMEOUT = 10000;
 const MODELS_DEV_API_URL = 'https://models.dev/api.json';
@@ -135,7 +135,7 @@ const SSE_PATH_PREFIXES = [
   '/api/event',
   '/api/global/event',
   '/api/notifications/stream',
-  '/api/openjunior/events',
+  '/api/glenker/events',
 ];
 
 function shouldSkipCompression(req, res) {
@@ -160,7 +160,7 @@ function shouldSkipCompression(req, res) {
   return headerIncludesEventStream(res.getHeader('Content-Type'));
 }
 
-const OPENJUNIOR_VERSION = (() => {
+const GLENKER_VERSION = (() => {
   try {
     const packagePath = path.resolve(__dirname, '..', 'package.json');
     const raw = fs.readFileSync(packagePath, 'utf8');
@@ -188,13 +188,13 @@ const isEnvFlagDisabled = (value) => {
 };
 
 const shouldSkipApiCompression = () => {
-  if (isEnvFlagEnabled(process.env.OPENJUNIOR_SKIP_API_COMPRESSION)) return true;
-  if (isEnvFlagEnabled(process.env.OPENJUNIOR_COMPRESS_API)) return false;
-  if (isEnvFlagDisabled(process.env.OPENJUNIOR_COMPRESS_API)) return true;
-  return process.env.OPENJUNIOR_RUNTIME === 'desktop';
+  if (isEnvFlagEnabled(process.env.GLENKER_SKIP_API_COMPRESSION)) return true;
+  if (isEnvFlagEnabled(process.env.GLENKER_COMPRESS_API)) return false;
+  if (isEnvFlagDisabled(process.env.GLENKER_COMPRESS_API)) return true;
+  return process.env.GLENKER_RUNTIME === 'desktop';
 };
 
-const OPENJUNIOR_VERBOSE_REQUEST_LOGS = isEnvFlagEnabled(process.env.OPENJUNIOR_VERBOSE_REQUEST_LOGS);
+const GLENKER_VERBOSE_REQUEST_LOGS = isEnvFlagEnabled(process.env.GLENKER_VERBOSE_REQUEST_LOGS);
 
 const PLAN_MODE_EXPERIMENT_ENABLED =
   isEnvFlagEnabled(process.env.OPENCODE_EXPERIMENTAL_PLAN_MODE)
@@ -234,9 +234,9 @@ const sanitizeModelRefs = (...args) => settingsNormalizationRuntime.sanitizeMode
 const sanitizeSkillCatalogs = (...args) => settingsNormalizationRuntime.sanitizeSkillCatalogs(...args);
 const sanitizeProjects = (...args) => settingsNormalizationRuntime.sanitizeProjects(...args);
 
-const OPENJUNIOR_USER_CONFIG_ROOT = path.join(os.homedir(), '.config', 'openjunior');
-const OPENJUNIOR_USER_THEMES_DIR = path.join(OPENJUNIOR_USER_CONFIG_ROOT, 'themes');
-const OPENJUNIOR_PROJECTS_CONFIG_DIR = path.join(OPENJUNIOR_USER_CONFIG_ROOT, 'projects');
+const GLENKER_USER_CONFIG_ROOT = path.join(os.homedir(), '.config', 'glenker');
+const GLENKER_USER_THEMES_DIR = path.join(GLENKER_USER_CONFIG_ROOT, 'themes');
+const GLENKER_PROJECTS_CONFIG_DIR = path.join(GLENKER_USER_CONFIG_ROOT, 'projects');
 
 const MAX_THEME_JSON_BYTES = 512 * 1024;
 
@@ -244,7 +244,7 @@ const MAX_THEME_JSON_BYTES = 512 * 1024;
 const themeRuntime = createThemeRuntime({
   fsPromises,
   path,
-  themesDir: OPENJUNIOR_USER_THEMES_DIR,
+  themesDir: GLENKER_USER_THEMES_DIR,
   maxThemeJsonBytes: MAX_THEME_JSON_BYTES,
   logger: console,
 });
@@ -265,14 +265,14 @@ const maybeCacheSessionInfoFromEvent = (...args) => notificationTemplateRuntime.
 const buildTemplateVariables = (...args) => notificationTemplateRuntime.buildTemplateVariables(...args);
 const getCachedZenModels = (...args) => notificationTemplateRuntime.getCachedZenModels(...args);
 
-const OPENJUNIOR_DATA_DIR = process.env.OPENJUNIOR_DATA_DIR
-  ? path.resolve(process.env.OPENJUNIOR_DATA_DIR)
-  : path.join(os.homedir(), '.config', 'openjunior');
-const SETTINGS_FILE_PATH = path.join(OPENJUNIOR_DATA_DIR, 'settings.json');
-const PUSH_SUBSCRIPTIONS_FILE_PATH = path.join(OPENJUNIOR_DATA_DIR, 'push-subscriptions.json');
-const REMOTE_CLIENTS_FILE_PATH = path.join(OPENJUNIOR_DATA_DIR, 'remote-clients.json');
-const CLOUDFLARE_MANAGED_REMOTE_TUNNELS_FILE_PATH = path.join(OPENJUNIOR_DATA_DIR, 'cloudflare-managed-remote-tunnels.json');
-const CLOUDFLARE_LEGACY_NAMED_TUNNELS_FILE_PATH = path.join(OPENJUNIOR_DATA_DIR, 'cloudflare-named-tunnels.json');
+const GLENKER_DATA_DIR = process.env.GLENKER_DATA_DIR
+  ? path.resolve(process.env.GLENKER_DATA_DIR)
+  : path.join(os.homedir(), '.config', 'glenker');
+const SETTINGS_FILE_PATH = path.join(GLENKER_DATA_DIR, 'settings.json');
+const PUSH_SUBSCRIPTIONS_FILE_PATH = path.join(GLENKER_DATA_DIR, 'push-subscriptions.json');
+const REMOTE_CLIENTS_FILE_PATH = path.join(GLENKER_DATA_DIR, 'remote-clients.json');
+const CLOUDFLARE_MANAGED_REMOTE_TUNNELS_FILE_PATH = path.join(GLENKER_DATA_DIR, 'cloudflare-managed-remote-tunnels.json');
+const CLOUDFLARE_LEGACY_NAMED_TUNNELS_FILE_PATH = path.join(GLENKER_DATA_DIR, 'cloudflare-named-tunnels.json');
 const CLOUDFLARE_MANAGED_REMOTE_TUNNELS_VERSION = 1;
 
 const managedTunnelConfigRuntime = createManagedTunnelConfigRuntime({
@@ -424,7 +424,7 @@ const getUpstreamStallTimeoutMs = () => (
 const projectConfigRuntime = createProjectConfigRuntime({
   fsPromises,
   path,
-  projectsDirPath: OPENJUNIOR_PROJECTS_CONFIG_DIR,
+  projectsDirPath: GLENKER_PROJECTS_CONFIG_DIR,
 });
 
 // HMR-persistent state via globalThis
@@ -433,7 +433,7 @@ const hmrStateRuntime = createHmrStateRuntime({
   globalThisLike: globalThis,
   os,
   processLike: process,
-  stateKey: '__openjuniorHmrState',
+  stateKey: '__glenkerHmrState',
 });
 const hmrState = hmrStateRuntime.getOrCreateHmrState();
 hmrStateRuntime.ensureUserProvidedOpenCodePassword(hmrState);
@@ -524,19 +524,19 @@ const {
 });
 
 const ENV_SKIP_OPENCODE_START = process.env.OPENCODE_SKIP_START === 'true' ||
-                                    process.env.OPENJUNIOR_SKIP_OPENCODE_START === 'true';
+                                    process.env.GLENKER_SKIP_OPENCODE_START === 'true';
 const ENV_DESKTOP_NOTIFY = (() => {
-  if (process.env.OPENJUNIOR_DESKTOP_NOTIFY === 'true') {
+  if (process.env.GLENKER_DESKTOP_NOTIFY === 'true') {
     return true;
   }
 
-  if (process.env.OPENJUNIOR_RUNTIME === 'desktop') {
+  if (process.env.GLENKER_RUNTIME === 'desktop') {
     return true;
   }
 
   const argv0 = typeof process.argv?.[0] === 'string' ? process.argv[0] : '';
   const argv1 = typeof process.argv?.[1] === 'string' ? process.argv[1] : '';
-  return /openjunior-server/i.test(argv0) || /openjunior-server/i.test(argv1);
+  return /glenker-server/i.test(argv0) || /glenker-server/i.test(argv1);
 })();
 const openCodeAuthStateRuntime = createOpenCodeAuthStateRuntime({
   crypto,
@@ -579,7 +579,7 @@ const ensureOpenCodeApiPrefix = (...args) => openCodeNetworkRuntime.ensureOpenCo
 const scheduleOpenCodeApiDetection = (...args) => openCodeNetworkRuntime.scheduleOpenCodeApiDetection(...args);
 
 const ENV_CONFIGURED_API_PREFIX = normalizeApiPrefix(
-  process.env.OPENCODE_API_PREFIX || process.env.OPENJUNIOR_API_PREFIX || ''
+  process.env.OPENCODE_API_PREFIX || process.env.GLENKER_API_PREFIX || ''
 );
 
   if (ENV_CONFIGURED_API_PREFIX && ENV_CONFIGURED_API_PREFIX !== '') {
@@ -721,7 +721,7 @@ const processForwardedEventPayload = (payload, emitSyntheticEvent) => {
   }
 
   emitSyntheticEvent({
-    type: 'openjunior:session-status',
+    type: 'glenker:session-status',
     properties: {
       sessionID: sessionId,
       status,
@@ -742,7 +742,7 @@ const processForwardedEventPayload = (payload, emitSyntheticEvent) => {
   });
 
   emitSyntheticEvent({
-    type: 'openjunior:session-activity',
+    type: 'glenker:session-activity',
     properties: {
       sessionId,
       phase: status === 'busy' || status === 'retry' ? 'busy' : 'idle',
@@ -826,7 +826,7 @@ const bootstrapRuntime = createBootstrapRuntime({
   registerAuthAndAccessRoutes,
   registerTtsRoutes,
   registerNotificationRoutes,
-  registerOpenJuniorRoutes,
+  registerGlenkerRoutes,
   express,
 });
 const tunnelWiringRuntime = createTunnelWiringRuntime({
@@ -940,10 +940,10 @@ const scheduledTasksRuntime = createScheduledTasksRuntime({
   getOpenCodeAuthHeaders,
   waitForOpenCodeReady,
   emitTaskRunEvent: (event) => {
-    for (const client of uiOpenJuniorEventClients) {
+    for (const client of uiGlenkerEventClients) {
       try {
         writeSseEvent(client, {
-          type: 'openjunior:scheduled-task-ran',
+          type: 'glenker:scheduled-task-ran',
           properties: {
             projectId: event.projectID,
             taskId: event.taskID,
@@ -953,7 +953,7 @@ const scheduledTasksRuntime = createScheduledTasksRuntime({
           },
         });
       } catch {
-        uiOpenJuniorEventClients.delete(client);
+        uiGlenkerEventClients.delete(client);
       }
     }
   },
@@ -1067,12 +1067,12 @@ async function main(options = {}) {
   const port = Number.isFinite(options.port) && options.port >= 0 ? Math.trunc(options.port) : DEFAULT_PORT;
   const host = typeof options.host === 'string' && options.host.length > 0 ? options.host : undefined;
   const effectiveBindHost = host
-    || (typeof process.env.OPENJUNIOR_HOST === 'string' && process.env.OPENJUNIOR_HOST.trim().length > 0
-      ? process.env.OPENJUNIOR_HOST.trim()
+    || (typeof process.env.GLENKER_HOST === 'string' && process.env.GLENKER_HOST.trim().length > 0
+      ? process.env.GLENKER_HOST.trim()
       : '127.0.0.1');
   const uiPassword = typeof options.uiPassword === 'string'
     ? options.uiPassword
-    : (typeof process.env.OPENJUNIOR_UI_PASSWORD === 'string' ? process.env.OPENJUNIOR_UI_PASSWORD : null);
+    : (typeof process.env.GLENKER_UI_PASSWORD === 'string' ? process.env.GLENKER_UI_PASSWORD : null);
   if (
     isNetworkExposedBindHost(effectiveBindHost)
     && !(typeof uiPassword === 'string' && uiPassword.trim().length > 0)
@@ -1081,7 +1081,7 @@ async function main(options = {}) {
     throw new Error(getUnauthenticatedLanErrorMessage(effectiveBindHost));
   }
   const tryCfTunnel = options.tryCfTunnel === true;
-  const apiOnly = options.apiOnly === true || isEnvFlagEnabled(process.env.OPENJUNIOR_API_ONLY);
+  const apiOnly = options.apiOnly === true || isEnvFlagEnabled(process.env.GLENKER_API_ONLY);
   const shouldUseCanonicalTunnelConfig = typeof options.tunnelMode === 'string'
     || typeof options.tunnelProvider === 'string'
     || options.tunnelConfigPath === null
@@ -1117,13 +1117,13 @@ async function main(options = {}) {
     notificationTriggerRuntime.setGetIsWindowFocused(options.getIsWindowFocused);
   }
 
-  console.log(`Starting OpenJunior on port ${port === 0 ? 'auto' : port}`);
+  console.log(`Starting Glenker on port ${port === 0 ? 'auto' : port}`);
 
   const sayTTSCapability = await detectSayTtsCapability(process);
 
   const app = express();
   const serverStartedAt = new Date().toISOString();
-  const packagedClientOrigins = new Set(['openjunior-ui://app']);
+  const packagedClientOrigins = new Set(['glenker-ui://app']);
   app.set('trust proxy', true);
   // Keep self-hosted instances out of search engines. The app shell is served
   // publicly (it loads before prompting for the UI password), so without this
@@ -1164,8 +1164,8 @@ async function main(options = {}) {
 
   const bootstrapResult = bootstrapRuntime.setupBaseRoutes(app, {
     process,
-    openjuniorVersion: OPENJUNIOR_VERSION,
-    runtimeName: process.env.OPENJUNIOR_RUNTIME || 'web',
+    glenkerVersion: GLENKER_VERSION,
+    runtimeName: process.env.GLENKER_RUNTIME || 'web',
     serverStartedAt,
     gracefulShutdown,
     getHealthSnapshot: () => {
@@ -1198,7 +1198,7 @@ async function main(options = {}) {
         apiOnly,
       };
     },
-    verboseRequestLogs: OPENJUNIOR_VERBOSE_REQUEST_LOGS,
+    verboseRequestLogs: GLENKER_VERBOSE_REQUEST_LOGS,
     uiPassword,
     tunnelAuthController,
     remoteClientAuthRuntime,
@@ -1223,7 +1223,7 @@ async function main(options = {}) {
     path,
     server,
     __dirname,
-    openjuniorDataDir: OPENJUNIOR_DATA_DIR,
+    glenkerDataDir: GLENKER_DATA_DIR,
     modelsDevApiUrl: MODELS_DEV_API_URL,
     modelsMetadataCacheTtl: MODELS_METADATA_CACHE_TTL,
     fetchFreeZenModels,
@@ -1244,8 +1244,8 @@ async function main(options = {}) {
     spawn,
     resolveGitBinaryForSpawn,
     createFsSearchRuntime: createFsSearchRuntimeFactory,
-    openjuniorDataDir: OPENJUNIOR_DATA_DIR,
-    openjuniorUserConfigRoot: OPENJUNIOR_USER_CONFIG_ROOT,
+    glenkerDataDir: GLENKER_DATA_DIR,
+    glenkerUserConfigRoot: GLENKER_USER_CONFIG_ROOT,
     normalizeDirectoryPath,
     resolveProjectDirectory,
     resolveOptionalProjectDirectory,
@@ -1266,7 +1266,7 @@ async function main(options = {}) {
     buildAugmentedPath,
     projectConfigRuntime,
     scheduledTasksRuntime,
-    getOpenJuniorEventClients: () => uiOpenJuniorEventClients,
+    getGlenkerEventClients: () => uiGlenkerEventClients,
     writeSseEvent,
   });
 

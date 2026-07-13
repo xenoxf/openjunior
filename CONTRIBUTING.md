@@ -1,10 +1,10 @@
-# Contributing to OpenJunior
+# Contributing to Glenker
 
 ## Getting Started
 
 ```bash
-git clone https://github.com/btriapitsyn/openjunior.git
-cd openjunior
+git clone https://github.com/btriapitsyn/glenker.git
+cd glenker
 bun install
 ```
 
@@ -21,7 +21,7 @@ Run commands from the project root unless a section says otherwise.
 | `bun run dev:web:hmr` | Vite dev server + Express API. **Open the Vite URL for HMR**, not the backend. | `5180` (Vite HMR), `3902` (API) |
 | `bun run start:web` | Start the packaged web server. | `3000` by default |
 
-Both are configurable via env vars: `OPENJUNIOR_PORT`, `OPENJUNIOR_HMR_UI_PORT`, `OPENJUNIOR_HMR_API_PORT`.
+Both are configurable via env vars: `GLENKER_PORT`, `GLENKER_HMR_UI_PORT`, `GLENKER_HMR_API_PORT`.
 
 ### Desktop (Electron)
 
@@ -47,9 +47,9 @@ bun run vscode:build    # Build extension + webview
 bun run vscode:package  # Create a local .vsix package
 ```
 
-`bun run vscode:dev` opens an Extension Development Host automatically. You can override the editor or workspace with `OPENJUNIOR_VSCODE_BIN` and `OPENJUNIOR_VSCODE_DEV_WORKSPACE`.
+`bun run vscode:dev` opens an Extension Development Host automatically. You can override the editor or workspace with `GLENKER_VSCODE_BIN` and `GLENKER_VSCODE_DEV_WORKSPACE`.
 
-Example: `OPENJUNIOR_VSCODE_BIN=cursor bun run vscode:dev`.
+Example: `GLENKER_VSCODE_BIN=cursor bun run vscode:dev`.
 
 ### Shared UI (`packages/ui`)
 
@@ -74,7 +74,7 @@ bun run lint:ui
 | `bun run electron:build` | Build packaged desktop app for the current OS |
 | `bun run vscode:build` | Build the VS Code extension |
 | `bun run vscode:package` | Package the VS Code extension as `.vsix` |
-| `bun run pack:web` | Create a package archive for `@openjunior/web` |
+| `bun run pack:web` | Create a package archive for `@glenker/web` |
 
 ## Platform Build Notes
 
@@ -149,4 +149,4 @@ You can still help:
 
 ## Questions?
 
-Open an [issue](https://github.com/btriapitsyn/openjunior/issues) or ask in [Discord](https://discord.gg/ZYRSdnwwKA).
+Open an [issue](https://github.com/btriapitsyn/glenker/issues) or ask in [Discord](https://discord.gg/ZYRSdnwwKA).

@@ -8,8 +8,8 @@ export type PWADisplayMode =
 
 const DISPLAY_MODES: Array<Exclude<PWADisplayMode, 'browser' | 'twa'>> = ['standalone', 'minimal-ui', 'fullscreen', 'window-controls-overlay'];
 
-export const PWA_INSTALL_NAME_STORAGE_KEY = 'openjunior.pwaName';
-export const PWA_RECENT_SESSIONS_STORAGE_KEY = 'openjunior.pwaRecentSessions';
+export const PWA_INSTALL_NAME_STORAGE_KEY = 'glenker.pwaName';
+export const PWA_RECENT_SESSIONS_STORAGE_KEY = 'glenker.pwaRecentSessions';
 
 const matchesDisplayMode = (mode: Exclude<PWADisplayMode, 'browser' | 'twa'>): boolean => {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {

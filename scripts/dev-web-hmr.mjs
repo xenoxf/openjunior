@@ -80,9 +80,9 @@ async function stopChildTree(child) {
   }
 }
 
-const uiPort = process.env.OPENJUNIOR_HMR_UI_PORT || '5180';
-const backendPort = process.env.OPENJUNIOR_HMR_API_PORT || '3902';
-const hmrHost = process.env.OPENJUNIOR_HMR_HOST || '127.0.0.1';
+const uiPort = process.env.GLENKER_HMR_UI_PORT || '5180';
+const backendPort = process.env.GLENKER_HMR_API_PORT || '3902';
+const hmrHost = process.env.GLENKER_HMR_HOST || '127.0.0.1';
 
 function getLanAddresses() {
   const addresses = [];
@@ -112,15 +112,15 @@ function clearViteCache() {
 clearViteCache();
 
 const api = run('api', 'bun', ['run', '--cwd', 'packages/web', 'dev:server:watch'], {
-  OPENJUNIOR_PORT: backendPort,
+  GLENKER_PORT: backendPort,
 });
 const vite = run(
   'vite',
   'bun',
   ['x', 'vite', '--force', '--host', hmrHost, '--port', uiPort, '--strictPort'],
   {
-    OPENJUNIOR_PORT: backendPort,
-    OPENJUNIOR_DISABLE_PWA_DEV: '1',
+    GLENKER_PORT: backendPort,
+    GLENKER_DISABLE_PWA_DEV: '1',
   },
   { cwd: webRoot },
 );

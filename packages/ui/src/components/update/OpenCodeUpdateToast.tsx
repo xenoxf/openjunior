@@ -156,11 +156,11 @@ export const OpenCodeUpdateToast: React.FC = () => {
       timeoutIds.push(setTimeout(() => { void checkForUpdate(0); }, INITIAL_CHECK_DELAY_MS));
     }
 
-    window.addEventListener('openjunior:opencode-update-available', onUpdateAvailable);
+    window.addEventListener('glenker:opencode-update-available', onUpdateAvailable);
     return () => {
       cancelled = true;
       for (const timeoutId of timeoutIds) clearTimeout(timeoutId);
-      window.removeEventListener('openjunior:opencode-update-available', onUpdateAvailable);
+      window.removeEventListener('glenker:opencode-update-available', onUpdateAvailable);
     };
   }, [runUpgrade, showOpenCodeUpdateNotifications, t]);
 

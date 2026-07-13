@@ -133,7 +133,7 @@ export function OnboardingView() {
               <Icon name="brain-ai-3" className="h-7 w-7 text-primary" />
             </div>
             <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-              Welcome to OpenJunior
+              Welcome to Glenker
             </h1>
             <p className="text-sm text-muted-foreground text-center">
               Let's set up your workspace. What describes you best?

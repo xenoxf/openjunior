@@ -15,12 +15,12 @@ export const applyPersistedHomeDirectoryToWindow = (homeDirectory: string): void
   if (typeof window === 'undefined') {
     return;
   }
-  if (typeof window.__OPENJUNIOR_HOME__ === 'string' && window.__OPENJUNIOR_HOME__.length > 0) {
+  if (typeof window.__GLENKER_HOME__ === 'string' && window.__GLENKER_HOME__.length > 0) {
     return;
   }
 
   try {
-    window.__OPENJUNIOR_HOME__ = homeDirectory;
+    window.__GLENKER_HOME__ = homeDirectory;
   } catch {
     /* read-only contextBridge property — leave preload-seeded value */
   }
@@ -97,9 +97,9 @@ const persistToLocalStorage = (settings: DesktopSettings) => {
   if (typeof settings.pwaAppName === 'string') {
     const normalized = settings.pwaAppName.trim().replace(/\s+/g, ' ').slice(0, 64);
     if (normalized.length > 0) {
-      localStorage.setItem('openjunior.pwaName', normalized);
+      localStorage.setItem('glenker.pwaName', normalized);
     } else {
-      localStorage.removeItem('openjunior.pwaName');
+      localStorage.removeItem('glenker.pwaName');
     }
   }
   if (typeof settings.mobileKeyboardMode === 'string') {
@@ -140,7 +140,7 @@ const dispatchSettingsSynced = (settings: DesktopSettings): void => {
   if (typeof window === 'undefined') {
     return;
   }
-  window.dispatchEvent(new CustomEvent<DesktopSettings>('openjunior:settings-synced', { detail: settings }));
+  window.dispatchEvent(new CustomEvent<DesktopSettings>('glenker:settings-synced', { detail: settings }));
 };
 
 type PersistApi = {

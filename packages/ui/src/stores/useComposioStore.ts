@@ -52,10 +52,11 @@ interface ComposioStore {
   loadMoreApps: () => Promise<void>;
   searchApps: (query: string) => Promise<void>;
   loadConnectedAccounts: () => Promise<void>;
+  getConnectionStatus: (connectionId: string) => Promise<{ status: string } | null>;
   getAuthFields: (slug: string, scheme: string) => Promise<ComposioAuthField[]>;
-  connectApp: (slug: string) => Promise<{ ok: boolean; redirectUrl?: string; connectionId?: string; error?: string }>;
+  connectApp: (slug: string) => Promise<{ ok: boolean; redirectUrl?: string; connectionId?: string; requiresCustomAuth?: boolean; authScheme?: string; error?: string }>;
   waitForConnection: (connectionId: string) => Promise<boolean>;
-  connectAppCustom: (slug: string, credentials: Record<string, string>, authScheme: string) => Promise<{ ok: boolean; error?: string }>;
+  connectAppCustom: (slug: string, credentials: Record<string, string>, authScheme: string) => Promise<{ ok: boolean; redirectUrl?: string; connectionId?: string; error?: string }>;
   disconnectAccount: (accountId: string) => Promise<boolean>;
   setSelectedAccount: (id: string | null) => void;
 }
@@ -145,6 +146,21 @@ export const useComposioStore = create<ComposioStore>()(
         }
       },
 
+      getConnectionStatus: async (connectionId) => {
+        try {
+          const response = await runtimeFetch(`/api/composio/connections/${connectionId}`, {
+            headers: { Accept: 'application/json' },
+          });
+          const data = await response.json();
+          if (data?.ok && data?.item) {
+            return { status: data.item.status };
+          }
+          return null;
+        } catch {
+          return null;
+        }
+      },
+
       getAuthFields: async (slug, scheme) => {
         try {
           const response = await runtimeFetch(`/api/composio/apps/${slug}/auth-fields?scheme=${encodeURIComponent(scheme)}`, {
@@ -167,6 +183,14 @@ export const useComposioStore = create<ComposioStore>()(
           const data = await response.json();
           if (data?.ok && data?.redirectUrl) {
             return { ok: true, redirectUrl: data.redirectUrl, connectionId: data.connectionId };
+          }
+          if (data?.requiresCustomAuth) {
+            return {
+              ok: false,
+              requiresCustomAuth: true,
+              authScheme: data.authScheme || 'OAUTH2',
+              error: data.error || 'This integration requires custom credentials',
+            };
           }
           return { ok: false, error: data?.error || 'Failed to initiate connection' };
         } catch (err) {
@@ -196,6 +220,9 @@ export const useComposioStore = create<ComposioStore>()(
           });
           const data = await response.json();
           if (data?.ok) {
+            if (data.redirectUrl) {
+              return { ok: true, redirectUrl: data.redirectUrl, connectionId: data.connectionId };
+            }
             return { ok: true };
           }
           return { ok: false, error: data?.error || 'Failed to connect' };

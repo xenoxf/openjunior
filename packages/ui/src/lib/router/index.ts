@@ -1,5 +1,5 @@
 /**
- * Router module for URL-based navigation in OpenJunior.
+ * Router module for URL-based navigation in Glenker.
  *
  * Provides bidirectional sync between URL query parameters and application state.
  * Works across web, desktop, and VS Code (state-only mode).

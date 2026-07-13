@@ -15,7 +15,7 @@ export const registerScheduledTaskRoutes = (app, dependencies) => {
     sanitizeProjects,
     projectConfigRuntime,
     scheduledTasksRuntime,
-    getOpenJuniorEventClients,
+    getGlenkerEventClients,
     writeSseEvent,
   } = dependencies;
 
@@ -154,7 +154,7 @@ export const registerScheduledTaskRoutes = (app, dependencies) => {
     }
   });
 
-  app.get('/api/openjunior/scheduled-tasks/status', async (_req, res) => {
+  app.get('/api/glenker/scheduled-tasks/status', async (_req, res) => {
     try {
       if (typeof scheduledTasksRuntime.getStatus === 'function') {
         return res.json(scheduledTasksRuntime.getStatus());
@@ -193,19 +193,19 @@ export const registerScheduledTaskRoutes = (app, dependencies) => {
     }
   });
 
-  app.get('/api/openjunior/events', (req, res) => {
+  app.get('/api/glenker/events', (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
     res.setHeader('Cache-Control', 'no-cache, no-transform');
     res.setHeader('Connection', 'keep-alive');
     res.setHeader('X-Accel-Buffering', 'no');
     res.flushHeaders?.();
 
-    const clients = getOpenJuniorEventClients();
+    const clients = getGlenkerEventClients();
     clients.add(res);
 
     try {
       writeSseEvent(res, {
-        type: 'openjunior:event-stream-ready',
+        type: 'glenker:event-stream-ready',
         properties: {
           connectedAt: Date.now(),
         },
@@ -216,7 +216,7 @@ export const registerScheduledTaskRoutes = (app, dependencies) => {
     const heartbeat = setInterval(() => {
       try {
         writeSseEvent(res, {
-          type: 'openjunior:heartbeat',
+          type: 'glenker:heartbeat',
           properties: {
             timestamp: Date.now(),
           },

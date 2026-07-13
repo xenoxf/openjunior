@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { copyTextToClipboard } from '@/lib/clipboard';
 import { toast } from '@/components/ui';
 import { Icon } from "@/components/icon/Icon";
-import { OPENJUNIOR_PROJECT_NOTES_MAX_LENGTH, getProjectNotesAndTodos, saveProjectNotesAndTodos } from '@/lib/openjuniorConfig';
+import { GLENKER_PROJECT_NOTES_MAX_LENGTH, getProjectNotesAndTodos, saveProjectNotesAndTodos } from '@/lib/glenkerConfig';
 import { resolveProjectForSessionDirectory } from '@/lib/projectResolution';
 import { useEffectiveDirectory } from '@/hooks/useEffectiveDirectory';
 import { isVSCodeRuntime } from '@/lib/desktop';
@@ -32,7 +32,7 @@ interface SelectionPayload {
 }
 
 const appendDistilledInsightToNotes = (existingNotes: string, insight: string): string => {
-  const trimmedInsight = insight.trim().replace(/^[-*+]\s+/, '').slice(0, OPENJUNIOR_PROJECT_NOTES_MAX_LENGTH);
+  const trimmedInsight = insight.trim().replace(/^[-*+]\s+/, '').slice(0, GLENKER_PROJECT_NOTES_MAX_LENGTH);
   if (!trimmedInsight) {
     return existingNotes;
   }
@@ -529,7 +529,7 @@ export const TextSelectionMenu: React.FC<TextSelectionMenuProps> = ({ containerR
         toast.error(t('chat.textSelection.toast.addToNotesFailed'));
         return;
       }
-      window.dispatchEvent(new CustomEvent('openjunior:project-notes-updated', {
+      window.dispatchEvent(new CustomEvent('glenker:project-notes-updated', {
         detail: { projectId: currentProjectRef.id },
       }));
       toast.success(t('chat.textSelection.toast.addToNotesSuccess'));

@@ -24,14 +24,14 @@ import {
   deleteProjectPlanFile,
   getProjectContextData,
   importProjectPlanFileFromContent,
-  OPENJUNIOR_PROJECT_NOTES_MAX_LENGTH,
+  GLENKER_PROJECT_NOTES_MAX_LENGTH,
   readProjectPlanFile,
-  OPENJUNIOR_PROJECT_TODO_TEXT_MAX_LENGTH,
+  GLENKER_PROJECT_TODO_TEXT_MAX_LENGTH,
   saveProjectNotesAndTodos,
-  type OpenJuniorProjectPlanFileLink,
-  type OpenJuniorProjectTodoItem,
+  type GlenkerProjectPlanFileLink,
+  type GlenkerProjectTodoItem,
   type ProjectRef,
-} from '@/lib/openjuniorConfig';
+} from '@/lib/glenkerConfig';
 import { requestFileAccess } from '@/lib/desktop';
 import { generateBranchName } from '@/lib/git/branchNameGenerator';
 import { useDirectoryStore } from '@/stores/useDirectoryStore';
@@ -87,12 +87,12 @@ type PendingSendTarget = {
   todoText: string;
 };
 
-type ProjectPlanListItem = OpenJuniorProjectPlanFileLink & {
+type ProjectPlanListItem = GlenkerProjectPlanFileLink & {
   title: string;
 };
 
 const toPlanListItem = async (
-  plan: OpenJuniorProjectPlanFileLink,
+  plan: GlenkerProjectPlanFileLink,
   fallbackTitle: string,
 ): Promise<ProjectPlanListItem> => {
   const file = await readProjectPlanFile(plan.path);
@@ -109,12 +109,12 @@ const createTodoId = (): string => {
   return `todo_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 };
 
-const sortTodosWithCompletedLast = (items: OpenJuniorProjectTodoItem[]): OpenJuniorProjectTodoItem[] => [
+const sortTodosWithCompletedLast = (items: GlenkerProjectTodoItem[]): GlenkerProjectTodoItem[] => [
   ...items.filter((todo) => !todo.completed),
   ...items.filter((todo) => todo.completed),
 ];
 
-const insertTodoBeforeCompleted = (items: OpenJuniorProjectTodoItem[], item: OpenJuniorProjectTodoItem): OpenJuniorProjectTodoItem[] => {
+const insertTodoBeforeCompleted = (items: GlenkerProjectTodoItem[], item: GlenkerProjectTodoItem): GlenkerProjectTodoItem[] => {
   const firstCompletedIndex = items.findIndex((todo) => todo.completed);
   if (firstCompletedIndex === -1) {
     return [...items, item];
@@ -167,7 +167,7 @@ export const ProjectNotesTodoPanel: React.FC<ProjectNotesTodoPanelProps> = ({
   const { t } = useI18n();
   const [isLoading, setIsLoading] = React.useState(false);
   const [notes, setNotes] = React.useState('');
-  const [todos, setTodos] = React.useState<OpenJuniorProjectTodoItem[]>([]);
+  const [todos, setTodos] = React.useState<GlenkerProjectTodoItem[]>([]);
   const [newTodoText, setNewTodoText] = React.useState('');
   const [sendingTodoId, setSendingTodoId] = React.useState<string | null>(null);
   const [expandedTodoIds, setExpandedTodoIds] = React.useState<Set<string>>(() => new Set());
@@ -188,7 +188,7 @@ export const ProjectNotesTodoPanel: React.FC<ProjectNotesTodoPanelProps> = ({
 
   const currentSessionId = useSessionUIStore((state) => state.currentSessionId);
   const createSession = useSessionUIStore((state) => state.createSession);
-  const initializeNewOpenJuniorSession = useSessionUIStore((state) => state.initializeNewOpenJuniorSession);
+  const initializeNewGlenkerSession = useSessionUIStore((state) => state.initializeNewGlenkerSession);
   const sendMessage = useSessionUIStore((state) => state.sendMessage);
   const setCurrentSession = useSessionUIStore((state) => state.setCurrentSession);
   const setPendingInputText = useInputStore((state) => state.setPendingInputText);
@@ -199,7 +199,7 @@ export const ProjectNotesTodoPanel: React.FC<ProjectNotesTodoPanelProps> = ({
   const padding = useUIStore((state) => state.padding);
 
   const persistProjectData = React.useCallback(
-    async (nextNotes: string, nextTodos: OpenJuniorProjectTodoItem[]) => {
+    async (nextNotes: string, nextTodos: GlenkerProjectTodoItem[]) => {
       if (!projectRef) {
         return false;
       }
@@ -292,11 +292,11 @@ export const ProjectNotesTodoPanel: React.FC<ProjectNotesTodoPanelProps> = ({
       setContextReloadTick((previous) => previous + 1);
     };
 
-    window.addEventListener('openjunior:project-plan-saved', handleProjectContextRefresh);
-    window.addEventListener('openjunior:project-notes-updated', handleProjectContextRefresh);
+    window.addEventListener('glenker:project-plan-saved', handleProjectContextRefresh);
+    window.addEventListener('glenker:project-notes-updated', handleProjectContextRefresh);
     return () => {
-      window.removeEventListener('openjunior:project-plan-saved', handleProjectContextRefresh);
-      window.removeEventListener('openjunior:project-notes-updated', handleProjectContextRefresh);
+      window.removeEventListener('glenker:project-plan-saved', handleProjectContextRefresh);
+      window.removeEventListener('glenker:project-notes-updated', handleProjectContextRefresh);
     };
   }, [projectRef]);
 
@@ -393,7 +393,7 @@ export const ProjectNotesTodoPanel: React.FC<ProjectNotesTodoPanelProps> = ({
 
     const nextTodos = insertTodoBeforeCompleted(todos, {
       id: createTodoId(),
-      text: trimmed.slice(0, OPENJUNIOR_PROJECT_TODO_TEXT_MAX_LENGTH),
+      text: trimmed.slice(0, GLENKER_PROJECT_TODO_TEXT_MAX_LENGTH),
       completed: false,
       createdAt: Date.now(),
     });
@@ -471,7 +471,7 @@ export const ProjectNotesTodoPanel: React.FC<ProjectNotesTodoPanelProps> = ({
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   );
 
-  const todoInputValue = newTodoText.slice(0, OPENJUNIOR_PROJECT_TODO_TEXT_MAX_LENGTH);
+  const todoInputValue = newTodoText.slice(0, GLENKER_PROJECT_TODO_TEXT_MAX_LENGTH);
   const completedTodoCount = todos.reduce((count, todo) => count + (todo.completed ? 1 : 0), 0);
 
   const routeToChat = React.useCallback(() => {
@@ -560,7 +560,7 @@ export const ProjectNotesTodoPanel: React.FC<ProjectNotesTodoPanelProps> = ({
           }
           sessionId = session.id;
           directoryHint = session.directory ?? projectRef.path;
-          initializeNewOpenJuniorSession(session.id, useConfigStore.getState().agents ?? []);
+          initializeNewGlenkerSession(session.id, useConfigStore.getState().agents ?? []);
         }
 
         if (!sessionId) {
@@ -608,7 +608,7 @@ export const ProjectNotesTodoPanel: React.FC<ProjectNotesTodoPanelProps> = ({
         setSendingTodoId(null);
       }
     },
-    [canCreateWorktree, createSession, initializeNewOpenJuniorSession, onActionComplete, pendingSendTarget, projectRef, routeToChat, sendMessage, setCurrentSession, t]
+    [canCreateWorktree, createSession, initializeNewGlenkerSession, onActionComplete, pendingSendTarget, projectRef, routeToChat, sendMessage, setCurrentSession, t]
   );
 
   const planFileInputRef = React.useRef<HTMLInputElement | null>(null);
@@ -628,7 +628,7 @@ export const ProjectNotesTodoPanel: React.FC<ProjectNotesTodoPanelProps> = ({
           return;
         }
         setPlans((previous) => previous.filter((entry) => entry.id !== planId));
-        window.dispatchEvent(new CustomEvent('openjunior:project-plan-saved', {
+        window.dispatchEvent(new CustomEvent('glenker:project-plan-saved', {
           detail: { projectId: projectRef.id },
         }));
       } finally {
@@ -675,7 +675,7 @@ export const ProjectNotesTodoPanel: React.FC<ProjectNotesTodoPanelProps> = ({
           toast.error(t('rightSidebar.contextNotesTodo.toast.importPlanFailed'));
           return;
         }
-        window.dispatchEvent(new CustomEvent('openjunior:project-plan-saved', {
+        window.dispatchEvent(new CustomEvent('glenker:project-plan-saved', {
           detail: { projectId: projectRef.id },
         }));
         toast.success(t('rightSidebar.contextNotesTodo.toast.planImported'));
@@ -709,7 +709,7 @@ export const ProjectNotesTodoPanel: React.FC<ProjectNotesTodoPanelProps> = ({
           toast.error(t('rightSidebar.contextNotesTodo.toast.importPlanFailed'));
           return;
         }
-        window.dispatchEvent(new CustomEvent('openjunior:project-plan-saved', {
+        window.dispatchEvent(new CustomEvent('glenker:project-plan-saved', {
           detail: { projectId: projectRef.id },
         }));
         toast.success(t('rightSidebar.contextNotesTodo.toast.planImported'));
@@ -759,11 +759,11 @@ export const ProjectNotesTodoPanel: React.FC<ProjectNotesTodoPanelProps> = ({
               project: projectLabel?.trim() || projectRef.path.split('/').filter(Boolean).pop() || projectRef.path,
             })}
           </h3>
-          <span className="typography-meta text-muted-foreground">{notes.length}/{OPENJUNIOR_PROJECT_NOTES_MAX_LENGTH}</span>
+          <span className="typography-meta text-muted-foreground">{notes.length}/{GLENKER_PROJECT_NOTES_MAX_LENGTH}</span>
         </div>
         <Textarea
           value={notes}
-          onChange={(event) => setNotes(event.target.value.slice(0, OPENJUNIOR_PROJECT_NOTES_MAX_LENGTH))}
+          onChange={(event) => setNotes(event.target.value.slice(0, GLENKER_PROJECT_NOTES_MAX_LENGTH))}
           onBlur={handleNotesBlur}
           placeholder={t('rightSidebar.contextNotesTodo.notes.placeholder')}
           resizedHeight={notesPanelHeight}
@@ -794,13 +794,13 @@ export const ProjectNotesTodoPanel: React.FC<ProjectNotesTodoPanelProps> = ({
               {t('rightSidebar.contextNotesTodo.todo.clearCompleted')}
             </button>
           </div>
-          <span className="typography-meta text-muted-foreground">{todoInputValue.length}/{OPENJUNIOR_PROJECT_TODO_TEXT_MAX_LENGTH}</span>
+          <span className="typography-meta text-muted-foreground">{todoInputValue.length}/{GLENKER_PROJECT_TODO_TEXT_MAX_LENGTH}</span>
         </div>
 
         <div className="flex items-center gap-1.5">
           <Input
             value={todoInputValue}
-            onChange={(event) => setNewTodoText(event.target.value.slice(0, OPENJUNIOR_PROJECT_TODO_TEXT_MAX_LENGTH))}
+            onChange={(event) => setNewTodoText(event.target.value.slice(0, GLENKER_PROJECT_TODO_TEXT_MAX_LENGTH))}
             onKeyDown={(event) => {
               if (event.key === 'Enter') {
                 event.preventDefault();

@@ -1,17 +1,17 @@
 import { createConfiguredWebAPIs } from './runtimeConfig';
-import type { RuntimeAPIs } from '@openjunior/ui/lib/api/types';
-import '@openjunior/ui/index.css';
-import '@openjunior/ui/styles/fonts';
+import type { RuntimeAPIs } from '@glenker/ui/lib/api/types';
+import '@glenker/ui/index.css';
+import '@glenker/ui/styles/fonts';
 
 declare global {
   interface Window {
-    __OPENJUNIOR_RUNTIME_APIS__?: RuntimeAPIs;
+    __GLENKER_RUNTIME_APIS__?: RuntimeAPIs;
   }
 }
 
-window.__OPENJUNIOR_RUNTIME_APIS__ = createConfiguredWebAPIs();
+window.__GLENKER_RUNTIME_APIS__ = createConfiguredWebAPIs();
 
-void import('@openjunior/ui/apps/renderElectronMiniChatApp')
+void import('@glenker/ui/apps/renderElectronMiniChatApp')
   .then(({ renderElectronMiniChatApp }) => {
-    renderElectronMiniChatApp(window.__OPENJUNIOR_RUNTIME_APIS__ ?? createConfiguredWebAPIs());
+    renderElectronMiniChatApp(window.__GLENKER_RUNTIME_APIS__ ?? createConfiguredWebAPIs());
   });

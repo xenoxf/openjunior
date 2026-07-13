@@ -8,7 +8,7 @@ import { invokeDesktop, isDesktopShell, isVSCodeRuntime } from '@/lib/desktop';
 import { syncDesktopSettings, initializeAppearancePreferences } from '@/lib/persistence';
 import { applyPersistedDirectoryPreferences } from '@/lib/directoryPersistence';
 import { DesktopHostSwitcherInline } from '@/components/desktop/DesktopHostSwitcher';
-import { OpenJuniorLogo } from '@/components/ui/OpenJuniorLogo';
+import { GlenkerLogo } from '@/components/ui/GlenkerLogo';
 import { Icon } from "@/components/icon/Icon";
 import { useI18n } from '@/lib/i18n';
 import { runtimeFetch } from '@/lib/runtime-fetch';
@@ -25,13 +25,13 @@ import {
 } from '@/lib/passkeys';
 
 const STATUS_CHECK_ENDPOINT = '/auth/session';
-const TRUST_DEVICE_STORAGE_KEY = 'openjunior.uiAuth.trustDevice';
+const TRUST_DEVICE_STORAGE_KEY = 'glenker.uiAuth.trustDevice';
 const LOCAL_DESKTOP_CLIENT_KIND = 'desktop-local';
 const LOCAL_DESKTOP_CLIENT_DEDUPE_KEY = 'desktop-local';
 
 const readLocalOrigin = (): string => {
   if (typeof window === 'undefined') return '';
-  const injected = (window as typeof window & { __OPENJUNIOR_LOCAL_ORIGIN__?: string }).__OPENJUNIOR_LOCAL_ORIGIN__;
+  const injected = (window as typeof window & { __GLENKER_LOCAL_ORIGIN__?: string }).__GLENKER_LOCAL_ORIGIN__;
   return typeof injected === 'string' ? injected.trim() : '';
 };
 
@@ -96,7 +96,7 @@ const submitPassword = async (password: string, trustDevice: boolean): Promise<R
       password,
       trustDevice,
       issueClientToken,
-      clientLabel: 'OpenJunior Desktop',
+      clientLabel: 'Glenker Desktop',
       ...desktopClientAuthMetadata(),
     }),
   });
@@ -115,7 +115,7 @@ const issueDesktopClientToken = async (): Promise<string> => {
       'Content-Type': 'application/json',
       Accept: 'application/json',
     },
-    body: JSON.stringify({ label: 'OpenJunior Desktop', ...desktopClientAuthMetadata() }),
+    body: JSON.stringify({ label: 'Glenker Desktop', ...desktopClientAuthMetadata() }),
   }).catch(() => null);
   if (!response?.ok) {
     return '';
@@ -220,7 +220,7 @@ const AuthShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 const LoadingScreen: React.FC = () => (
   <div className="flex min-h-screen items-center justify-center bg-background text-foreground">
-    <OpenJuniorLogo width={120} height={120} />
+    <GlenkerLogo width={120} height={120} />
   </div>
 );
 
@@ -576,7 +576,7 @@ export const SessionAuthGate: React.FC<SessionAuthGateProps> = ({ children }) =>
     try {
       const payload = await authenticateWithPasskey(trustDevice, {
         issueClientToken: shouldIssueDesktopClientToken(),
-        clientLabel: 'OpenJunior Desktop',
+        clientLabel: 'Glenker Desktop',
         ...desktopClientAuthMetadata(),
       }) as { clientToken?: unknown } | null;
       const clientToken = shouldIssueDesktopClientToken() && typeof payload?.clientToken === 'string' && payload.clientToken.trim()
@@ -699,7 +699,7 @@ export const SessionAuthGate: React.FC<SessionAuthGateProps> = ({ children }) =>
                 <div className="relative flex-1">
                   <Icon name="lock" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60" />
                   <Input
-                    id="openjunior-ui-password"
+                    id="glenker-ui-password"
                     ref={passwordInputRef}
                     type="password"
                     autoComplete="current-password"

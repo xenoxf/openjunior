@@ -309,13 +309,13 @@ export const DirectoryTree: React.FC<DirectoryTreeProps> = ({
         applyPinned(detail.pinnedDirectories);
       }
     };
-    window.addEventListener('openjunior:settings-synced', handleSettingsSynced);
+    window.addEventListener('glenker:settings-synced', handleSettingsSynced);
 
     void loadPinnedDirectories();
 
     return () => {
       cancelled = true;
-      window.removeEventListener('openjunior:settings-synced', handleSettingsSynced);
+      window.removeEventListener('glenker:settings-synced', handleSettingsSynced);
     };
   }, [stripTrailingSlashes]);
 

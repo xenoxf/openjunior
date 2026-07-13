@@ -42,9 +42,9 @@ function _getUserAgent() {
 
   try {
     const pkg = JSON.parse(fs.readFileSync(_getPackageJsonPath(), 'utf8'));
-    _userAgent = `openjunior-server/${typeof pkg.version === 'string' ? pkg.version : '0.0.0'}`;
+    _userAgent = `glenker-server/${typeof pkg.version === 'string' ? pkg.version : '0.0.0'}`;
   } catch {
-    _userAgent = 'openjunior-server/dev';
+    _userAgent = 'glenker-server/dev';
   }
 
   return _userAgent;

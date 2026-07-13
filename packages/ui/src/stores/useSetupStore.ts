@@ -61,7 +61,7 @@ export const useSetupStore = create<SetupState>()(
       skipSetup: () => set({ isComplete: true, currentStep: STEP_COUNT }),
     }),
     {
-      name: 'openjunior_setup',
+      name: 'glenker_setup',
       version: 1,
     }
   )

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('@openjunior/ui/lib/gitApiHttp', () => ({
+vi.mock('@glenker/ui/lib/gitApiHttp', () => ({
   checkIsGitRepository: vi.fn(),
   getGitStatus: vi.fn(),
   getGitDiff: vi.fn(),

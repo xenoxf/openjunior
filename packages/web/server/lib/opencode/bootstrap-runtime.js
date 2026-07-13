@@ -6,14 +6,14 @@ export const createBootstrapRuntime = (dependencies) => {
     registerAuthAndAccessRoutes,
     registerTtsRoutes,
     registerNotificationRoutes,
-    registerOpenJuniorRoutes,
+    registerGlenkerRoutes,
     express,
   } = dependencies;
 
   const setupBaseRoutes = (app, options) => {
     const {
       process,
-      openjuniorVersion,
+      glenkerVersion,
       runtimeName,
       serverStartedAt,
       gracefulShutdown,
@@ -43,7 +43,7 @@ export const createBootstrapRuntime = (dependencies) => {
       path,
       server,
       __dirname,
-      openjuniorDataDir,
+      glenkerDataDir,
       modelsDevApiUrl,
       modelsMetadataCacheTtl,
       fetchFreeZenModels,
@@ -63,7 +63,7 @@ export const createBootstrapRuntime = (dependencies) => {
     registerServerStatusRoutes(app, {
       express,
       process,
-      openjuniorVersion,
+      glenkerVersion,
       runtimeName,
       serverStartedAt,
       gracefulShutdown,
@@ -111,14 +111,14 @@ export const createBootstrapRuntime = (dependencies) => {
       setAutoAcceptSession,
     });
 
-    registerOpenJuniorRoutes(app, {
+    registerGlenkerRoutes(app, {
       fs,
       os,
       path,
       process,
       server,
       __dirname,
-      openjuniorDataDir,
+      glenkerDataDir,
       modelsDevApiUrl,
       modelsMetadataCacheTtl,
       readSettingsFromDiskMigrated,

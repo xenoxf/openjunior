@@ -1,6 +1,6 @@
 export const createRequestSecurityRuntime = (deps) => {
   const { readSettingsFromDiskMigrated } = deps;
-  const packagedClientOrigins = new Set(['openjunior-ui://app']);
+  const packagedClientOrigins = new Set(['glenker-ui://app']);
 
   const getUiSessionTokenFromRequest = (req) => {
     const cookieHeader = req?.headers?.cookie;

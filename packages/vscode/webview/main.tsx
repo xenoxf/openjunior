@@ -2,25 +2,25 @@ import { createVSCodeAPIs } from './api';
 import { onCommand, onThemeChange, proxyApiRequest, proxySessionMessageRequest, sendBridgeMessage, startSseProxy, stopSseProxy } from './api/bridge';
 import { vscodeStreamPerfCount, vscodeStreamPerfMeasure, vscodeStreamPerfObserve } from './api/streamPerf';
 import { extractBodyBase64, extractBodyText, extractJsonBody, hasInitBody } from './requestBodyTransport';
-import type { RuntimeAPIs } from '@openjunior/ui/lib/api/types';
-import { opencodeClient } from '@openjunior/ui/lib/opencode/client';
+import type { RuntimeAPIs } from '@glenker/ui/lib/api/types';
+import { opencodeClient } from '@glenker/ui/lib/opencode/client';
 import {
   buildVSCodeThemeFromPalette,
   readVSCodeThemePalette,
   type VSCodeThemeKind,
   type VSCodeThemePayload,
-} from '@openjunior/ui/lib/theme/vscode/adapter';
-import { getBootstrapMessages, readStoredLocaleForBootstrap } from '@openjunior/ui/lib/i18n';
+} from '@glenker/ui/lib/theme/vscode/adapter';
+import { getBootstrapMessages, readStoredLocaleForBootstrap } from '@glenker/ui/lib/i18n';
 import type { VSCodeActiveEditorFile } from '@/sync/input-store';
 
 type ConnectionStatus = 'connecting' | 'connected' | 'error' | 'disconnected';
 type PanelType = 'chat' | 'agentManager';
 
-declare const __OPENJUNIOR_WEBVIEW_BUILD_TIME__: string;
+declare const __GLENKER_WEBVIEW_BUILD_TIME__: string;
 
 declare global {
   interface Window {
-    __OPENJUNIOR_RUNTIME_APIS__?: RuntimeAPIs;
+    __GLENKER_RUNTIME_APIS__?: RuntimeAPIs;
     __VSCODE_CONFIG__?: {
       apiUrl?: string;
       workspaceFolder: string;
@@ -35,27 +35,27 @@ declare global {
       viewMode?: 'sidebar' | 'editor';
       initialSessionId?: string | null;
     };
-    __OPENJUNIOR_VSCODE_THEME__?: VSCodeThemePayload['theme'];
-    __OPENJUNIOR_VSCODE_SHIKI_THEMES__?: { light?: Record<string, unknown>; dark?: Record<string, unknown> } | null;
-    __OPENJUNIOR_CONNECTION__?: { status: ConnectionStatus; error?: string; cliAvailable?: boolean };
-    __OPENJUNIOR_HOME__?: string;
-    __OPENJUNIOR_PANEL_TYPE__?: PanelType;
-    __OPENJUNIOR_VSCODE_WINDOW_FOCUSED__?: boolean;
+    __GLENKER_VSCODE_THEME__?: VSCodeThemePayload['theme'];
+    __GLENKER_VSCODE_SHIKI_THEMES__?: { light?: Record<string, unknown>; dark?: Record<string, unknown> } | null;
+    __GLENKER_CONNECTION__?: { status: ConnectionStatus; error?: string; cliAvailable?: boolean };
+    __GLENKER_HOME__?: string;
+    __GLENKER_PANEL_TYPE__?: PanelType;
+    __GLENKER_VSCODE_WINDOW_FOCUSED__?: boolean;
   }
 }
 
-console.log('[OpenJunior] VS Code webview starting...');
-console.log('[OpenJunior] VS Code webview build:', __OPENJUNIOR_WEBVIEW_BUILD_TIME__);
-console.log('[OpenJunior] Config:', window.__VSCODE_CONFIG__);
+console.log('[Glenker] VS Code webview starting...');
+console.log('[Glenker] VS Code webview build:', __GLENKER_WEBVIEW_BUILD_TIME__);
+console.log('[Glenker] Config:', window.__VSCODE_CONFIG__);
 try {
-  if (window.localStorage.getItem('openjunior_stream_debug') === '1') {
-    console.log('[OpenJunior] Debug: openjunior_stream_debug=1');
+  if (window.localStorage.getItem('glenker_stream_debug') === '1') {
+    console.log('[Glenker] Debug: glenker_stream_debug=1');
   }
 } catch {
   // ignore
 }
 
-window.__OPENJUNIOR_RUNTIME_APIS__ = createVSCodeAPIs();
+window.__GLENKER_RUNTIME_APIS__ = createVSCodeAPIs();
 
 const bootstrapLocale = readStoredLocaleForBootstrap();
 const bootstrapMessages = getBootstrapMessages(bootstrapLocale);
@@ -63,27 +63,27 @@ const bootstrapMessages = getBootstrapMessages(bootstrapLocale);
 const bootstrapConnectionStatus = () => {
   const initialStatus = (window.__VSCODE_CONFIG__?.connectionStatus as ConnectionStatus | undefined) || 'connecting';
   const cliAvailable = window.__VSCODE_CONFIG__?.cliAvailable ?? true;
-  window.__OPENJUNIOR_CONNECTION__ = { status: initialStatus, cliAvailable };
+  window.__GLENKER_CONNECTION__ = { status: initialStatus, cliAvailable };
 };
 
 bootstrapConnectionStatus();
 
 // Expose panel type globally for the VS Code app root to conditionally render.
-window.__OPENJUNIOR_PANEL_TYPE__ = (window.__VSCODE_CONFIG__?.panelType as PanelType) || 'chat';
+window.__GLENKER_PANEL_TYPE__ = (window.__VSCODE_CONFIG__?.panelType as PanelType) || 'chat';
 
 const handleConnectionMessage = (event: MessageEvent) => {
   const msg = event.data;
   if (msg?.type === 'connectionStatus') {
     const payload: ConnectionStatus = msg.status;
     const error: string | undefined = msg.error;
-    const prevCliAvailable = window.__OPENJUNIOR_CONNECTION__?.cliAvailable ?? true;
-    window.__OPENJUNIOR_CONNECTION__ = { status: payload, error, cliAvailable: prevCliAvailable };
-    window.dispatchEvent(new CustomEvent('openjunior:connection-status', { detail: { status: payload, error } }));
+    const prevCliAvailable = window.__GLENKER_CONNECTION__?.cliAvailable ?? true;
+    window.__GLENKER_CONNECTION__ = { status: payload, error, cliAvailable: prevCliAvailable };
+    window.dispatchEvent(new CustomEvent('glenker:connection-status', { detail: { status: payload, error } }));
   }
 };
 
 window.addEventListener('message', handleConnectionMessage);
-window.addEventListener('openjunior:connection-status', () => {
+window.addEventListener('glenker:connection-status', () => {
   maybeHideLoadingOverlay();
 });
 
@@ -140,7 +140,7 @@ const waitForUiMount = (timeoutMs = 8000): Promise<boolean> => {
 let uiMounted = false;
 
 const maybeHideLoadingOverlay = () => {
-  const connectionStatus = window.__OPENJUNIOR_CONNECTION__?.status ?? 'connecting';
+  const connectionStatus = window.__GLENKER_CONNECTION__?.status ?? 'connecting';
 
   if (!uiMounted) {
     return;
@@ -159,7 +159,7 @@ const maybeHideLoadingOverlay = () => {
   }
 
   if (connectionStatus === 'error') {
-    const error = window.__OPENJUNIOR_CONNECTION__?.error;
+    const error = window.__GLENKER_CONNECTION__?.error;
     setLoadingStatusText(error || bootstrapMessages.connectionError, 'error');
     fadeOutLoadingScreen();
     return;
@@ -201,9 +201,9 @@ const emitVSCodeTheme = (preferredKind?: VSCodeThemeKind) => {
     return;
   }
   const theme = buildVSCodeThemeFromPalette(palette);
-  window.__OPENJUNIOR_VSCODE_THEME__ = theme;
+  window.__GLENKER_VSCODE_THEME__ = theme;
    applyInitialTheme(theme);
-  window.dispatchEvent(new CustomEvent<VSCodeThemePayload>('openjunior:vscode-theme', {
+  window.dispatchEvent(new CustomEvent<VSCodeThemePayload>('glenker:vscode-theme', {
     detail: { theme, palette },
   }));
 };
@@ -227,9 +227,9 @@ onThemeChange((payload) => {
       : undefined) as VSCodeThemeKind | undefined;
 
   if (typeof payload === 'object' && payload?.shikiThemes !== undefined) {
-    window.__OPENJUNIOR_VSCODE_SHIKI_THEMES__ = payload.shikiThemes;
+    window.__GLENKER_VSCODE_SHIKI_THEMES__ = payload.shikiThemes;
     window.dispatchEvent(
-      new CustomEvent('openjunior:vscode-shiki-themes', {
+      new CustomEvent('glenker:vscode-shiki-themes', {
         detail: { shikiThemes: payload.shikiThemes },
       }),
     );
@@ -252,7 +252,7 @@ if (workspaceFolder) {
   };
 
   const normalizedWorkspaceFolder = normalizeWorkspacePath(workspaceFolder);
-  window.__OPENJUNIOR_HOME__ = normalizedWorkspaceFolder;
+  window.__GLENKER_HOME__ = normalizedWorkspaceFolder;
   try {
     window.localStorage.setItem('lastDirectory', normalizedWorkspaceFolder);
     window.localStorage.setItem('homeDirectory', normalizedWorkspaceFolder);
@@ -364,7 +364,7 @@ const handleLocalApiRequest = async (input: RequestInfo | URL, url: URL, init: R
   if (normalizedPathname === '/api/system/info' && method === 'GET') {
     const config = window.__VSCODE_CONFIG__;
     return jsonResponse({
-      openjuniorVersion: config?.extensionVersion || 'VS Code Extension',
+      glenkerVersion: config?.extensionVersion || 'VS Code Extension',
       runtime: 'vscode',
       platform: config?.platform || '',
       arch: config?.arch || '',
@@ -375,7 +375,7 @@ const handleLocalApiRequest = async (input: RequestInfo | URL, url: URL, init: R
     return unsupportedWebRouteResponse('Preview proxy');
   }
 
-  if (normalizedPathname.startsWith('/api/openjunior/tunnel/')) {
+  if (normalizedPathname.startsWith('/api/glenker/tunnel/')) {
     return unsupportedWebRouteResponse('Remote tunnel settings');
   }
 
@@ -521,9 +521,9 @@ const handleLocalApiRequest = async (input: RequestInfo | URL, url: URL, init: R
 
   // Health endpoints: reflect actual connection status
   if (pathname === '/health' || pathname === '/api/health') {
-    const connectionStatus = window.__OPENJUNIOR_CONNECTION__?.status;
+    const connectionStatus = window.__GLENKER_CONNECTION__?.status;
     const isReady = connectionStatus === 'connected';
-    const cliAvailable = window.__OPENJUNIOR_CONNECTION__?.cliAvailable ?? true;
+    const cliAvailable = window.__GLENKER_CONNECTION__?.cliAvailable ?? true;
     return new Response(JSON.stringify({ 
       status: isReady ? 'ok' : 'connecting', 
       isOpenCodeReady: isReady,
@@ -935,12 +935,12 @@ const handleLocalApiRequest = async (input: RequestInfo | URL, url: URL, init: R
     }
   }
 
-  if (pathname.startsWith('/api/openjunior/models-metadata')) {
+  if (pathname.startsWith('/api/glenker/models-metadata')) {
     try {
       const data = await sendBridgeMessage('api:models/metadata');
       return new Response(JSON.stringify(data), { status: 200, headers: { 'Content-Type': 'application/json' } });
     } catch (error) {
-      console.warn('[OpenJunior] Failed to fetch models metadata via bridge, returning empty set:', error);
+      console.warn('[Glenker] Failed to fetch models metadata via bridge, returning empty set:', error);
       return new Response(JSON.stringify({}), { status: 200, headers: { 'Content-Type': 'application/json' } });
     }
   }
@@ -956,7 +956,7 @@ const handleLocalApiRequest = async (input: RequestInfo | URL, url: URL, init: R
   }
 
   if (pathname === '/api/opencode/health' && method === 'GET') {
-    const connectionStatus = window.__OPENJUNIOR_CONNECTION__?.status;
+    const connectionStatus = window.__GLENKER_CONNECTION__?.status;
     return new Response(JSON.stringify({ healthy: connectionStatus === 'connected' }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
@@ -973,7 +973,7 @@ const handleLocalApiRequest = async (input: RequestInfo | URL, url: URL, init: R
     }
   }
 
-  if (pathname.startsWith('/api/openjunior/update-check')) {
+  if (pathname.startsWith('/api/glenker/update-check')) {
     try {
       const currentVersion = url.searchParams.get('currentVersion') || undefined;
       const instanceMode = url.searchParams.get('instanceMode') || 'local';
@@ -982,7 +982,7 @@ const handleLocalApiRequest = async (input: RequestInfo | URL, url: URL, init: R
       const arch = url.searchParams.get('arch') || window.__VSCODE_CONFIG__?.arch || undefined;
       const reportUsageRaw = (url.searchParams.get('reportUsage') || 'true').toLowerCase();
       const reportUsage = !(reportUsageRaw === 'false' || reportUsageRaw === '0' || reportUsageRaw === 'no');
-      const data = await sendBridgeMessage('api:openjunior:update-check', {
+      const data = await sendBridgeMessage('api:glenker:update-check', {
         currentVersion,
         instanceMode,
         deviceClass,
@@ -1075,9 +1075,9 @@ window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
   const pathname = targetUrl?.pathname || '';
   const normalizedPathname = pathname.replace(/\/{2,}/g, '/');
   if (targetUrl && normalizedPathname === '/health') {
-    const connectionStatus = window.__OPENJUNIOR_CONNECTION__?.status;
+    const connectionStatus = window.__GLENKER_CONNECTION__?.status;
     const isReady = connectionStatus === 'connected';
-    const cliAvailable = window.__OPENJUNIOR_CONNECTION__?.cliAvailable ?? true;
+    const cliAvailable = window.__GLENKER_CONNECTION__?.cliAvailable ?? true;
     return new Response(JSON.stringify({ 
       status: isReady ? 'ok' : 'connecting', 
       isOpenCodeReady: isReady,
@@ -1195,7 +1195,7 @@ window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
       const data = await sendBridgeMessage('api:models/metadata');
       return new Response(JSON.stringify(data), { status: 200, headers: { 'Content-Type': 'application/json' } });
     } catch (error) {
-      console.warn('[OpenJunior] models.dev request failed via bridge, returning empty metadata:', error);
+      console.warn('[Glenker] models.dev request failed via bridge, returning empty metadata:', error);
       return new Response(JSON.stringify({}), { status: 200, headers: { 'Content-Type': 'application/json' } });
     }
   }
@@ -1298,7 +1298,7 @@ onCommand('createSessionWithPrompt', (payload) => {
         undefined, // agentMentionName
         undefined  // additionalParts
       ).catch((error: unknown) => {
-        console.error('[OpenJunior] Failed to send prompt:', error);
+        console.error('[Glenker] Failed to send prompt:', error);
       });
     } else {
       // If no provider/model configured, just set the text and let user send manually
@@ -1357,20 +1357,20 @@ onCommand('newSession', (payload) => {
   });
 
   // Also dispatch event to navigate to chat view in VSCodeLayout
-  window.dispatchEvent(new CustomEvent('openjunior:navigate', { detail: { view: 'chat' } }));
+  window.dispatchEvent(new CustomEvent('glenker:navigate', { detail: { view: 'chat' } }));
 });
 
 // Listen for showSettings command from extension title bar button
 onCommand('showSettings', () => {
   // Dispatch event to navigate to settings view in VSCodeLayout
-  window.dispatchEvent(new CustomEvent('openjunior:navigate', { detail: { view: 'settings' } }));
+  window.dispatchEvent(new CustomEvent('glenker:navigate', { detail: { view: 'settings' } }));
 });
 
 // Run the same full OpenCode reload flow the app uses after an update: shows the
 // reload overlay, restarts the managed OpenCode (via the bridge's /api/config/reload),
 // and refreshes config/data. Triggered by the "Restart API Connection" command.
 onCommand('reloadOpenCode', () => {
-  void import('@openjunior/ui/stores/useAgentsStore').then(({ reloadOpenCodeConfiguration }) => {
+  void import('@glenker/ui/stores/useAgentsStore').then(({ reloadOpenCodeConfiguration }) => {
     void reloadOpenCodeConfiguration().catch(() => undefined);
   });
 });
@@ -1384,7 +1384,7 @@ const getNotificationClaimKey = (payload: { title?: unknown; body?: unknown; ses
     .join('|');
 };
 
-const claimOpenJuniorNotification = async (payload: { title?: unknown; body?: unknown; sessionId?: unknown; tag?: unknown } | undefined): Promise<boolean> => {
+const claimGlenkerNotification = async (payload: { title?: unknown; body?: unknown; sessionId?: unknown; tag?: unknown } | undefined): Promise<boolean> => {
   const key = getNotificationClaimKey(payload);
   if (!key) return true;
   try {
@@ -1395,13 +1395,13 @@ const claimOpenJuniorNotification = async (payload: { title?: unknown; body?: un
   }
 };
 
-const showOpenJuniorNotification = (payload: { title?: unknown; body?: unknown; sessionId?: unknown; tag?: unknown; requireHidden?: unknown } | undefined) => {
+const showGlenkerNotification = (payload: { title?: unknown; body?: unknown; sessionId?: unknown; tag?: unknown; requireHidden?: unknown } | undefined) => {
   if (typeof Notification === 'undefined') {
     return false;
   }
 
   const show = async () => {
-    const isVSCodeWindowFocused = window.__OPENJUNIOR_VSCODE_WINDOW_FOCUSED__ ?? document.hasFocus();
+    const isVSCodeWindowFocused = window.__GLENKER_VSCODE_WINDOW_FOCUSED__ ?? document.hasFocus();
     if (payload?.requireHidden === true && isVSCodeWindowFocused) {
       return false;
     }
@@ -1411,12 +1411,12 @@ const showOpenJuniorNotification = (payload: { title?: unknown; body?: unknown; 
 
     const title = typeof payload?.title === 'string' && payload.title.trim().length > 0
       ? payload.title.trim()
-      : 'OpenJunior';
+      : 'Glenker';
     const body = typeof payload?.body === 'string' ? payload.body : '';
     const sessionId = typeof payload?.sessionId === 'string' && payload.sessionId.trim().length > 0
       ? payload.sessionId.trim()
       : '';
-    if (!await claimOpenJuniorNotification({ ...payload, title, body, sessionId })) {
+    if (!await claimGlenkerNotification({ ...payload, title, body, sessionId })) {
       return false;
     }
 
@@ -1427,7 +1427,7 @@ const showOpenJuniorNotification = (payload: { title?: unknown; body?: unknown; 
           useSessionUIStore.getState().setCurrentSession(sessionId);
         });
       }
-      window.dispatchEvent(new CustomEvent('openjunior:navigate', { detail: { view: 'chat' } }));
+      window.dispatchEvent(new CustomEvent('glenker:navigate', { detail: { view: 'chat' } }));
     };
     return true;
   };
@@ -1446,12 +1446,12 @@ const showOpenJuniorNotification = (payload: { title?: unknown; body?: unknown; 
 };
 
 onCommand('showNotification', (payload) => {
-  showOpenJuniorNotification(payload as { title?: unknown; body?: unknown; sessionId?: unknown; requireHidden?: unknown } | undefined);
+  showGlenkerNotification(payload as { title?: unknown; body?: unknown; sessionId?: unknown; requireHidden?: unknown } | undefined);
 });
 
 onCommand('windowFocusChanged', (payload) => {
   if (typeof payload === 'object' && payload && typeof (payload as { focused?: unknown }).focused === 'boolean') {
-    window.__OPENJUNIOR_VSCODE_WINDOW_FOCUSED__ = (payload as { focused: boolean }).focused;
+    window.__GLENKER_VSCODE_WINDOW_FOCUSED__ = (payload as { focused: boolean }).focused;
   }
 });
 
@@ -1489,7 +1489,7 @@ const ensureNotificationSettingsSynced = async () => {
     notificationSettingsSyncPromise = import('@/lib/persistence')
       .then(({ syncDesktopSettings }) => syncDesktopSettings())
       .catch((error) => {
-        console.warn('[OpenJunior] Failed to sync notification settings:', error);
+        console.warn('[Glenker] Failed to sync notification settings:', error);
       });
   }
   await notificationSettingsSyncPromise;
@@ -1617,7 +1617,7 @@ const getNotificationSessionId = (payload: Record<string, unknown>): string => {
   return getPayloadString(info?.sessionID ?? info?.sessionId ?? properties.sessionID ?? properties.sessionId ?? properties.session);
 };
 
-window.addEventListener('openjunior:vscode-notification-event', (event) => {
+window.addEventListener('glenker:vscode-notification-event', (event) => {
   const detail = (event as CustomEvent<{ payload?: unknown }>).detail;
   const payload = detail?.payload;
   if (!payload || typeof payload !== 'object') {
@@ -1676,7 +1676,7 @@ window.addEventListener('openjunior:vscode-notification-event', (event) => {
         const template = getNotificationTemplate(settings, 'completion', { title: '{agent_name} is ready', message: '{model_name} completed the task' });
         const title = resolveTemplate(template.title, variables) || 'Agent is ready';
         const body = resolveTemplate(template.message, variables);
-        showOpenJuniorNotification({
+        showGlenkerNotification({
           title,
           body: shouldApplyTemplateMessage(template.message, body, variables) ? body : `${variables.model_name} completed the task`,
           sessionId,
@@ -1690,7 +1690,7 @@ window.addEventListener('openjunior:vscode-notification-event', (event) => {
         const template = getNotificationTemplate(settings, 'error', { title: 'Tool error', message: '{last_message}' });
         const title = resolveTemplate(template.title, variables) || 'Tool error';
         const body = resolveTemplate(template.message, variables);
-        showOpenJuniorNotification({
+        showGlenkerNotification({
           title,
           body: shouldApplyTemplateMessage(template.message, body, variables) ? body : 'An error occurred',
           sessionId,
@@ -1709,7 +1709,7 @@ window.addEventListener('openjunior:vscode-notification-event', (event) => {
       const template = getNotificationTemplate(settings, 'question', { title: 'Input needed', message: '{last_message}' });
       const title = resolveTemplate(template.title, questionVariables) || (/plan\s*mode/i.test(header) ? 'Switch to plan mode' : /build\s*agent/i.test(header) ? 'Switch to build mode' : header || 'Input needed');
       const body = resolveTemplate(template.message, questionVariables);
-      showOpenJuniorNotification({
+      showGlenkerNotification({
         title,
         body: shouldApplyTemplateMessage(template.message, body, questionVariables) ? body : questionText || 'Agent is waiting for your response',
         sessionId,
@@ -1728,7 +1728,7 @@ window.addEventListener('openjunior:vscode-notification-event', (event) => {
       const template = getNotificationTemplate(settings, 'question', { title: 'Permission required', message: '{last_message}' });
       const title = resolveTemplate(template.title, permissionVariables) || 'Permission required';
       const body = resolveTemplate(template.message, permissionVariables);
-      showOpenJuniorNotification({
+      showGlenkerNotification({
         title,
         body: shouldApplyTemplateMessage(template.message, body, permissionVariables) ? body : fallbackMessage,
         sessionId,
@@ -1740,7 +1740,7 @@ window.addEventListener('openjunior:vscode-notification-event', (event) => {
 
 // Listen for settings sync command from extension (broadcast to all VS Code webviews)
 onCommand('settingsSynced', () => {
-  import('@openjunior/ui/lib/persistence').then(({ syncDesktopSettings }) => {
+  import('@glenker/ui/lib/persistence').then(({ syncDesktopSettings }) => {
     void syncDesktopSettings();
   });
 });
@@ -1752,15 +1752,15 @@ onCommand('activeEditorFile', (payload) => {
   });
 });
 
-import('@openjunior/ui/apps/renderVSCodeApp')
+import('@glenker/ui/apps/renderVSCodeApp')
   .then(async ({ renderVSCodeApp }) => {
-    renderVSCodeApp(window.__OPENJUNIOR_RUNTIME_APIS__ ?? createVSCodeAPIs());
+    renderVSCodeApp(window.__GLENKER_RUNTIME_APIS__ ?? createVSCodeAPIs());
     await waitForUiMount();
     uiMounted = true;
     maybeHideLoadingOverlay();
   })
   .catch((error) => {
-    console.error('[OpenJunior] Failed to bootstrap UI:', error);
+    console.error('[Glenker] Failed to bootstrap UI:', error);
     // If the UI bundle fails to load, remove the overlay so the user at least sees errors in the root.
     uiMounted = true;
     fadeOutLoadingScreen();

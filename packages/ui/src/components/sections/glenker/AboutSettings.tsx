@@ -6,13 +6,13 @@ import { useDeviceInfo } from '@/lib/device';
 import { toast } from '@/components/ui';
 import { Button } from '@/components/ui/button';
 import { Icon } from "@/components/icon/Icon";
-import { OpenJuniorLogo } from '@/components/ui/OpenJuniorLogo';
+import { GlenkerLogo } from '@/components/ui/GlenkerLogo';
 import { useI18n } from '@/lib/i18n';
 import { runtimeFetch } from '@/lib/runtime-fetch';
 
-const GITHUB_URL = 'https://github.com/openjunior/openjunior';
+const GITHUB_URL = 'https://github.com/glenker/glenker';
 const DISCORD_URL = 'https://discord.gg/ZYRSdnwwKA';
-const X_URL = 'https://x.com/openchamber_dev';
+const X_URL = 'https://x.com/glenker_dev';
 
 const MIN_CHECKING_DURATION = 800; // ms
 
@@ -24,7 +24,7 @@ export const AboutSettings: React.FC<AboutSettingsProps> = ({ initialUpdateDialo
   const { t } = useI18n();
   const [updateDialogOpen, setUpdateDialogOpen] = React.useState(initialUpdateDialogOpen);
   const [showChecking, setShowChecking] = React.useState(false);
-  const [openChamberVersion, setOpenJuniorVersion] = React.useState<string | null>(null);
+  const [glenkerVersion, setGlenkerVersion] = React.useState<string | null>(null);
   const [openCodeVersion, setOpenCodeVersion] = React.useState<string | null>(null);
   const updateStore = useUpdateStore(useShallow((s) => ({
     info: s.info,
@@ -41,29 +41,29 @@ export const AboutSettings: React.FC<AboutSettingsProps> = ({ initialUpdateDialo
   })));
   const { isMobile } = useDeviceInfo();
 
-  const currentVersion = openChamberVersion || updateStore.info?.currentVersion || 'unknown';
+  const currentVersion = glenkerVersion || updateStore.info?.currentVersion || 'unknown';
 
   React.useEffect(() => {
     let cancelled = false;
 
-    const loadOpenJuniorVersion = async () => {
+    const loadGlenkerVersion = async () => {
       try {
         const response = await runtimeFetch('/api/system/info', {
           method: 'GET',
           headers: { Accept: 'application/json' },
         });
         if (!response.ok) return;
-        const data = await response.json().catch(() => null) as { openjuniorVersion?: unknown } | null;
-        const version = typeof data?.openjuniorVersion === 'string' && data.openjuniorVersion.trim().length > 0
-          ? data.openjuniorVersion.trim()
+        const data = await response.json().catch(() => null) as { glenkerVersion?: unknown } | null;
+        const version = typeof data?.glenkerVersion === 'string' && data.glenkerVersion.trim().length > 0
+          ? data.glenkerVersion.trim()
           : null;
-        if (!cancelled) setOpenJuniorVersion(version);
+        if (!cancelled) setGlenkerVersion(version);
       } catch {
-        if (!cancelled) setOpenJuniorVersion(null);
+        if (!cancelled) setGlenkerVersion(null);
       }
     };
 
-    void loadOpenJuniorVersion();
+    void loadGlenkerVersion();
 
     return () => {
       cancelled = true;
@@ -110,7 +110,7 @@ export const AboutSettings: React.FC<AboutSettingsProps> = ({ initialUpdateDialo
         setShowChecking(false);
         // Show toast if check completed with no update available
         if (didInitiateCheck.current && !updateStore.available && !updateStore.error) {
-          toast.success(t('settings.openjunior.about.toast.latestVersion'));
+          toast.success(t('settings.glenker.about.toast.latestVersion'));
           didInitiateCheck.current = false;
         }
       }, MIN_CHECKING_DURATION);
@@ -124,11 +124,11 @@ export const AboutSettings: React.FC<AboutSettingsProps> = ({ initialUpdateDialo
     return (
       <div className="w-full space-y-6 pb-2">
         <div className="flex flex-col items-center text-center">
-          <OpenJuniorLogo width={72} height={72} />
-          <h2 className="mt-4 typography-ui-header font-semibold text-foreground">OpenJunior</h2>
+          <GlenkerLogo width={72} height={72} />
+          <h2 className="mt-4 typography-ui-header font-semibold text-foreground">Glenker</h2>
           <div className="mt-2 space-y-1 typography-ui text-muted-foreground">
-            <p>{t('aboutDialog.openChamberVersionLabel', { version: currentVersion })}</p>
-            <p>{t('aboutDialog.openCodeVersionLabel', { version: openCodeVersion || t('settings.openjunior.about.state.unknown') })}</p>
+            <p>{t('aboutDialog.glenkerVersionLabel', { version: currentVersion })}</p>
+            <p>{t('aboutDialog.openCodeVersionLabel', { version: openCodeVersion || t('settings.glenker.about.state.unknown') })}</p>
           </div>
         </div>
 
@@ -143,7 +143,7 @@ export const AboutSettings: React.FC<AboutSettingsProps> = ({ initialUpdateDialo
               className="h-10 w-auto justify-center gap-2 rounded-xl px-4"
             >
               {isChecking ? <Icon name="loader" className="size-4 animate-spin" /> : <Icon name="refresh" className="size-4" />}
-              {isChecking ? t('settings.openjunior.about.state.checking') : t('settings.openjunior.about.actions.checkForUpdates')}
+              {isChecking ? t('settings.glenker.about.state.checking') : t('settings.glenker.about.actions.checkForUpdates')}
             </Button>
           )}
 
@@ -156,7 +156,7 @@ export const AboutSettings: React.FC<AboutSettingsProps> = ({ initialUpdateDialo
               className="h-10 w-auto justify-center gap-2 rounded-xl px-4"
             >
               <Icon name="download" className="size-4" />
-              {t('settings.openjunior.about.actions.updateToVersion', { version: updateStore.info?.version || '' })}
+              {t('settings.glenker.about.actions.updateToVersion', { version: updateStore.info?.version || '' })}
             </Button>
           )}
         </div>
@@ -197,7 +197,7 @@ export const AboutSettings: React.FC<AboutSettingsProps> = ({ initialUpdateDialo
             className="flex items-center gap-1.5 typography-ui-label text-muted-foreground transition-colors hover:text-foreground"
           >
             <Icon name="twitter-xfill" className="size-5" />
-            <span>@openchamber_dev</span>
+            <span>@glenker_dev</span>
           </a>
         </div>
 
@@ -226,26 +226,26 @@ export const AboutSettings: React.FC<AboutSettingsProps> = ({ initialUpdateDialo
     <div className="mb-8">
       <div className="mb-3 px-1">
         <h3 className="typography-ui-header font-semibold text-foreground">
-          {t('settings.openjunior.about.title')}
+          {t('settings.glenker.about.title')}
         </h3>
       </div>
 
       <div className="rounded-lg bg-[var(--surface-elevated)]/70 overflow-hidden flex flex-col">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-4 py-3 border-b border-[var(--surface-subtle)]">
           <div className="flex min-w-0 flex-col">
-            <span className="typography-ui-label text-foreground">{t('settings.openjunior.about.field.version')}</span>
+            <span className="typography-ui-label text-foreground">{t('settings.glenker.about.field.version')}</span>
             <span className="typography-meta text-muted-foreground font-mono">{currentVersion}</span>
           </div>
           <div className="flex min-w-0 flex-col">
-            <span className="typography-ui-label text-foreground">{t('settings.openjunior.about.field.openCodeVersion')}</span>
-            <span className="typography-meta text-muted-foreground font-mono">{openCodeVersion || t('settings.openjunior.about.state.unknown')}</span>
+            <span className="typography-ui-label text-foreground">{t('settings.glenker.about.field.openCodeVersion')}</span>
+            <span className="typography-meta text-muted-foreground font-mono">{openCodeVersion || t('settings.glenker.about.state.unknown')}</span>
           </div>
           
           <div className="flex items-center gap-3">
             {updateStore.checking && (
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Icon name="loader" className="h-4 w-4 animate-spin" />
-                <span className="typography-meta">{t('settings.openjunior.about.state.checking')}</span>
+                <span className="typography-meta">{t('settings.glenker.about.state.checking')}</span>
               </div>
             )}
 
@@ -255,12 +255,12 @@ export const AboutSettings: React.FC<AboutSettingsProps> = ({ initialUpdateDialo
                 onClick={() => setUpdateDialogOpen(true)}
               >
                 <Icon name="download" className="h-4 w-4 mr-1" />
-                {t('settings.openjunior.about.actions.updateToVersion', { version: updateStore.info?.version || '' })}
+                {t('settings.glenker.about.actions.updateToVersion', { version: updateStore.info?.version || '' })}
               </Button>
             )}
 
             {!updateStore.checking && !updateStore.available && !updateStore.error && (
-              <span className="typography-meta text-muted-foreground">{t('settings.openjunior.about.state.upToDate')}</span>
+              <span className="typography-meta text-muted-foreground">{t('settings.glenker.about.state.upToDate')}</span>
             )}
 
             <Button size="sm"
@@ -268,7 +268,7 @@ export const AboutSettings: React.FC<AboutSettingsProps> = ({ initialUpdateDialo
               onClick={() => updateStore.checkForUpdates()}
               disabled={updateStore.checking}
             >
-              {t('settings.openjunior.about.actions.checkForUpdates')}
+              {t('settings.glenker.about.actions.checkForUpdates')}
             </Button>
           </div>
         </div>
@@ -297,7 +297,7 @@ export const AboutSettings: React.FC<AboutSettingsProps> = ({ initialUpdateDialo
             className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground typography-meta transition-colors"
           >
             <Icon name="twitter-xfill" className="h-4 w-4" />
-              <span>@openchamber_dev</span>
+              <span>@glenker_dev</span>
             </a>
         </div>
       </div>

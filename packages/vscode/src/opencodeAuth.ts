@@ -32,7 +32,7 @@ const writeAuthFile = (auth: AuthFile): void => {
     }
 
     if (fs.existsSync(AUTH_FILE)) {
-      const backupFile = `${AUTH_FILE}.openjunior.backup`;
+      const backupFile = `${AUTH_FILE}.glenker.backup`;
       fs.copyFileSync(AUTH_FILE, backupFile);
     }
 

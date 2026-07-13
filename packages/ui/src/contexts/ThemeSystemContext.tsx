@@ -168,7 +168,7 @@ export function ThemeSystemProvider({ children, defaultThemeId }: ThemeSystemPro
     if (typeof window === 'undefined' || !isVSCodeRuntime()) {
       return null;
     }
-    const existing = (window as unknown as { __OPENJUNIOR_VSCODE_THEME__?: Theme }).__OPENJUNIOR_VSCODE_THEME__;
+    const existing = (window as unknown as { __GLENKER_VSCODE_THEME__?: Theme }).__GLENKER_VSCODE_THEME__;
     return existing || null;
   });
   const isVSCode = useMemo(() => isVSCodeRuntime(), []);
@@ -299,13 +299,13 @@ export function ThemeSystemProvider({ children, defaultThemeId }: ThemeSystemPro
       }
     };
 
-    const existing = (window as unknown as { __OPENJUNIOR_VSCODE_THEME__?: Theme }).__OPENJUNIOR_VSCODE_THEME__;
+    const existing = (window as unknown as { __GLENKER_VSCODE_THEME__?: Theme }).__GLENKER_VSCODE_THEME__;
     if (existing) {
       applyVSCodeTheme(existing);
     }
 
-    window.addEventListener('openjunior:vscode-theme', handleThemeEvent as EventListener);
-    return () => window.removeEventListener('openjunior:vscode-theme', handleThemeEvent as EventListener);
+    window.addEventListener('glenker:vscode-theme', handleThemeEvent as EventListener);
+    return () => window.removeEventListener('glenker:vscode-theme', handleThemeEvent as EventListener);
   }, [isVSCode]);
 
   const updateBrowserChrome = useCallback((theme: Theme) => {
@@ -313,7 +313,7 @@ export function ThemeSystemProvider({ children, defaultThemeId }: ThemeSystemPro
       return;
     }
     const hasMacVibrancy = document.documentElement.hasAttribute('data-oc-vibrancy')
-      || window.__OPENJUNIOR_ELECTRON__?.macVibrancy === true;
+      || window.__GLENKER_ELECTRON__?.macVibrancy === true;
     const chromeColor = hasMacVibrancy ? 'transparent' : theme.colors.surface.background;
 
     document.body.style.backgroundColor = chromeColor;
@@ -508,14 +508,14 @@ export function ThemeSystemProvider({ children, defaultThemeId }: ThemeSystemPro
     }
 
     const scopedWindow = window as unknown as {
-      __openjuniorApplyThemeSync?: (payload: ThemeSyncPayload) => void;
+      __glenkerApplyThemeSync?: (payload: ThemeSyncPayload) => void;
     };
 
-    scopedWindow.__openjuniorApplyThemeSync = applyIncomingThemeSync;
+    scopedWindow.__glenkerApplyThemeSync = applyIncomingThemeSync;
 
     return () => {
-      if (scopedWindow.__openjuniorApplyThemeSync === applyIncomingThemeSync) {
-        delete scopedWindow.__openjuniorApplyThemeSync;
+      if (scopedWindow.__glenkerApplyThemeSync === applyIncomingThemeSync) {
+        delete scopedWindow.__glenkerApplyThemeSync;
       }
     };
   }, [applyIncomingThemeSync]);
@@ -535,7 +535,7 @@ export function ThemeSystemProvider({ children, defaultThemeId }: ThemeSystemPro
         payload?: ThemeSyncPayload;
       };
 
-      if (data?.type !== 'openjunior:theme-sync' || !data.payload) {
+      if (data?.type !== 'glenker:theme-sync' || !data.payload) {
         return;
       }
 
@@ -624,8 +624,8 @@ export function ThemeSystemProvider({ children, defaultThemeId }: ThemeSystemPro
       });
     };
 
-    window.addEventListener('openjunior:settings-synced', handleSettingsSynced);
-    return () => window.removeEventListener('openjunior:settings-synced', handleSettingsSynced);
+    window.addEventListener('glenker:settings-synced', handleSettingsSynced);
+    return () => window.removeEventListener('glenker:settings-synced', handleSettingsSynced);
   }, []);
 
   const setTheme = useCallback(

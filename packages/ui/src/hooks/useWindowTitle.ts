@@ -5,7 +5,7 @@ import { desktopHostsGet, getDesktopHostApiUrl, locationMatchesHost, redactSensi
 import { setDesktopWindowTitle } from '@/lib/desktopNative';
 import { getRuntimeApiBaseUrl } from '@/lib/runtime-switch';
 
-const APP_TITLE = 'OpenJunior';
+const APP_TITLE = 'Glenker';
 
 const formatProjectLabel = (label: string): string => {
   return label.replace(/[-_]/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
@@ -67,7 +67,7 @@ export const useWindowTitle = () => {
           return;
         }
 
-        const localOrigin = window.__OPENJUNIOR_LOCAL_ORIGIN__ || window.location.origin;
+        const localOrigin = window.__GLENKER_LOCAL_ORIGIN__ || window.location.origin;
         const runtimeApiBaseUrl = getRuntimeApiBaseUrl();
 
         if (runtimeApiBaseUrl && locationMatchesHost(runtimeApiBaseUrl, localOrigin)) {

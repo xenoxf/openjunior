@@ -71,7 +71,7 @@ const useExternalLinkInteractions = ({
         return;
       }
 
-      if (anchor.getAttribute('data-openjunior-file-link') === 'true') {
+      if (anchor.getAttribute('data-glenker-file-link') === 'true') {
         return;
       }
 
@@ -143,10 +143,10 @@ interface MarkdownRendererProps {
 }
 
 const MERMAID_BLOCK_SELECTOR = '[data-markdown="mermaid-block"]';
-const FILE_LINK_SELECTOR = '[data-openjunior-file-link="true"]';
-const BLOCK_PATH_TOKEN_ATTR = 'data-openjunior-block-path-token';
+const FILE_LINK_SELECTOR = '[data-glenker-file-link="true"]';
+const BLOCK_PATH_TOKEN_ATTR = 'data-glenker-block-path-token';
 const BLOCK_PATH_TOKEN_SELECTOR = `[${BLOCK_PATH_TOKEN_ATTR}]`;
-const CODE_BLOCK_PATH_SCANNED_ATTR = 'data-openjunior-block-paths-scanned';
+const CODE_BLOCK_PATH_SCANNED_ATTR = 'data-glenker-block-paths-scanned';
 // Matches `path[:line[:col]]` inside shell/grep-style output. Requires a file
 // extension (1-8 alphanumerics) so plain words don't qualify; the path itself
 // must contain at least one extension-bearing segment.
@@ -391,12 +391,12 @@ const extractPathCandidateFromElement = (element: HTMLElement): string => {
 
 // Walks text nodes inside `<pre><code>` subtrees and wraps any substring that
 // looks like a `path[:line[:col]]` reference in a span carrying
-// `data-openjunior-block-path-token`. `annotateFileLinks` then promotes those
+// `data-glenker-block-path-token`. `annotateFileLinks` then promotes those
 // spans into clickable file links via the same existing pipeline used for
 // inline code (parseFileReference → fileReferenceExists → openFileReference).
 //
 // Idempotent: each `<code>` node is marked with
-// `data-openjunior-block-paths-scanned` once processed so the walk is not
+// `data-glenker-block-paths-scanned` once processed so the walk is not
 // repeated on the same element. When the renderer replaces the `<code>` subtree
 // (e.g. on content change during streaming), the new element lacks the marker and
 // will be rescanned on the next mutation-observer callback.
@@ -572,9 +572,9 @@ const useFileReferenceInteractions = ({
     const fileReferenceLinkLimit = getFileReferenceLinkLimit();
 
     const clearFileLinkAttributes = (candidate: HTMLElement) => {
-      candidate.removeAttribute('data-openjunior-file-link');
-      candidate.removeAttribute('data-openjunior-file-ref');
-      candidate.removeAttribute('data-openjunior-file-path');
+      candidate.removeAttribute('data-glenker-file-link');
+      candidate.removeAttribute('data-glenker-file-ref');
+      candidate.removeAttribute('data-glenker-file-path');
       if (candidate.getAttribute('title') === 'Open file') {
         candidate.removeAttribute('title');
       }
@@ -657,9 +657,9 @@ const useFileReferenceInteractions = ({
             return;
           }
 
-          candidate.setAttribute('data-openjunior-file-link', 'true');
-          candidate.setAttribute('data-openjunior-file-ref', latestRawCandidate);
-          candidate.setAttribute('data-openjunior-file-path', latestResolved.resolvedPath);
+          candidate.setAttribute('data-glenker-file-link', 'true');
+          candidate.setAttribute('data-glenker-file-ref', latestRawCandidate);
+          candidate.setAttribute('data-glenker-file-path', latestResolved.resolvedPath);
           candidate.setAttribute('title', 'Open file');
           if (candidate.tagName.toLowerCase() !== 'a') {
             candidate.setAttribute('role', 'button');
@@ -670,7 +670,7 @@ const useFileReferenceInteractions = ({
     };
 
     const openFileReference = async (sourceElement: HTMLElement) => {
-      const raw = sourceElement.getAttribute('data-openjunior-file-ref') || extractPathCandidateFromElement(sourceElement);
+      const raw = sourceElement.getAttribute('data-glenker-file-ref') || extractPathCandidateFromElement(sourceElement);
       const resolved = getResolvedReference(raw, effectiveDirectory);
       if (!resolved) {
         return;
@@ -732,7 +732,7 @@ const useFileReferenceInteractions = ({
       }
 
       const target = event.target;
-      if (!(target instanceof HTMLElement) || target.getAttribute('data-openjunior-file-link') !== 'true') {
+      if (!(target instanceof HTMLElement) || target.getAttribute('data-glenker-file-link') !== 'true') {
         return;
       }
 

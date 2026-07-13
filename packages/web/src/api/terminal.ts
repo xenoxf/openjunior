@@ -6,7 +6,7 @@ import {
   closeTerminal,
   restartTerminalSession,
   forceKillTerminal,
-} from '@openjunior/ui/lib/terminalApi';
+} from '@glenker/ui/lib/terminalApi';
 import type {
   TerminalAPI,
   TerminalHandlers,
@@ -15,7 +15,7 @@ import type {
   ResizeTerminalPayload,
   TerminalSession,
   ForceKillOptions,
-} from '@openjunior/ui/lib/api/types';
+} from '@glenker/ui/lib/api/types';
 
 const getRetryPolicy = (options?: TerminalStreamOptions) => {
   const retry = options?.retry;

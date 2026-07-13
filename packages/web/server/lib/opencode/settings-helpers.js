@@ -797,11 +797,11 @@ export const createSettingsHelpers = (dependencies) => {
       securityScopedBookmarks: bookmarks,
       pinnedDirectories: normalizeStringArray(settings.pinnedDirectories),
       typographySizes: sanitizeTypographySizesPartial(settings.typographySizes),
-      ...(process.env.OPENJUNIOR_RUNTIME === 'desktop'
+      ...(process.env.GLENKER_RUNTIME === 'desktop'
         ? {
-            desktopLanAccessActive: process.env.OPENJUNIOR_DESKTOP_LAN_ACCESS_ACTIVE === 'true',
+            desktopLanAccessActive: process.env.GLENKER_DESKTOP_LAN_ACCESS_ACTIVE === 'true',
             desktopLanAccessBlockedReason:
-              process.env.OPENJUNIOR_DESKTOP_LAN_ACCESS_BLOCKED_REASON === 'missing-password'
+              process.env.GLENKER_DESKTOP_LAN_ACCESS_BLOCKED_REASON === 'missing-password'
                 ? 'missing-password'
                 : null,
           }

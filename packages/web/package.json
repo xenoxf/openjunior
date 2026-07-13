@@ -1,20 +1,20 @@
 {
-  "name": "@openjunior/web",
+  "name": "@glenker/web",
   "version": "1.16.0",
   "private": false,
   "type": "module",
   "main": "./server/index.js",
   "types": "./server/index.d.ts",
   "bin": {
-    "openjunior": "./bin/cli.js"
+    "glenker": "./bin/cli.js"
   },
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
     "dev": "bun run build:watch",
-    "dev:server": "bun server/index.js --port ${OPENJUNIOR_PORT:-3001}",
-    "dev:server:watch": "nodemon --watch server --ext js --exec \"bun server/index.js --port ${OPENJUNIOR_PORT:-3001}\"",
+    "dev:server": "bun server/index.js --port ${GLENKER_PORT:-3001}",
+    "dev:server:watch": "nodemon --watch server --ext js --exec \"bun server/index.js --port ${GLENKER_PORT:-3001}\"",
     "build": "vite build",
     "build:watch": "vite build --watch",
     "type-check": "tsc --noEmit",

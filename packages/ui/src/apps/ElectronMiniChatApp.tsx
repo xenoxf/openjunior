@@ -22,7 +22,7 @@ import { useMiniChatKeyboardShortcuts } from '@/hooks/useMiniChatKeyboardShortcu
 import { listProjectWorktrees } from '@/lib/worktrees/worktreeManager';
 import type { WorktreeMetadata } from '@/types/worktree';
 
-const MINI_CHAT_PRESENCE_CHANNEL = 'openjunior:mini-chat-presence';
+const MINI_CHAT_PRESENCE_CHANNEL = 'glenker:mini-chat-presence';
 
 type MiniChatMode = 'session' | 'draft';
 
@@ -156,8 +156,8 @@ const MiniChatBootstrap: React.FC<{ config: MiniChatConfig }> = ({ config }) => 
       setCurrentSession(sessionId, directory);
       sessionBootstrappedRef.current = true;
     };
-    window.addEventListener('openjunior:open-session', onOpenSession);
-    return () => window.removeEventListener('openjunior:open-session', onOpenSession);
+    window.addEventListener('glenker:open-session', onOpenSession);
+    return () => window.removeEventListener('glenker:open-session', onOpenSession);
   }, [sessions, setCurrentSession, sync]);
 
   React.useEffect(() => {

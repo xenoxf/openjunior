@@ -73,7 +73,7 @@ type MessageStreamWsFrame = {
   scope?: "global" | "directory"
 }
 
-const normalizeOpenJuniorSessionStatus = (payload: Event): Event | null => {
+const normalizeGlenkerSessionStatus = (payload: Event): Event | null => {
   const record = payload as unknown as {
     id?: unknown
     type?: unknown
@@ -89,7 +89,7 @@ const normalizeOpenJuniorSessionStatus = (payload: Event): Event | null => {
     }
   }
 
-  if (record.type !== "openjunior:session-status") return null
+  if (record.type !== "glenker:session-status") return null
 
   const sessionID = typeof record.properties?.sessionID === "string" && record.properties.sessionID.length > 0
     ? record.properties.sessionID
@@ -122,7 +122,7 @@ const normalizeOpenJuniorSessionStatus = (payload: Event): Event | null => {
   return {
     id: typeof record.id === "string" && record.id.length > 0
       ? record.id
-      : `openjunior-status-${sessionID}-${Date.now()}`,
+      : `glenker-status-${sessionID}-${Date.now()}`,
     type: "session.status",
     properties: {
       sessionID,
@@ -132,9 +132,9 @@ const normalizeOpenJuniorSessionStatus = (payload: Event): Event | null => {
 }
 
 const normalizeEventType = (payload: Event): Event => {
-  const normalizedOpenJuniorStatus = normalizeOpenJuniorSessionStatus(payload)
-  if (normalizedOpenJuniorStatus) {
-    return normalizedOpenJuniorStatus
+  const normalizedGlenkerStatus = normalizeGlenkerSessionStatus(payload)
+  if (normalizedGlenkerStatus) {
+    return normalizedGlenkerStatus
   }
 
   const type = (payload as { type?: unknown }).type
@@ -890,7 +890,7 @@ export function createEventPipeline(input: EventPipelineInput): EventPipeline {
   // Use globalThis (not window) for the system-resume listener so that
   // test environments can replace globalThis.window with a stub.
   if (typeof globalThis.window !== "undefined") {
-    globalThis.window.addEventListener("openjunior:system-resume", onSystemResume)
+    globalThis.window.addEventListener("glenker:system-resume", onSystemResume)
     globalThis.window.addEventListener("online", onOnline)
     globalThis.window.addEventListener("offline", onOffline)
   }
@@ -901,7 +901,7 @@ export function createEventPipeline(input: EventPipelineInput): EventPipeline {
       window.removeEventListener("pageshow", onPageShow)
     }
     if (typeof globalThis.window !== "undefined") {
-      globalThis.window.removeEventListener("openjunior:system-resume", onSystemResume)
+      globalThis.window.removeEventListener("glenker:system-resume", onSystemResume)
       globalThis.window.removeEventListener("online", onOnline)
       globalThis.window.removeEventListener("offline", onOffline)
     }
