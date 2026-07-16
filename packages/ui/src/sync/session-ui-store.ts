@@ -923,7 +923,13 @@ export const useSessionUIStore = create<SessionUIState>()((set, get) => ({
       }
 
       const created = await get().createSession(draft.title, draftDirectoryOverride, draft.parentID ?? null)
-      if (!created?.id) throw new Error("Failed to create session")
+      if (!created?.id) {
+        const hasDir = !!(draftDirectoryOverride || opencodeClient.getDirectory())
+        const msg = hasDir
+          ? 'Could not create a new session. The server may be unavailable.'
+          : 'Select a working directory first to start a new session.'
+        throw new Error(msg)
+      }
 
       persistDraftTarget({
         projectId: draftProjectId,
@@ -1082,7 +1088,6 @@ export const useSessionUIStore = create<SessionUIState>()((set, get) => ({
   createSession: async (title, directoryOverride, parentID, metadata) => {
     const draft = get().newSessionDraft
     const targetFolderId = draft.targetFolderId
-    get().closeNewSessionDraft()
 
     try {
       const dir = directoryOverride ?? opencodeClient.getDirectory()

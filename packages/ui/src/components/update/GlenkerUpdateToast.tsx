@@ -4,14 +4,51 @@ import { toast } from '@/components/ui/toast';
 import { useI18n } from '@/lib/i18n';
 import { getSafeStorage } from '@/stores/utils/safeStorage';
 import { useUpdateStore } from '@/stores/useUpdateStore';
+import { isElectronShell, isDesktopLocalOriginActive } from '@/lib/desktop';
 
 const UPDATE_TOAST_ID = 'glenker-update-available';
 const UPDATE_DOWNLOAD_TOAST_ID = 'glenker-update-download';
 const DISMISSED_VERSION_KEY = 'glenker-update-toast-dismissed-version';
 
+const AUTO_CHECK_INITIAL_DELAY_MS = 15_000;
+const AUTO_CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
+
 export const GlenkerUpdateToast: React.FC = () => {
   const { t } = useI18n();
   const seenVersionsRef = React.useRef(new Set<string>());
+  const autoCheckScheduledRef = React.useRef(false);
+
+  React.useEffect(() => {
+    if (!isElectronShell() || !isDesktopLocalOriginActive()) {
+      return;
+    }
+
+    if (autoCheckScheduledRef.current) {
+      return;
+    }
+    autoCheckScheduledRef.current = true;
+
+    let cancelled = false;
+    let checkTimer: number | null = null;
+    let intervalTimer: number | null = null;
+
+    const doCheck = () => {
+      if (cancelled) return;
+      void useUpdateStore.getState().checkForUpdates();
+    };
+
+    checkTimer = window.setTimeout(() => {
+      if (cancelled) return;
+      doCheck();
+      intervalTimer = window.setInterval(doCheck, AUTO_CHECK_INTERVAL_MS);
+    }, AUTO_CHECK_INITIAL_DELAY_MS);
+
+    return () => {
+      cancelled = true;
+      if (checkTimer !== null) window.clearTimeout(checkTimer);
+      if (intervalTimer !== null) window.clearInterval(intervalTimer);
+    };
+  }, []);
 
   React.useEffect(() => {
     let cancelled = false;

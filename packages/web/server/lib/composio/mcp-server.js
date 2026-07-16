@@ -13,12 +13,12 @@ if (!API_KEY) {
 const client = new Composio({ apiKey: API_KEY });
 
 function sendResponse(id, result) {
-  const msg = JSON.stringify({ id, result });
+  const msg = JSON.stringify({ jsonrpc: '2.0', id, result });
   process.stdout.write(msg + '\n');
 }
 
 function sendError(id, code, message) {
-  const msg = JSON.stringify({ id, error: { code, message } });
+  const msg = JSON.stringify({ jsonrpc: '2.0', id, error: { code, message } });
   process.stdout.write(msg + '\n');
 }
 
@@ -39,7 +39,7 @@ async function listTools() {
         const actionName = action.name || action.actionName || action.key;
         if (!actionName) continue;
 
-        const name = `${toolkitName}_${actionName}`.replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
+        const name = `composio_${toolkitName}_${actionName}`.replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
         if (seen.has(name)) continue;
         seen.add(name);
 
@@ -61,10 +61,6 @@ async function listTools() {
 }
 
 async function callTool(name, args) {
-  if (!name.startsWith('composio_')) {
-    name = `composio_${name}`;
-  }
-
   try {
     const accounts = await client.connectedAccounts.list({
       userIds: [USER_ID],
@@ -78,8 +74,8 @@ async function callTool(name, args) {
         const actionName = action.name || action.actionName || action.key;
         if (!actionName) continue;
 
-        const expected = `${toolkitName}_${actionName}`.replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
-        if (expected !== name && !name.endsWith(`_${actionName}`)) continue;
+        const expected = `composio_${toolkitName}_${actionName}`.replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
+        if (expected !== name) continue;
 
         const result = await client.tools.execute(actionName, {
           connectedAccountId: acct.id,
