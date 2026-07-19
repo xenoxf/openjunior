@@ -29,6 +29,7 @@ import { useI18n } from '@/lib/i18n';
 import { resolveProjectForDirectory, resolveProjectForSessionDirectory } from '@/lib/projectResolution';
 import { clampPercent, formatQuotaResetLabel, formatQuotaValueLabel, formatWindowLabel, QUOTA_PROVIDERS, resolveUsageTone } from '@/lib/quota';
 import { getDisplayModelName } from '@/lib/quota/model-families';
+import { haptic, isNativeAgentAvailable, startAgentTeam } from '@/lib/mobile';
 import { runtimeFetch } from '@/lib/runtime-fetch';
 import { sessionEvents } from '@/lib/sessionEvents';
 import { cn } from '@/lib/utils';
@@ -756,7 +757,10 @@ const MobileHeader: React.FC<{
             type="button"
             className="flex size-10 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-interactive-hover hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             aria-label={t('mobile.sessions.openSheetAria')}
-            onClick={handleOpenSessions}
+            onClick={() => {
+              haptic();
+              handleOpenSessions();
+            }}
             style={{ touchAction: 'manipulation' }}
           >
             <Icon name="menu" className="size-5" />
@@ -777,7 +781,10 @@ const MobileHeader: React.FC<{
             type="button"
             className="flex size-10 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-interactive-hover hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             aria-label={t('mobile.header.openMenuAria')}
-            onClick={handleOpenMenu}
+            onClick={() => {
+              haptic();
+              handleOpenMenu();
+            }}
             style={{ touchAction: 'manipulation' }}
           >
             <Icon name="more-2" className="size-5" />
@@ -924,7 +931,8 @@ const MobileShell: React.FC = () => {
   return (
     <DedicatedMobileAppProvider actions={mobileActions}>
       <div
-        className="main-content-safe-area flex h-[100dvh] flex-col bg-background text-foreground"
+        data-oc-dedicated-mobile="true"
+        className="main-content-safe-area flex h-[var(--app-height,100dvh)] flex-col bg-background text-foreground"
         data-page-scroll-lock="true"
       >
         <MobileHeader
@@ -1099,6 +1107,24 @@ export function MobileApp({ apis }: MobileAppProps) {
   React.useEffect(() => {
     setIsMobile(true);
   }, [setIsMobile]);
+
+  // Native mobile: launch the local OpenCode engine as a parallel agent team.
+  // A single `startTeam` call fans out into N concurrent subprocesses on the
+  // native side; all agents share the loopback interface (127.0.0.1).
+  React.useEffect(() => {
+    if (!isNativeAgentAvailable()) return;
+    let cancelled = false;
+    void startAgentTeam([
+      { id: 'primary' },
+      { id: 'research' },
+      { id: 'coder' },
+    ]).catch((err) => {
+      if (!cancelled) console.error('[mobile] failed to start agent team:', err);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   React.useEffect(() => {
     void initializeApp();

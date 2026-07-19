@@ -1,0 +1,9 @@
+// Generated equivalent of the file `cap sync android` normally writes.
+// This project uses only Capacitor plugins (no Cordova plugins), so this is a
+// minimal no-op. Real asset sync (copying ../web/dist into app/src/main/assets/public)
+// is performed by `npx cap sync android` once the web bundle is built.
+android {
+    defaultConfig {
+        // Capacitor registers plugins via the generated res/xml/config.xml (Glenker feature).
+    }
+}

@@ -49,6 +49,7 @@ export const IntegrationsTab: React.FC = () => {
   const [credentialConnecting, setCredentialConnecting] = React.useState(false);
 
   React.useEffect(() => {
+    useComposioStore.getState().loadConfig();
     loadApps();
     useComposioStore.getState().loadConnectedAccounts();
   }, [loadApps]);

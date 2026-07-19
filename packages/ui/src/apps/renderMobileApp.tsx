@@ -15,6 +15,7 @@ import { initializeAppearancePreferences, syncDesktopSettings } from '@/lib/pers
 import { startModelPrefsAutoSave } from '@/lib/modelPrefsAutoSave';
 import { startTypographyWatcher } from '@/lib/typographyWatcher';
 import { MobileApp } from './MobileApp';
+import { initAppHeight } from '@/lib/mobile';
 
 const initializeSharedPreferences = () => {
   initializeLocale();
@@ -36,6 +37,7 @@ const initializeSharedPreferences = () => {
 };
 
 export function renderMobileApp(apis: RuntimeAPIs) {
+  initAppHeight();
   initializeSharedPreferences();
 
   const rootElement = document.getElementById('root');

@@ -286,7 +286,8 @@ export const createFeatureRoutesRuntime = (dependencies) => {
 
     if (composioApiKey) {
       try {
-        const { createMcpConfig, updateMcpConfig } = await import('./mcp.js');
+        const { createMcpConfig, updateMcpConfig, migrateLegacyConfigToOpenCodeJson } = await import('./mcp.js');
+        migrateLegacyConfigToOpenCodeJson();
         try {
           updateMcpConfig('composio', {
             type: 'local',
@@ -311,6 +312,11 @@ export const createFeatureRoutesRuntime = (dependencies) => {
           }, process.cwd(), 'user');
         }
         console.log('[FeatureRoutes] Composio MCP server registered');
+          try {
+            await refreshOpenCodeAfterConfigChange('composio mcp registration');
+          } catch (reloadErr) {
+            console.warn('[FeatureRoutes] OpenCode reload after Composio MCP registration failed:', reloadErr.message);
+          }
       } catch (err) {
         console.warn('[FeatureRoutes] Failed to register Composio MCP server:', err.message);
       }

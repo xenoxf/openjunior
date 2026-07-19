@@ -498,3 +498,68 @@
     }
   }
 }
+
+/* =========================================================================
+   Dedicated Mobile App (Capacitor / /mobile.html) — native Android feel
+   Scoped to the dedicated mobile root only; desktop layout is untouched.
+   Colors use theme tokens exclusively (no hardcoded hex).
+   ========================================================================= */
+[data-oc-dedicated-mobile] {
+  /* Robust full-height that tracks the visual viewport (keyboard/URL bar). */
+  height: var(--app-height, 100dvh);
+}
+
+/* Bottom tab / composer safe areas clear the gesture bar. */
+[data-oc-dedicated-mobile] .bottom-safe-area {
+  padding-bottom: calc(var(--oc-safe-area-bottom, 0px) + 0.5rem);
+}
+
+[data-oc-dedicated-mobile] .mobile-sidebar-top {
+  padding-bottom: var(--oc-safe-area-bottom, 0px);
+}
+
+/* 44pt minimum tap targets for primary interactive controls. */
+[data-oc-dedicated-mobile] button:not([role="radio"]):not([role="checkbox"]):not([role="switch"]),
+[data-oc-dedicated-mobile] .btn,
+[data-oc-dedicated-mobile] [role="button"]:not([role="option"]):not([role="menuitem"]),
+[data-oc-dedicated-mobile] [role="tab"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+[data-oc-dedicated-mobile] input,
+[data-oc-dedicated-mobile] textarea,
+[data-oc-dedicated-mobile] select {
+  min-height: 44px;
+}
+
+/* Chat scroll region: momentum scrolling + contain overscroll bounce so the
+   gesture doesn't leak to the page behind the WebView. */
+[data-oc-dedicated-mobile] main {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+[data-oc-dedicated-mobile] .overflow-y-auto,
+[data-oc-dedicated-mobile] [data-va-virtualizer] {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Native momentum feel for scrollable surfaces (sheets, settings, diffs). */
+[data-oc-dedicated-mobile] .overflow-auto {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Remove the 300ms legacy tap delay and suppress blue highlight on taps. */
+[data-oc-dedicated-mobile] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+@media (display-mode: standalone) {
+  [data-oc-dedicated-mobile] {
+    height: var(--app-height, 100dvh);
+  }
+}

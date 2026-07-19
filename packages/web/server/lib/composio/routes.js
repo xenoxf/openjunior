@@ -27,6 +27,12 @@ export function registerComposioRoutes(app, composioApiKey, composioUserId) {
 
   const getApiKey = () => composioApiKey;
 
+  // Expose the effective userId so the UI can stay in sync with the server
+  // (the MCP server uses COMPOSIO_USER_ID; the UI must use the same value).
+  app.get('/api/composio/config', (req, res) => {
+    res.json({ ok: true, userId: composioUserId || 'default', hasApiKey: !!composioApiKey });
+  });
+
   const PAGE_SIZE = 20;
   const paginationCache = new Map();
 

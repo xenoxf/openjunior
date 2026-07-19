@@ -23,41 +23,37 @@ function sendError(id, code, message) {
 }
 
 async function listTools() {
-  try {
-    const accounts = await client.connectedAccounts.list({
-      userIds: [USER_ID],
-    });
+  const accounts = await client.connectedAccounts.list({
+    userIds: [USER_ID],
+  });
 
-    const tools = [];
-    const seen = new Set();
+  const tools = [];
+  const seen = new Set();
 
-    for (const acct of (accounts || [])) {
-      const toolkitName = acct.appName || acct.toolkit || acct.app || 'unknown';
-      const actions = acct.actions || [];
+  for (const acct of (accounts || [])) {
+    const toolkitName = acct.appName || acct.toolkit || acct.app || 'unknown';
+    const actions = acct.actions || [];
 
-      for (const action of (actions || [])) {
-        const actionName = action.name || action.actionName || action.key;
-        if (!actionName) continue;
+    for (const action of (actions || [])) {
+      const actionName = action.name || action.actionName || action.key;
+      if (!actionName) continue;
 
-        const name = `composio_${toolkitName}_${actionName}`.replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
-        if (seen.has(name)) continue;
-        seen.add(name);
+      const name = `composio_${toolkitName}_${actionName}`.replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
+      if (seen.has(name)) continue;
+      seen.add(name);
 
-        tools.push({
-          name,
-          description: action.display_name || action.description || `${toolkitName}: ${actionName}`,
-          inputSchema: action.parameters?.type === 'object' ? action.parameters : {
-            type: 'object',
-            properties: {},
-          },
-        });
-      }
+      tools.push({
+        name,
+        description: action.display_name || action.description || `${toolkitName}: ${actionName}`,
+        inputSchema: action.parameters?.type === 'object' ? action.parameters : {
+          type: 'object',
+          properties: {},
+        },
+      });
     }
-
-    return tools;
-  } catch (err) {
-    return [];
   }
+
+  return tools;
 }
 
 async function callTool(name, args) {
@@ -117,14 +113,18 @@ process.stdin.on('data', (chunk) => {
           (text) => sendResponse(id, { content: [{ type: 'text', text }] }),
           (err) => sendError(id, -32603, err.message),
         );
+      } else if (method === 'ping') {
+        sendResponse(id, {});
       } else if (method === 'initialize') {
         sendResponse(id, {
           protocolVersion: '2024-11-05',
           capabilities: { tools: {} },
           serverInfo: { name: 'composio-mcp', version: '1.0.0' },
         });
-      } else if (method === 'notifications/initialized') {
-        // ignore
+      } else if (method === 'notifications/initialized' || method === 'notifications/') {
+        // ignore notifications
+      } else if (method && method.startsWith('notifications/')) {
+        // ignore all notifications
       } else {
         sendError(id, -32601, `Method not found: ${method}`);
       }

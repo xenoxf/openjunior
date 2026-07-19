@@ -48,6 +48,8 @@ interface ComposioStore {
   searchQuery: string;
   _searchSeq: number;
   selectedAccountId: string | null;
+  userId: string;
+  loadConfig: () => Promise<void>;
   loadApps: () => Promise<void>;
   loadMoreApps: () => Promise<void>;
   searchApps: (query: string) => Promise<void>;
@@ -74,6 +76,21 @@ export const useComposioStore = create<ComposioStore>()(
       nextCursor: null,
       searchQuery: '',
       _searchSeq: 0,
+      userId: 'default',
+
+      loadConfig: async () => {
+        try {
+          const response = await runtimeFetch('/api/composio/config', {
+            headers: { Accept: 'application/json' },
+          });
+          const data = await response.json();
+          if (data?.ok && data?.userId) {
+            set({ userId: data.userId });
+          }
+        } catch {
+          // keep default
+        }
+      },
 
       loadApps: async () => {
         set({ isLoadingApps: true, searchQuery: '' });
@@ -178,7 +195,7 @@ export const useComposioStore = create<ComposioStore>()(
           const response = await runtimeFetch(`/api/composio/apps/${slug}/connect`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify({ userId: 'default' }),
+            body: JSON.stringify({ userId: get().userId }),
           });
           const data = await response.json();
           if (data?.ok && data?.redirectUrl) {
@@ -216,7 +233,7 @@ export const useComposioStore = create<ComposioStore>()(
           const response = await runtimeFetch(`/api/composio/apps/${slug}/connect-custom`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: JSON.stringify({ userId: 'default', credentials, authScheme }),
+            body: JSON.stringify({ userId: get().userId, credentials, authScheme }),
           });
           const data = await response.json();
           if (data?.ok) {

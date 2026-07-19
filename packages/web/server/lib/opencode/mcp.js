@@ -9,6 +9,7 @@ import {
   getJsonEntrySource,
   getJsonWriteTarget,
   writeConfig,
+  migrateLegacyConfigToOpenCodeJson,
 } from './shared.js';
 
 const GLENKER_CONFIG_DIR = path.join(os.homedir(), '.config', 'glenker');
@@ -135,6 +136,10 @@ function getDefaultMcps() {
 
 function seedDefaultMcps(workingDirectory) {
   if (hasMcpSeedFlag()) return;
+
+  // Ensure opencode.json exists (OpenCode reads this file, not config.json).
+  // Migrates from opencode.jsonc if needed so Glenker + OpenCode share config.
+  migrateLegacyConfigToOpenCodeJson();
 
   for (const mcp of DEFAULT_MCPS) {
     try {

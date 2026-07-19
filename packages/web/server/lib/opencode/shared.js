@@ -10,7 +10,11 @@ const OPENCODE_CONFIG_DIR = path.join(os.homedir(), '.config', 'opencode');
 const AGENT_DIR = path.join(OPENCODE_CONFIG_DIR, 'agents');
 const COMMAND_DIR = path.join(OPENCODE_CONFIG_DIR, 'commands');
 const SKILL_DIR = path.join(OPENCODE_CONFIG_DIR, 'skills');
-const CONFIG_FILE = path.join(OPENCODE_CONFIG_DIR, 'config.json');
+// OpenCode (the external binary) reads `opencode.json` / `opencode.jsonc` from
+// its config dir. Glenker MUST write to the same file so MCP servers (Composio,
+// etc.) registered by Glenker are visible to OpenCode. We use `opencode.json`
+// (JSON, not JSONC) so it can be written/parsed reliably by both sides.
+const CONFIG_FILE = path.join(OPENCODE_CONFIG_DIR, 'opencode.json');
 const CUSTOM_CONFIG_FILE = process.env.OPENCODE_CONFIG
   ? path.resolve(process.env.OPENCODE_CONFIG)
   : null;
@@ -116,9 +120,9 @@ function getProjectConfigPath(workingDirectory) {
 function getConfigPaths(workingDirectory) {
   return {
     userPaths: [
-      path.join(OPENCODE_CONFIG_DIR, 'config.json'),
       path.join(OPENCODE_CONFIG_DIR, 'opencode.json'),
       path.join(OPENCODE_CONFIG_DIR, 'opencode.jsonc'),
+      path.join(OPENCODE_CONFIG_DIR, 'config.json'),
     ],
     projectPath: getProjectConfigPath(workingDirectory),
     customPath: CUSTOM_CONFIG_FILE
@@ -133,6 +137,30 @@ function getPrimaryUserConfigPath(userPaths) {
   }
 
   return CONFIG_FILE;
+}
+
+/**
+ * Ensure `opencode.json` (the file OpenCode reads) exists and is up to date.
+ * If OpenCode previously wrote `opencode.jsonc` but `opencode.json` does not
+ * exist yet, migrate the JSONC content into `opencode.json` so Glenker and
+ * OpenCode share a single source of truth. This is what makes MCP servers
+ * registered by Glenker (Composio, etc.) visible to OpenCode.
+ */
+function migrateLegacyConfigToOpenCodeJson() {
+  const jsoncPath = path.join(OPENCODE_CONFIG_DIR, 'opencode.jsonc');
+  const jsonPath = path.join(OPENCODE_CONFIG_DIR, 'opencode.json');
+
+  if (fs.existsSync(jsoncPath) && !fs.existsSync(jsonPath)) {
+    try {
+      const content = fs.readFileSync(jsoncPath, 'utf8');
+      const parsed = parseJsonc(content.trim(), [], { allowTrailingComma: true });
+      fs.mkdirSync(OPENCODE_CONFIG_DIR, { recursive: true });
+      fs.writeFileSync(jsonPath, JSON.stringify(parsed || {}, null, 2), 'utf8');
+      console.log('[Config] Migrated opencode.jsonc -> opencode.json for OpenCode compatibility');
+    } catch (err) {
+      console.warn('[Config] Failed to migrate opencode.jsonc -> opencode.json:', err.message);
+    }
+  }
 }
 
 function readConfigFile(filePath) {
@@ -539,4 +567,5 @@ export {
   readSkillSupportingFile,
   writeSkillSupportingFile,
   deleteSkillSupportingFile,
+  migrateLegacyConfigToOpenCodeJson,
 };
