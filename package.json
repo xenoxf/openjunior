@@ -1,6 +1,6 @@
 {
   "name": "glenker-monorepo",
-  "version": "1.16.0",
+  "version": "1.17.0",
   "description": "Glenker monorepo workspace for web, ui, and desktop runtimes",
   "private": true,
   "type": "module",

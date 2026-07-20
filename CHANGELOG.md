@@ -4,6 +4,37 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.17.0] - 2026-07-20
+
+### App (renombrada a Glenker)
+- La aplicación ahora se distribuye oficialmente como **Glenker** (antes OpenJunior): nuevo nombre de producto, identidad visual y marca en todos los binarios de escritorio.
+- Se limpió la interfaz y se mejoró la experiencia de usuario (UX) en general: layout más ordenado, menos ruido visual y flujos más directos.
+
+### Chat / Comandos
+- Nuevo comando `/goal`: define un objetivo que la IA mantiene presente en todo el trabajo posterior de la sesión (disponible en el menú de comandos slash).
+
+### Automatizaciones
+- Mejoras en las automatizaciones: flujos más robustos y configuración más clara desde la interfaz.
+
+### Integraciones
+- Composio: se mejoró el funcionamiento de las integraciones (OAuth, gestión de cuentas y catálogo) para mayor fiabilidad.
+- Personalización de la app: más opciones de personalización expuestas en los ajustes.
+
+### Notificaciones
+- Sistema de notificaciones mejorado en esta versión de Glenker (mensajes más claros, truncado inteligente y resumen opcional).
+
+### Android (motor OpenCode nativo, multi-agente)
+- La app móvil ahora ejecuta el motor OpenCode (`lildax`) como subproceso ARM64 nativo dentro del runtime de Glenker, con soporte de **equipos de agentes** (ejecución paralela de varios agentes).
+- `GlenkerPlugin.startTeam` devuelve los puertos de cada agente vía `AgentManager`: `{ count, running, agents: [{ id, port, running }] }`.
+- `packages/ui/src/lib/mobile.ts`: expone `TeamResult` y `startAgentTeam`, y construye la URL base por agente (`buildAgentBaseUrl`).
+- `packages/ui/src/apps/MobileApp.tsx`: al iniciar el equipo, apunta `opencodeClient` al puerto del agente `primary`.
+- Tests de integración del contrato multi-agente (arranque paralelo, puertos distintos, `listAgents` round-trip).
+
+### Empaquetado / Build
+- `liblildax.so` (motor OpenCode ARM64, ~126 MB) migrado a **Git LFS**: el repositorio guarda solo un *pointer*; quien clona obtiene el binario vía LFS (evita el límite de 100 MB de GitHub).
+- Versiones de AndroidX fijadas para compatibilidad con `compileSdk 35` (`packages/android/capacitor/gradle.properties`).
+- Corrección de baseline de type-check: error preexistente `preconnect`/`typeof fetch` en `runtime-fetch.ts` y `client.ts` (el DOM lib más nuevo de TypeScript exige el miembro `preconnect` en `typeof fetch`). Type-check y lint en verde.
+
 ## [1.16.0] - 2026-07-10
 
 - Build: Electron cross-platform Docker build system (`Dockerfile.electron`, `docker-compose.build.yml`).

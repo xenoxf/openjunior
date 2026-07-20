@@ -1,6 +1,6 @@
 {
   "name": "@glenker/electron",
-  "version": "1.16.0",
+  "version": "1.17.0",
   "private": true,
   "description": "Electron desktop runtime for Glenker",
   "author": "Glenker <dev@glenker.dev>",
