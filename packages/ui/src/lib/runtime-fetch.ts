@@ -191,7 +191,7 @@ export const installRuntimeFetchBridge = (): void => {
   runtimeFetchBridgeInstalled = true;
 
   const nativeFetch = window.fetch.bind(window);
-  window.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+  window.fetch = (async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
     if (typeof input === 'string') {
       if (!shouldResolveFetchInput(input)) {
         try {
@@ -242,5 +242,5 @@ export const installRuntimeFetchBridge = (): void => {
     }
 
     return nativeFetch(input, init);
-  };
+  }) as unknown as typeof window.fetch;
 };

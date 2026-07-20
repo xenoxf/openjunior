@@ -71,10 +71,20 @@ class GlenkerPlugin : Plugin() {
             putExtra(AgentService.EXTRA_TEAM, specs)
         }
         startServiceSafely(intent, call) ?: run {
-            manager()?.startTeam(specs)
+            val handles = manager()?.startTeam(specs)
+            val agentsOut = JSArray()
+            val running = handles?.isNotEmpty() ?: false
+            handles?.forEach { h ->
+                val o = JSObject()
+                o.put("id", h.id)
+                o.put("port", h.port)
+                o.put("running", h.started)
+                agentsOut.put(o)
+            }
             val result = JSObject()
             result.put("count", specs.size)
-            result.put("running", true)
+            result.put("running", running)
+            result.put("agents", agentsOut)
             call.resolve(result)
         }
     }
@@ -147,6 +157,9 @@ class GlenkerPlugin : Plugin() {
     private fun startServiceSafely(intent: Intent, call: PluginCall): PluginCall? {
         return try {
             context.startForegroundService(intent)
+            // First-launch path: the service resolves before the manager is up,
+            // so per-agent ports aren't available yet. JS must follow up with
+            // listAgents() to get the agents array with ports.
             val result = JSObject()
             result.put("running", true)
             call.resolve(result)

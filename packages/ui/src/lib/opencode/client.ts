@@ -161,7 +161,7 @@ const resolveRuntimeBaseUrl = (): string | null => {
 const createRuntimeOpencodeClient = (config: { baseUrl: string; directory?: string }): OpencodeClient => {
   return createOpencodeClient({
     ...config,
-    fetch: runtimeFetch,
+    fetch: runtimeFetch as unknown as typeof fetch,
   });
 };
 
@@ -246,6 +246,26 @@ class OpencodeService {
 
   getBaseUrl(): string {
     return this.baseUrl;
+  }
+
+  /**
+   * Points the SDK client at a specific base URL (e.g. a local agent's
+   * loopback port). Rebuilds the client and clears caches so subsequent
+   * calls hit the new target. No-op when the URL is unchanged.
+   */
+  setBaseUrl(url: string): void {
+    const nextBaseUrl = ensureAbsoluteBaseUrl(url);
+    if (nextBaseUrl === this.baseUrl) {
+      return;
+    }
+    this.baseUrl = nextBaseUrl;
+    this.client = createRuntimeOpencodeClient({ baseUrl: this.baseUrl });
+    this.scopedClients.clear();
+    this.listDirectoryInFlight.clear();
+    this.configProvidersInFlight.clear();
+    this.listAgentsInFlight.clear();
+    this.clearConfigCache();
+    this.listDirectoryCache.clear();
   }
 
   reconnectToRuntimeBaseUrl(): void {

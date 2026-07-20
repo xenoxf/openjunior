@@ -1,52 +1,66 @@
 import { describe, expect, test, beforeEach, afterEach } from 'bun:test';
+import {
+  startAgentTeam,
+  listAgents,
+  buildAgentBaseUrl,
+  computeAppHeight,
+  type AgentSummary,
+} from '../lib/mobile';
 
 /**
  * Mobile bootstrap wiring tests (Capacitor `Glenker` plugin -> agent launch).
  *
  * The production mobile entry (packages/ui/src/apps/renderMobileApp.tsx) mounts
  * MobileApp, and the native side exposes the `Glenker` Capacitor plugin with
- * `startAgent({ port })`. The JS caller that invokes `startAgent` is currently
- * owned by the native bridge; this test encodes that contract with a minimal,
- * dependency-free mock of `window.Capacitor` and asserts:
+ * `startAgent({ port })` / `startTeam({ agents })` / `listAgents()`. The JS
+ * callers that invoke them live in the native bridge; this test encodes that
+ * contract with a minimal, dependency-free mock of `window.Capacitor` and
+ * asserts:
  *   1. the bootstrap calls `startAgent` and expects a numeric port,
  *   2. the resolved port is used to build the SDK base URL http://127.0.0.1:<port>,
  *   3. the visualViewport `--app-height` logic (mirrored by computeAppHeight)
- *      produces the expected CSS var value.
+ *      produces the expected CSS var value,
+ *   4. the multi-agent `startTeam` / `listAgents` contract fans out N agents.
  *
  * No browser is required: globals are mocked inline.
  */
 
-// ---- Pure helpers that mirror the mobile bootstrap contract ----------------
-
-/** Mirrors the visualViewport logic: sets --app-height to the viewport height. */
-function computeAppHeight(visualViewportHeight: number | null | undefined): number {
-  if (typeof visualViewportHeight === 'number' && Number.isFinite(visualViewportHeight)) {
-    return Math.round(visualViewportHeight);
-  }
-  return 0;
-}
-
-/** Mirrors SDK base URL construction for the local agent. */
-function buildAgentBaseUrl(port: number): string {
-  return `http://127.0.0.1:${port}`;
-}
-
 // ---- Capacitor plugin mock -------------------------------------------------
 
 type StartAgentCall = { port?: number };
+type StartTeamCall = { agents: Array<{ id: string; port?: number }> };
 
 function installCapacitorGlenkerPlugin(): {
-  calls: StartAgentCall[];
-  resolveStart: (port: number) => void;
+  agentCalls: StartAgentCall[];
+  teamCalls: StartTeamCall[];
+  lastTeamAgents: AgentSummary[];
 } {
-  const calls: StartAgentCall[] = [];
+  const agentCalls: StartAgentCall[] = [];
+  const teamCalls: StartTeamCall[] = [];
+  let lastTeamAgents: AgentSummary[] = [];
 
   const handler = {
     startAgent(call: StartAgentCall) {
-      calls.push(call);
+      agentCalls.push(call);
       return Promise.resolve({ port: call.port ?? 4096, running: true });
     },
+    startTeam(call: StartTeamCall) {
+      teamCalls.push(call);
+      const agents: AgentSummary[] = call.agents.map((a, i) => ({
+        id: a.id,
+        port: a.port ?? 4096 + i,
+        running: true,
+      }));
+      lastTeamAgents = agents;
+      return Promise.resolve({ count: agents.length, running: true, agents });
+    },
+    listAgents() {
+      return Promise.resolve({ agents: lastTeamAgents });
+    },
     stopAgent() {
+      return Promise.resolve({ stopped: true });
+    },
+    stopAll() {
       return Promise.resolve({ running: false });
     },
   };
@@ -59,12 +73,7 @@ function installCapacitorGlenkerPlugin(): {
 
   (globalThis as unknown as { Capacitor: unknown }).Capacitor = capacitor;
 
-  return {
-    calls,
-    resolveStart: (port: number) => {
-      handler.startAgent({ port });
-    },
-  };
+  return { agentCalls, get teamCalls() { return teamCalls; }, get lastTeamAgents() { return lastTeamAgents; } };
 }
 
 function clearCapacitor() {
@@ -76,17 +85,17 @@ async function bootstrapMobileAgent(getPort: () => number): Promise<{
   calls: StartAgentCall[];
   baseUrl: string;
 }> {
-  const { calls } = installCapacitorGlenkerPlugin();
+  const { agentCalls } = installCapacitorGlenkerPlugin();
   const port = getPort();
 
   const capacitor = (globalThis as unknown as {
-    Capacitor: { Plugins: { Glenker: { startAgent(c: StartAgentCall): Promise<unknown> } } };
+    Capacitor: { Plugins: { Glenker: { startAgent(c: StartAgentCall): Promise<{ port: number }> } } };
   }).Capacitor;
 
-  const result = (await capacitor.Plugins.Glenker.startAgent({ port })) as { port: number };
-  const baseUrl = buildAgentBaseUrl(result.port);
+  const result = (await capacitor.Plugins.Glenker.startAgent({ port })).port;
+  const baseUrl = buildAgentBaseUrl(result);
 
-  return { calls, baseUrl };
+  return { calls: agentCalls, baseUrl };
 }
 
 describe('mobile bootstrap wiring', () => {
@@ -124,5 +133,70 @@ describe('mobile bootstrap wiring', () => {
   test('computeAppHeight falls back to 0 without visualViewport', () => {
     expect(computeAppHeight(null)).toBe(0);
     expect(computeAppHeight(undefined)).toBe(0);
+  });
+
+  describe('multi-agent team contract', () => {
+    test('startAgentTeam calls startTeam once with 3 agents', async () => {
+      const { teamCalls } = installCapacitorGlenkerPlugin();
+      await startAgentTeam([{ id: 'primary' }, { id: 'research' }, { id: 'coder' }]);
+      expect(teamCalls.length).toBe(1);
+      expect(teamCalls[0].agents.length).toBe(3);
+    });
+
+    test('startAgentTeam returns a TeamResult with distinct ports', async () => {
+      installCapacitorGlenkerPlugin();
+      const result = await startAgentTeam([
+        { id: 'primary' },
+        { id: 'research' },
+        { id: 'coder' },
+      ]);
+
+      expect(result.count).toBe(3);
+      expect(result.running).toBe(true);
+      const agents = (result as unknown as { agents: AgentSummary[] }).agents;
+      expect(agents.length).toBe(3);
+
+      for (const agent of agents) {
+        expect(typeof agent.port).toBe('number');
+      }
+
+      const ports = agents.map((a) => a.port);
+      expect(new Set(ports).size).toBe(ports.length);
+    });
+
+    test('buildAgentBaseUrl matches the first agent port', async () => {
+      installCapacitorGlenkerPlugin();
+      const result = await startAgentTeam([
+        { id: 'primary' },
+        { id: 'research' },
+        { id: 'coder' },
+      ]);
+      const agents = (result as unknown as { agents: AgentSummary[] }).agents;
+      expect(buildAgentBaseUrl(agents[0].port)).toBe(
+        `http://127.0.0.1:${agents[0].port}`,
+      );
+    });
+
+    test('listAgents returns the started agents', async () => {
+      installCapacitorGlenkerPlugin();
+      const started = await startAgentTeam([
+        { id: 'primary' },
+        { id: 'research' },
+        { id: 'coder' },
+      ]);
+      const startedAgents = (started as unknown as { agents: AgentSummary[] }).agents;
+
+      const listed = await listAgents();
+      expect(listed.length).toBe(startedAgents.length);
+      for (let i = 0; i < startedAgents.length; i++) {
+        expect(listed[i].id).toBe(startedAgents[i].id);
+        expect(listed[i].port).toBe(startedAgents[i].port);
+      }
+    });
+
+    test('listAgents returns empty when no team started', async () => {
+      const listed = await listAgents();
+      expect(listed).toEqual([]);
+    });
   });
 });

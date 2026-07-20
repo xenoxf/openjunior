@@ -73,11 +73,11 @@ describe('runtimeFetch transport contract', () => {
           status: 200,
           headers: { 'content-type': 'application/json' },
         });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const client = createOpencodeClient({
         baseUrl: 'https://app.example/api',
-        fetch: runtimeFetch,
+        fetch: runtimeFetch as unknown as typeof fetch,
       });
 
       await client.session.revert({ sessionID: 'ses_1', directory: '/repo', messageID: 'msg_1' });
@@ -154,7 +154,7 @@ describe('runtimeFetch transport contract', () => {
         const request = input instanceof Request ? input : new Request(input);
         calls.push({ input: request, body: await request.clone().text() });
         return new Response(JSON.stringify({ ok: true }), { status: 200 });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const request = new Request('https://app.example/api/session/abc/prompt_async?directory=%2Frepo&workspace=main', {
         method: 'POST',
@@ -195,7 +195,7 @@ describe('runtimeFetch transport contract', () => {
       globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
         calls.push({ input, init });
         return new Response(null, { status: 204 });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       await runtimeFetch('/api/path', {
         headers: { Authorization: 'Bearer sdk-token' },
@@ -220,7 +220,7 @@ describe('runtimeFetch transport contract', () => {
       globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
         calls.push({ input, init });
         return new Response(new Blob(['icon']), { status: 200 });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       await runtimeFetch('/api/projects/project-1/icon', {
         method: 'GET',
@@ -250,7 +250,7 @@ describe('runtimeFetch transport contract', () => {
       globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
         calls.push({ input, init });
         return new Response(null, { status: 204 });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       await runtimeFetch('https://old-runtime.example/api/config/settings');
 
@@ -274,7 +274,7 @@ describe('runtimeFetch transport contract', () => {
       globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
         calls.push({ input, init });
         return new Response(JSON.stringify({ authenticated: true }), { status: 200 });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       await runtimeFetch('https://runtime.example/auth/session');
 
@@ -298,7 +298,7 @@ describe('runtimeFetch read coalescing', () => {
         calls += 1;
         await new Promise((r) => setTimeout(r, 20));
         return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'content-type': 'application/json' } });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       const [a, b] = await Promise.all([
         runtimeFetch('/api/config/providers'),
@@ -329,7 +329,7 @@ describe('runtimeFetch read coalescing', () => {
         calls += 1;
         await new Promise((r) => setTimeout(r, 10));
         return new Response('{}', { status: 200, headers: { 'content-type': 'application/json' } });
-      }) as typeof fetch;
+      }) as unknown as typeof fetch;
 
       // POST to an allowlisted path → not coalesced.
       await Promise.all([

@@ -29,7 +29,7 @@ import { useI18n } from '@/lib/i18n';
 import { resolveProjectForDirectory, resolveProjectForSessionDirectory } from '@/lib/projectResolution';
 import { clampPercent, formatQuotaResetLabel, formatQuotaValueLabel, formatWindowLabel, QUOTA_PROVIDERS, resolveUsageTone } from '@/lib/quota';
 import { getDisplayModelName } from '@/lib/quota/model-families';
-import { haptic, isNativeAgentAvailable, startAgentTeam } from '@/lib/mobile';
+import { buildAgentBaseUrl, haptic, isNativeAgentAvailable, startAgentTeam } from '@/lib/mobile';
 import { runtimeFetch } from '@/lib/runtime-fetch';
 import { sessionEvents } from '@/lib/sessionEvents';
 import { cn } from '@/lib/utils';
@@ -1110,7 +1110,9 @@ export function MobileApp({ apis }: MobileAppProps) {
 
   // Native mobile: launch the local OpenCode engine as a parallel agent team.
   // A single `startTeam` call fans out into N concurrent subprocesses on the
-  // native side; all agents share the loopback interface (127.0.0.1).
+  // native side; all agents share the loopback interface (127.0.0.1). The SDK
+  // client is pointed at the primary agent's loopback port so the UI talks to
+  // the local engine instead of a remote host.
   React.useEffect(() => {
     if (!isNativeAgentAvailable()) return;
     let cancelled = false;
@@ -1118,9 +1120,17 @@ export function MobileApp({ apis }: MobileAppProps) {
       { id: 'primary' },
       { id: 'research' },
       { id: 'coder' },
-    ]).catch((err) => {
-      if (!cancelled) console.error('[mobile] failed to start agent team:', err);
-    });
+    ])
+      .then((team) => {
+        if (cancelled) return;
+        const primary = team.agents.find((a) => a.id === 'primary');
+        if (primary) {
+          opencodeClient.setBaseUrl(buildAgentBaseUrl(primary.port));
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) console.error('[mobile] failed to start agent team:', err);
+      });
     return () => {
       cancelled = true;
     };

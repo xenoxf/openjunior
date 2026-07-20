@@ -30,9 +30,16 @@ export interface AgentSummary {
   running: boolean;
 }
 
+/** Result of starting a team: the count plus each agent's loopback port. */
+export interface TeamResult {
+  count: number;
+  running: boolean;
+  agents: AgentSummary[];
+}
+
 interface GlenkerPlugin {
   startAgent(opts: { id?: string; port?: number }): Promise<{ id?: string; port: number; running: boolean }>;
-  startTeam(opts: { agents: Array<{ id: string; port?: number }> }): Promise<{ count: number; running: boolean }>;
+  startTeam(opts: { agents: Array<{ id: string; port?: number }> }): Promise<TeamResult>;
   stopAgent(opts: { id: string }): Promise<{ stopped: boolean }>;
   stopAll(): Promise<{ running: boolean }>;
   agentStatus(opts: { id: string }): Promise<{ id: string; running: boolean }>;
@@ -68,10 +75,14 @@ export async function startAgent(opts: { id?: string; port?: number } = {}): Pro
  */
 export async function startAgentTeam(
   agents: Array<{ id: string; port?: number }>,
-): Promise<{ count: number; running: boolean }> {
+): Promise<TeamResult> {
   const plugin = getGlenkerPlugin();
   if (!plugin) {
-    return { count: 0, running: false };
+    return {
+      count: agents.length,
+      running: false,
+      agents: agents.map((a) => ({ id: a.id, port: a.port ?? 4096, running: false })),
+    };
   }
   return plugin.startTeam({ agents });
 }
